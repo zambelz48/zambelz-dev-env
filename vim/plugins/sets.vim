@@ -17,6 +17,7 @@ set nobackup
 set undodir=~/.vim/undodir
 set undofile
 set incsearch
+set noshowmode
 set scrolloff=8
 set cmdheight=2
 set colorcolumn=80
