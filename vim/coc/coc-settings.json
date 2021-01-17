@@ -1,0 +1,14 @@
+{
+
+    // coc-explorer properties
+    "explorer.icon.enableNerdfont": true,
+    "explorer.file.showHiddenFiles": true,
+    "explorer.quitOnOpen": true,
+    "explorer.git.icon.status.added": "A",
+    "explorer.git.icon.status.modified": "M",
+    "explorer.git.icon.status.renamed": "R",
+    "explorer.git.icon.status.deleted": "D",
+    "explorer.git.icon.rootStatus.conflicted": "C"
+
+}
+
