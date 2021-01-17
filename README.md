@@ -2,7 +2,7 @@
 
 ## Tools
 1. Homebrew: https://docs.brew.sh/Installation
-1. any other?
+1. oh-my-zsh: https://github.com/ohmyzsh/ohmyzsh
 1. tmux (install using homebrew: brew install tmux)
 
 ## zsh
