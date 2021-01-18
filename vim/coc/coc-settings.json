@@ -1,5 +1,16 @@
 {
 
+    // language server
+    "languageserver": {
+        "kotlin": {
+            "command": "/Users/ruangguru/Development/KotlinServer/bin/kotlin-language-server",
+            "filetypes": ["kotlin"]
+        }
+    },
+
+    // coc-clangd
+    "clangd.path": "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clangd",
+
     // coc-explorer properties
     "explorer.icon.enableNerdfont": true,
     "explorer.file.showHiddenFiles": true,

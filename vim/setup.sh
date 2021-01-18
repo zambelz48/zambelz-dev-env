@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-current_dir=$(pwd)
+current_dir=$(dirname "$0")
 vim_rtp="$HOME/.vim"
 
 trap cleanup EXIT
