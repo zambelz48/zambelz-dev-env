@@ -15,5 +15,10 @@ case $option in
         bash setup.sh
         cd "$current_dir" 
     ;;
+    alacritty)
+        cd alacritty
+        bash setup.sh
+        cd "$current_dir" 
+    ;;
 esac
 

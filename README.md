@@ -1,9 +1,9 @@
 # Macbook tools and configurations
 
 ## Tools
-1. iTerm: https://iterm2.com
+1. Terminal emulator: [iTerm](https://iterm2.com) or [alacritty](https://github.com/alacritty/alacritty)
 1. Homebrew: https://docs.brew.sh/Installation
-1. oh-my-zsh: https://github.com/ohmyzsh/ohmyzsh
+1. ZSH:[oh-my-zsh](https://github.com/ohmyzsh/ohmyzsh)
 1. tmux (install using homebrew: brew install tmux)
 
 ## zsh
