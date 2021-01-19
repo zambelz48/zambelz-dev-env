@@ -9,6 +9,7 @@ Plug 'vim-airline/vim-airline'
 Plug 'vim-airline/vim-airline-themes'
 Plug 'edkolev/tmuxline.vim'
 Plug 'udalov/kotlin-vim'
+Plug '/usr/local/opt/fzf'
 
 call plug#end()
 
