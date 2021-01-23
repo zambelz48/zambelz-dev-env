@@ -57,6 +57,7 @@ ln -s "$current_dir/plugins/coc.vim" "$vim_rtp/plugin/coc.vim"
 ln -s "$current_dir/plugins/airline.vim" "$vim_rtp/plugin/airline.vim"
 ln -s "$current_dir/coc/coc-settings.json" "$HOME/.vim/coc-settings.json"
 
+mkdir "$HOME/.config/coc"
 mkdir "$HOME/.config/coc/extensions"
 ln -s "$current_dir/coc/extensions/package.json" "$HOME/.config/coc/extensions/package.json"
 cd "$HOME/.config/coc/extensions"
