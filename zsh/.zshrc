@@ -105,6 +105,8 @@ export PATH="$PATH:$HOME/.rvm/bin"
 
 export TERM="xterm-256color"
 
+export JAVA_HOME=$(/usr/libexec/java_home)
+
 # Start RG iOS CLI
 export RG_IOS_CLI_SRCDIR="/Users/ruangguru/Development/Ruangguru/Codes/ios-cli"
 # End RG iOS CLI
