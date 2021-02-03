@@ -5,6 +5,10 @@
         "kotlin": {
             "command": "/Users/nanda/Dev/KotlinServer/bin/kotlin-language-server",
             "filetypes": ["kotlin"]
+        },
+        "sourcekit-lsp": {
+            "filetypes": ["swift"],
+            "command": "sourcekit-lsp"
         }
     },
 
