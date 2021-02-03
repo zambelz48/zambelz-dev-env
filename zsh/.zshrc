@@ -91,6 +91,18 @@ source $ZSH/oh-my-zsh.sh
 # Compilation flags
 # export ARCHFLAGS="-arch x86_64"
 
+export BREW_HOME=/opt/homebrew
+export GEM_HOME=$HOME/.gem
+export RUBY_USER_HOME=$GEM_HOME/ruby/2.6.0
+
+export PATH="$BREW_HOME/bin:$PATH"
+export PATH="$GEM_HOME/bin:$PATH"
+export PATH="$RUBY_USER_HOME/bin:$PATH"
+
+export TERM="xterm-256color"
+
+export JAVA_HOME=$(/usr/libexec/java_home)
+
 # Set personal aliases, overriding those provided by oh-my-zsh libs,
 # plugins, and themes. Aliases can be placed here, though oh-my-zsh
 # users are encouraged to define aliases within the ZSH_CUSTOM folder.
@@ -99,15 +111,6 @@ source $ZSH/oh-my-zsh.sh
 # Example aliases
 # alias zshconfig="mate ~/.zshrc"
 # alias ohmyzsh="mate ~/.oh-my-zsh"
-
-export PATH="/usr/local/sbin:$PATH"
-export PATH="$PATH:$HOME/.rvm/bin"
-
-export TERM="xterm-256color"
-
-export JAVA_HOME=$(/usr/libexec/java_home)
-
-# Start RG iOS CLI
-export RG_IOS_CLI_SRCDIR="/Users/ruangguru/Development/Ruangguru/Codes/ios-cli"
-# End RG iOS CLI
+alias pod_x86="arch -x86_64 pod"
+alias gem_x86="arch -x86_64 gem"
 

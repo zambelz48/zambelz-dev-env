@@ -1,5 +1,5 @@
 
-call plug#begin('~/.vim/plugged')
+call plug#begin(stdpath('data') . '/plugged')
 
 Plug 'junegunn/vim-plug'
 Plug 'gruvbox-community/gruvbox'

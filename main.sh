@@ -12,6 +12,9 @@ case $option in
     vim)
         bash "$SCRIPT_DIR/vim/setup.sh"
     ;;
+    neovim)
+        bash "$SCRIPT_DIR/neovim/setup.sh"
+    ;;
     alacritty)
         bash "$SCRIPT_DIR/alacritty/setup.sh"
     ;;
