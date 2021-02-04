@@ -3,6 +3,7 @@ call plug#begin(stdpath('data') . '/plugged')
 
 Plug 'junegunn/vim-plug'
 Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
+Plug 'junegunn/fzf.vim' 
 Plug 'gruvbox-community/gruvbox'
 Plug 'neoclide/coc.nvim', {'branch': 'release'}
 Plug 'tpope/vim-fugitive'
