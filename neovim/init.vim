@@ -11,6 +11,8 @@ Plug 'vim-airline/vim-airline'
 Plug 'vim-airline/vim-airline-themes'
 Plug 'edkolev/tmuxline.vim'
 Plug 'udalov/kotlin-vim'
+Plug 'ap/vim-css-color'
+Plug 'iamcco/markdown-preview.nvim', { 'do': 'cd app && yarn install'  }
 
 " Don't forget to clone: https://github.com/apple/swift
 Plug '/Users/nanda/Dev/Projects/swift/utils/vim'
