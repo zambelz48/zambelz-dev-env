@@ -91,17 +91,24 @@ source $ZSH/oh-my-zsh.sh
 # Compilation flags
 # export ARCHFLAGS="-arch x86_64"
 
+
 export BREW_HOME=/opt/homebrew
 export GEM_HOME=$HOME/.gem
 export RUBY_USER_HOME=$GEM_HOME/ruby/2.6.0
+export ANDROID_SDK_HOME=$HOME/Dev/AndroidSDK
+export BUCK_HOME=$HOME/Dev/Projects/buck
 
 export PATH="$BREW_HOME/bin:$PATH"
 export PATH="$GEM_HOME/bin:$PATH"
 export PATH="$RUBY_USER_HOME/bin:$PATH"
+export PATH="$ANDROID_SDK_HOME/platform-tools:$PATH"
+export PATH="$ANDROID_SDK_HOME/cmdline-tools/latest/bin:$PATH"
+export PATH="$HOME/.jenv/bin:$PATH"
+export PATH="$BUCK_HOME/bin:$PATH"
+
+eval "$(jenv init -)"
 
 export TERM="xterm-256color"
-
-export JAVA_HOME=$(/usr/libexec/java_home)
 
 # Set personal aliases, overriding those provided by oh-my-zsh libs,
 # plugins, and themes. Aliases can be placed here, though oh-my-zsh
