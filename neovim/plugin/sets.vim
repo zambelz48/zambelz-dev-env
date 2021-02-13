@@ -1,5 +1,6 @@
 syntax on
 
+set termguicolors
 set re=0
 set hidden
 set guicursor=

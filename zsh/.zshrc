@@ -93,6 +93,7 @@ source $ZSH/oh-my-zsh.sh
 
 
 export BREW_HOME=/opt/homebrew
+export GROOVY_HOME=$BREW_HOME/opt/groovy/libexec
 export GEM_HOME=$HOME/.gem
 export RUBY_USER_HOME=$GEM_HOME/ruby/2.6.0
 export ANDROID_SDK_HOME=$HOME/Dev/AndroidSDK
@@ -107,8 +108,6 @@ export PATH="$HOME/.jenv/bin:$PATH"
 export PATH="$BUCK_HOME/bin:$PATH"
 
 eval "$(jenv init -)"
-
-export TERM="xterm-256color"
 
 # Set personal aliases, overriding those provided by oh-my-zsh libs,
 # plugins, and themes. Aliases can be placed here, though oh-my-zsh
