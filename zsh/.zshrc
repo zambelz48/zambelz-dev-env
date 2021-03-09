@@ -104,8 +104,8 @@ export PATH="$GEM_HOME/bin:$PATH"
 export PATH="$RUBY_USER_HOME/bin:$PATH"
 export PATH="$ANDROID_SDK_HOME/platform-tools:$PATH"
 export PATH="$ANDROID_SDK_HOME/cmdline-tools/latest/bin:$PATH"
-export PATH="$HOME/.jenv/bin:$PATH"
 export PATH="$BUCK_HOME/bin:$PATH"
+export PATH="$HOME/.jenv/bin:$PATH"
 
 eval "$(jenv init -)"
 
