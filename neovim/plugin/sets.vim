@@ -1,6 +1,7 @@
 syntax on
 
 set termguicolors
+set guifont=Hack\ Nerd\ Font\ 12
 set re=0
 set hidden
 set guicursor=
