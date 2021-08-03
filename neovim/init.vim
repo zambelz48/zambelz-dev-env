@@ -4,7 +4,7 @@ call plug#begin(stdpath('data') . '/plugged')
 Plug 'junegunn/vim-plug'
 Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
 Plug 'junegunn/fzf.vim' 
-Plug 'gruvbox-community/gruvbox'
+Plug 'dracula/vim', { 'as': 'dracula' }
 Plug 'neoclide/coc.nvim', {'branch': 'release'}
 Plug 'tpope/vim-fugitive'
 Plug 'tpope/vim-commentary'
@@ -20,7 +20,7 @@ Plug '/Users/nanda/Dev/Projects/swift/utils/vim'
 
 call plug#end()
 
-colorscheme gruvbox
+colorscheme dracula
 set background=dark
 
 highlight Normal guibg=none
