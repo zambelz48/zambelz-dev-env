@@ -117,6 +117,9 @@ eval "$(jenv init -)"
 # Example aliases
 # alias zshconfig="mate ~/.zshrc"
 # alias ohmyzsh="mate ~/.oh-my-zsh"
-alias pod_x86="arch -x86_64 pod"
-alias gem_x86="arch -x86_64 gem"
+alias pod-x86="arch -x86_64 pod"
+alias gem-x86="arch -x86_64 gem"
+
+alias xcode-clean-data="rm -rf $HOME/Library/Developer/Xcode/DerivedData"
+alias xcode-show-data="ls -lah $HOME/Library/Developer/Xcode/DerivedData"
 
