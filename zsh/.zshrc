@@ -96,14 +96,14 @@ export BREW_HOME=/opt/homebrew
 export GROOVY_HOME=$BREW_HOME/opt/groovy/libexec
 export GEM_HOME=$HOME/.gem
 export RUBY_USER_HOME=$GEM_HOME/ruby/2.6.0
-export ANDROID_SDK_HOME=$HOME/Dev/AndroidSDK
+export ANDROID_HOME=$HOME/Dev/AndroidSDK
 export BUCK_HOME=$HOME/Dev/Projects/buck
 
 export PATH="$BREW_HOME/bin:$PATH"
 export PATH="$GEM_HOME/bin:$PATH"
 export PATH="$RUBY_USER_HOME/bin:$PATH"
-export PATH="$ANDROID_SDK_HOME/platform-tools:$PATH"
-export PATH="$ANDROID_SDK_HOME/cmdline-tools/latest/bin:$PATH"
+export PATH="$ANDROID_HOME/platform-tools:$PATH"
+export PATH="$ANDROID_HOME/cmdline-tools/latest/bin:$PATH"
 export PATH="$BUCK_HOME/bin:$PATH"
 export PATH="$HOME/.jenv/bin:$PATH"
 
@@ -119,6 +119,8 @@ eval "$(jenv init -)"
 # alias ohmyzsh="mate ~/.oh-my-zsh"
 alias pod-x86="arch -x86_64 pod"
 alias gem-x86="arch -x86_64 gem"
+
+alias new-terminal-window="open -n /Applications/Alacritty.app"
 
 alias xcode-clean-data="rm -rf $HOME/Library/Developer/Xcode/DerivedData"
 alias xcode-show-data="ls -lah $HOME/Library/Developer/Xcode/DerivedData"
