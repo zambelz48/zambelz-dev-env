@@ -39,7 +39,10 @@ ZSH_THEME="robbyrussell"
 # DISABLE_LS_COLORS="true"
 
 # Uncomment the following line to disable auto-setting terminal title.
-# DISABLE_AUTO_TITLE="true"
+DISABLE_AUTO_TITLE="true"
+
+# Terminal title
+precmd () {print -Pn "\e]0;%~\a"}
 
 # Uncomment the following line to enable command auto-correction.
 # ENABLE_CORRECTION="true"
@@ -79,7 +82,7 @@ source $ZSH/oh-my-zsh.sh
 # export MANPATH="/usr/local/man:$MANPATH"
 
 # You may need to manually set your language environment
-# export LANG=en_US.UTF-8
+export LANG=en_US.UTF-8
 
 # Preferred editor for local and remote sessions
 # if [[ -n $SSH_CONNECTION ]]; then
@@ -119,8 +122,6 @@ eval "$(jenv init -)"
 # alias ohmyzsh="mate ~/.oh-my-zsh"
 alias pod-x86="arch -x86_64 pod"
 alias gem-x86="arch -x86_64 gem"
-
-alias new-terminal-window="open -n /Applications/Alacritty.app"
 
 alias xcode-clean-data="rm -rf $HOME/Library/Developer/Xcode/DerivedData"
 alias xcode-show-data="ls -lah $HOME/Library/Developer/Xcode/DerivedData"
