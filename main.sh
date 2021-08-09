@@ -18,6 +18,9 @@ case $option in
     alacritty)
         bash "$SCRIPT_DIR/alacritty/setup.sh"
     ;;
+    kitty)
+        bash "$SCRIPT_DIR/kitty/setup.sh"
+    ;;
     tmux)
         bash "$SCRIPT_DIR/tmux/setup.sh"
     ;;
