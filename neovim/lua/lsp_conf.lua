@@ -1,4 +1,6 @@
 
+-- list of available lsp: https://github.com/neovim/nvim-lspconfig/blob/master/CONFIG.md
+
 local nvim_lsp = require 'lspconfig'
 local on_attach = function(_, bufnr)
     vim.api.nvim_buf_set_option(bufnr, 'omnifunc', 'v:lua.vim.lsp.omnifunc')
@@ -31,22 +33,63 @@ capabilities = require('cmp_nvim_lsp').update_capabilities(capabilities)
 
 -- Enable the following language servers
 local servers = { 
-    'bashls',
-    'clangd',
-    'cmake',
-    'cssls',
-    'eslint',
-    'html',
-    'java_language_server',
-    'kotlin_language_server',
-    'cssls', 
-    'pyright',
-    'rust_analyzer', 
-    'sourcekit',
-    'tsserver'
+	{ 
+		name = 'bashls',
+		cmd = { 'bash-language-server', 'start' },
+	},
+	{
+		name = 'clangd',
+		cmd = { 'clangd', '--backgroun-index' },
+	},
+	{ 
+		name = 'cmake',
+		cmd = { 'cmake-language-server' }
+	},
+	{
+		name = 'cssls',
+		cmd = { 'vscode-css-language-server', '--stdio' },
+	},
+	{
+		name = 'eslint',
+		cmd = { 'vscode-eslint-language-server', '--stdio' },
+	},
+	{
+		name = 'html',
+		cmd = { 'vscode-html-language-server', '--stdio' },
+	},
+	{
+		name = 'java_language_server',
+		cmd = { '/Users/nanda/Dev/Projects/java-language-server/scripts/link_mac.sh' },
+	},
+	{ 
+		name = 'kotlin_language_server',
+		cmd = { 'kotlin-language-server' },
+	}, 
+	{ 
+		name = 'pyright',
+		cmd = { 'pyright-langserver', '--stdio' },
+	},
+	{ 
+		name = 'rust_analyzer', 
+		cmd = { 'rust-analyzer' },
+	},
+	{ 
+		name = 'solargraph',
+		cmd = { 'solargraph', 'stdio' },
+	},
+	{
+		name = 'sourcekit',
+		cmd = { 'sourcekit-lsp' },
+	},
+	{
+		name = 'tsserver',
+		cmd = { 'typescript-language-server', '--stdio' },
+	}
 }
+
 for _, lsp in ipairs(servers) do
-    nvim_lsp[lsp].setup {
+    nvim_lsp[lsp.name].setup {
+		cmd = lsp.cmd,
         on_attach = on_attach,
         capabilities = capabilities,
     }
