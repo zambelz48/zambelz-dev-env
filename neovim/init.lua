@@ -21,7 +21,9 @@ require('packer').startup(function()
     use {
         'kyazdani42/nvim-tree.lua',
         requires = 'kyazdani42/nvim-web-devicons',
-        config = function() require'nvim-tree'.setup {} end
+        config = function()
+			require'nvim-tree'.setup {}
+		end
     }
     use 'tpope/vim-fugitive'
     use 'tpope/vim-commentary'
@@ -41,6 +43,7 @@ require('packer').startup(function()
     }
     use 'itchyny/lightline.vim'
     use 'edkolev/tmuxline.vim'
+	use 'norcalli/nvim-colorizer.lua'
 end)
 
 require('options')
@@ -51,4 +54,5 @@ require('cmp_conf')
 require('nvim_tree_conf')
 require('telescope_conf')
 require('lightline_conf')
+require('nvim_colorizer_conf')
 

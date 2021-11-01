@@ -41,4 +41,5 @@ ln -s "$current_dir/lua/treesitter_conf.lua" "$nvim_lua/treesitter_conf.lua"
 ln -s "$current_dir/lua/nvim_tree_conf.lua" "$nvim_lua/nvim_tree_conf.lua"
 ln -s "$current_dir/lua/cmp_conf.lua" "$nvim_lua/cmp_conf.lua"
 ln -s "$current_dir/lua/lightline_conf.lua" "$nvim_lua/lightline_conf.lua"
+ln -s "$current_dir/lua/nvim_colorizer_conf.lua" "$nvim_lua/nvim_colorizer_conf.lua"
 
