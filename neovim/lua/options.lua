@@ -1,4 +1,6 @@
 
+vim.g.python3_host_prog = '/opt/homebrew/bin/python3'
+
 vim.o.inccommand = 'nosplit'
 vim.o.hlsearch = true
 vim.o.hidden = true
