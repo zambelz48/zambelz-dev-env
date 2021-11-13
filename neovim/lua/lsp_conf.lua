@@ -95,6 +95,10 @@ local servers = {
 	{
 		name = 'tsserver',
 		cmd = { 'typescript-language-server', '--stdio' },
+	},
+	{
+		name = 'yamlls',
+		cmd = { 'yaml-language-server', '--stdio' },
 	}
 }
 
