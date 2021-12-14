@@ -43,4 +43,5 @@ ln -s "$current_dir/lua/cmp_conf.lua" "$nvim_lua/cmp_conf.lua"
 ln -s "$current_dir/lua/lualine_conf.lua" "$nvim_lua/lualine_conf.lua"
 ln -s "$current_dir/lua/nvim_colorizer_conf.lua" "$nvim_lua/nvim_colorizer_conf.lua"
 ln -s "$current_dir/lua/markdown_preview_conf.lua" "$nvim_lua/markdown_preview_conf.lua"
+ln -s "$current_dir/lua/vimspector_conf.lua" "$nvim_lua/vimspector_conf.lua"
 

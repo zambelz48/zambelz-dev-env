@@ -54,6 +54,7 @@ require('packer').startup(function()
 		'iamcco/markdown-preview.nvim', 
 		run = 'cd app && yarn install'
 	}
+	use { 'puremourning/vimspector' }
 end)
 
 require('options')
@@ -66,4 +67,5 @@ require('telescope_conf')
 require('lualine_conf')
 require('nvim_colorizer_conf')
 require('markdown_preview_conf')
+require('vimspector_conf')
 
