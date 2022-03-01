@@ -20,10 +20,7 @@ require('packer').startup(function()
     use 'wbthomason/packer.nvim'
     use {
         'kyazdani42/nvim-tree.lua',
-        requires = 'kyazdani42/nvim-web-devicons',
-        config = function()
-			require'nvim-tree'.setup {}
-		end
+        requires = 'kyazdani42/nvim-web-devicons'
     }
 	use {
 		'nvim-lualine/lualine.nvim',
@@ -44,7 +41,7 @@ require('packer').startup(function()
     use 'hrsh7th/cmp-nvim-lsp'
     use 'saadparwaiz1/cmp_luasnip'
     use 'L3MON4D3/LuaSnip'
-    use { 
+    use {
         'dracula/vim', 
         as = 'dracula' 
     }

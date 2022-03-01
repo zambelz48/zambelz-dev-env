@@ -1,4 +1,3 @@
-vim.g.nvim_tree_quit_on_open = 1
 vim.g.nvim_tree_highlight_opened_files = 1
 vim.g.nvim_tree_icon_padding = ' ' 
 vim.g.nvim_tree_icons = {
@@ -83,7 +82,7 @@ require'nvim-tree'.setup {
 
   view = {
     -- width of the window, can be either a number (columns) or a string in `%`, for left or right side placement
-    width = 30,
+    width = 40,
     -- height of the window, can be either a number (columns) or a string in `%`, for top or bottom side placement
     height = 30,
     -- Hide the root path of the current folder on top of the tree 
@@ -106,7 +105,14 @@ require'nvim-tree'.setup {
   },
 
   filters = {
+	dotfiles = false,
     custom = {}
+  },
+
+  actions = {
+    open_file = {
+      quit_on_open = true
+    }
   }
 }
 
