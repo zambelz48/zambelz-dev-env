@@ -79,6 +79,10 @@ local servers = {
 		name = 'kotlin_language_server',
 		cmd = { 'kotlin-language-server' },
 	}, 
+	{
+		name = 'sumneko_lua',
+		cmd = { 'lua-language-server' },
+	},
 	{ 
 		name = 'pyright',
 		cmd = { 'pyright-langserver', '--stdio' },
