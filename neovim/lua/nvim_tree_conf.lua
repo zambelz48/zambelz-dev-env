@@ -46,6 +46,10 @@ require'nvim-tree'.setup {
 	},
 
 	view = {
+		-- show current line number
+		number = true,
+		-- show relative number
+		relativenumber = true,
 		-- width of the window, can be either a number (columns) or a string in `%`, for left or right side placement
 		width = 40,
 		-- Hide the root path of the current folder on top of the tree 
