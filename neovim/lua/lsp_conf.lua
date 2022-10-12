@@ -43,75 +43,154 @@ capabilities = require('cmp_nvim_lsp').update_capabilities(capabilities)
 
 -- Enable the following language servers
 local servers = { 
-	{ 
+	{
+		name = 'vimls',
+		cmd = { 'vim-language-server', '--stdio' },
+		filetypes = {
+            'vim'
+        },
+	},
+	{
 		name = 'bashls',
 		cmd = { 'bash-language-server', 'start' },
+		filetypes = {
+			'sh'
+		},
 	},
 	{
 		name = 'clangd',
 		cmd = { 'clangd', '--backgroun-index' },
+		filetypes = {
+			'c',
+			'cpp',
+			'objc',
+			'objcpp',
+			'cuda',
+			'proto'
+		},
 	},
-	{ 
+	{
 		name = 'cmake',
-		cmd = { 'cmake-language-server' }
+		cmd = { 'cmake-language-server' },
+		filetypes = {
+			'cmake'
+		},
 	},
 	{
 		name = 'jsonls',
 		cmd = { 'vscode-json-language-server', '--stdio' },
+		filetypes = {
+			'json',
+			'jsonc'
+		},
 	},
 	{
 		name = 'cssls',
 		cmd = { 'vscode-css-language-server', '--stdio' },
+		filetypes = {
+			'css',
+			'scss',
+			'less'
+		},
 	},
 	{
 		name = 'eslint',
 		cmd = { 'vscode-eslint-language-server', '--stdio' },
+		filetypes = {
+			'javascript',
+			'javascriptreact',
+			'javascript.jsx',
+			'typescript',
+			'typescriptreact',
+			'typescript.tsx',
+			'vue',
+			'svelte'
+		},
 	},
 	{
 		name = 'html',
 		cmd = { 'vscode-html-language-server', '--stdio' },
+		filetypes = {
+			'html'
+		},
 	},
 	{
 		name = 'java_language_server',
 		cmd = { '/Users/nanda/Dev/Projects/java-language-server/scripts/link_mac.sh' },
+		filetypes = {
+			'java'
+		},
 	},
-	{ 
+	{
 		name = 'kotlin_language_server',
 		cmd = { 'kotlin-language-server' },
+		filetypes = {
+			'kotlin'
+		},
 	}, 
 	{
 		name = 'sumneko_lua',
 		cmd = { 'lua-language-server' },
+		filetypes = {
+			'lua'
+		},
 	},
-	{ 
+	{
 		name = 'pyright',
 		cmd = { 'pyright-langserver', '--stdio' },
+		filetypes = {
+			'python'
+		},
 	},
-	{ 
+	{
 		name = 'rust_analyzer', 
 		cmd = { 'rust-analyzer' },
+		filetypes = {
+			'rust'
+		},
 	},
-	{ 
+	{
 		name = 'solargraph',
 		cmd = { 'solargraph', 'stdio' },
+		filetypes = {
+			'ruby'
+		},
 	},
 	{
 		name = 'sourcekit',
 		cmd = { 'sourcekit-lsp' },
+		filetypes = {
+			'swift',
+			'objective-c',
+			'objective-cpp'
+		},
 	},
 	{
 		name = 'tsserver',
 		cmd = { 'typescript-language-server', '--stdio' },
+		filetypes = {
+			'javascript',
+			'javascriptreact',
+			'javascript.jsx',
+			'typescript',
+			'typescriptreact',
+			'typescript.tsx'
+		},
 	},
 	{
 		name = 'yamlls',
 		cmd = { 'yaml-language-server', '--stdio' },
+		filetypes = {
+			'yaml',
+			'yaml.docker-compose'
+		},
 	}
 }
 
 for _, lsp in ipairs(servers) do
     nvim_lsp[lsp.name].setup {
-		cmd = lsp.cmd,
+        cmd = lsp.cmd,
+        filetypes = lsp.filetypes,
         on_attach = on_attach,
         capabilities = capabilities,
     }
