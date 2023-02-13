@@ -129,7 +129,7 @@ local servers = {
 		},
 	}, 
 	{
-		name = 'sumneko_lua',
+		name = 'lua_ls',
 		cmd = { 'lua-language-server' },
 		filetypes = {
 			'lua'
