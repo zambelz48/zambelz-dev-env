@@ -52,6 +52,7 @@ require('packer').startup(function()
 		run = 'cd app && yarn install'
 	}
 	use { 'puremourning/vimspector' }
+	use { 'gpanders/editorconfig.nvim' }
 end)
 
 require('options')
