@@ -33,15 +33,14 @@ mkdir "$nvim_lua"
 
 ln -s "$current_dir/init.lua" "$nvim_config/init.lua"
 
-ln -s "$current_dir/lua/mappings.lua" "$nvim_lua/mappings.lua"
-ln -s "$current_dir/lua/options.lua" "$nvim_lua/options.lua"
-ln -s "$current_dir/lua/lsp_conf.lua" "$nvim_lua/lsp_conf.lua"
-ln -s "$current_dir/lua/telescope_conf.lua" "$nvim_lua/telescope_conf.lua"
-ln -s "$current_dir/lua/treesitter_conf.lua" "$nvim_lua/treesitter_conf.lua"
-ln -s "$current_dir/lua/nvim_tree_conf.lua" "$nvim_lua/nvim_tree_conf.lua"
-ln -s "$current_dir/lua/cmp_conf.lua" "$nvim_lua/cmp_conf.lua"
-ln -s "$current_dir/lua/lualine_conf.lua" "$nvim_lua/lualine_conf.lua"
-ln -s "$current_dir/lua/nvim_colorizer_conf.lua" "$nvim_lua/nvim_colorizer_conf.lua"
-ln -s "$current_dir/lua/markdown_preview_conf.lua" "$nvim_lua/markdown_preview_conf.lua"
-ln -s "$current_dir/lua/vimspector_conf.lua" "$nvim_lua/vimspector_conf.lua"
+source_config_dir="$current_dir/lua"
+destination_config_dir="$nvim_lua"
+
+shopt -s nullglob
+conf_files=("$source_config_dir"/*.lua)
+
+for conf_file in "${conf_files[@]}"; do
+	conf_file_name="${conf_file[@]##*/}"
+	ln -s "$source_config_dir/$conf_file_name" "$nvim_lua/$conf_file_name"
+done
 
