@@ -53,6 +53,7 @@ require('packer').startup(function()
 	}
 	use { 'puremourning/vimspector' }
 	use { 'gpanders/editorconfig.nvim' }
+	use { 'akinsho/toggleterm.nvim', tag = '*' }
 end)
 
 require('options')
@@ -66,4 +67,5 @@ require('lualine_conf')
 require('nvim_colorizer_conf')
 require('markdown_preview_conf')
 require('vimspector_conf')
+require('toggleterm_conf')
 
