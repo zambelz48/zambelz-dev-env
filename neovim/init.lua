@@ -52,7 +52,14 @@ require('packer').startup(function()
 		run = 'cd app && yarn install'
 	}
 	use { 'puremourning/vimspector' }
-	use { 'akinsho/toggleterm.nvim', tag = '*' }
+	use {
+		'akinsho/toggleterm.nvim',
+		tag = '*'
+	}
+	use {
+		'lewis6991/gitsigns.nvim',
+		tag = 'release'
+	}
 end)
 
 require('options')
@@ -67,4 +74,5 @@ require('nvim_colorizer_conf')
 require('markdown_preview_conf')
 require('vimspector_conf')
 require('toggleterm_conf')
+require('gitsigns_conf')
 
