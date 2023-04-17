@@ -1,5 +1,6 @@
 
 vim.g.python3_host_prog = '/opt/homebrew/bin/python3'
+vim.g.loaded_perl_provider = 0
 
 vim.o.inccommand = 'nosplit'
 vim.o.hlsearch = true
