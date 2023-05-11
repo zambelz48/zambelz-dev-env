@@ -47,7 +47,7 @@ require'nvim-tree'.setup {
 		-- show relative number
 		relativenumber = true,
 		-- width of the window, can be either a number (columns) or a string in `%`, for left or right side placement
-		width = 40,
+		width = 60,
 		-- Hide the root path of the current folder on top of the tree 
 		hide_root_folder = false,
 		-- side of the tree, can be one of 'left' | 'right' | 'top' | 'bottom'
