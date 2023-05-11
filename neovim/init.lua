@@ -18,14 +18,15 @@ vim.api.nvim_exec(
 local use = require('packer').use
 require('packer').startup(function()
     use 'wbthomason/packer.nvim'
+	use 'nvim-tree/nvim-web-devicons'
     use {
-        'kyazdani42/nvim-tree.lua',
-        requires = 'kyazdani42/nvim-web-devicons'
+        'nvim-tree/nvim-tree.lua',
+        requires = 'nvim-tree/nvim-web-devicons'
     }
 	use {
 		'nvim-lualine/lualine.nvim',
 		requires = {
-			'kyazdani42/nvim-web-devicons', 
+			'nvim-tree/nvim-web-devicons', 
 			opt = true 
 		}
 	}
@@ -60,6 +61,10 @@ require('packer').startup(function()
 		'lewis6991/gitsigns.nvim',
 		tag = 'release'
 	}
+	use {
+		'folke/trouble.nvim',
+		requires = 'nvim-tree/nvim-web-devicons'
+	}
 end)
 
 require('options')
@@ -75,4 +80,6 @@ require('markdown_preview_conf')
 require('vimspector_conf')
 require('toggleterm_conf')
 require('gitsigns_conf')
+require('trouble_conf')
+require('nvim_web_devicons_conf')
 
