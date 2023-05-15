@@ -32,6 +32,7 @@ require('packer').startup(function()
 	}
     use 'tpope/vim-fugitive'
     use 'tpope/vim-commentary'
+	use 'nvim-lua/plenary.nvim'
     use { 
         'nvim-telescope/telescope.nvim', 
         requires = { 'nvim-lua/plenary.nvim' } 
@@ -57,10 +58,7 @@ require('packer').startup(function()
 		'akinsho/toggleterm.nvim',
 		tag = '*'
 	}
-	use {
-		'lewis6991/gitsigns.nvim',
-		tag = 'release'
-	}
+	use 'lewis6991/gitsigns.nvim'
 	use {
 		'folke/trouble.nvim',
 		requires = 'nvim-tree/nvim-web-devicons'
