@@ -26,16 +26,16 @@ require('packer').startup(function()
 	use {
 		'nvim-lualine/lualine.nvim',
 		requires = {
-			'nvim-tree/nvim-web-devicons', 
-			opt = true 
+			'nvim-tree/nvim-web-devicons',
+			opt = true
 		}
 	}
     use 'tpope/vim-fugitive'
     use 'tpope/vim-commentary'
 	use 'nvim-lua/plenary.nvim'
-    use { 
-        'nvim-telescope/telescope.nvim', 
-        requires = { 'nvim-lua/plenary.nvim' } 
+    use {
+        'nvim-telescope/telescope.nvim',
+        requires = { 'nvim-lua/plenary.nvim' }
     }
     use 'nvim-treesitter/nvim-treesitter'
     use 'neovim/nvim-lspconfig'
@@ -44,13 +44,13 @@ require('packer').startup(function()
     use 'saadparwaiz1/cmp_luasnip'
     use 'L3MON4D3/LuaSnip'
     use {
-        'dracula/vim', 
-        as = 'dracula' 
+        'dracula/vim',
+        as = 'dracula'
     }
     use 'edkolev/tmuxline.vim'
 	use 'norcalli/nvim-colorizer.lua'
-	use { 
-		'iamcco/markdown-preview.nvim', 
+	use {
+		'iamcco/markdown-preview.nvim',
 		run = 'cd app && yarn install'
 	}
 	use { 'puremourning/vimspector' }
