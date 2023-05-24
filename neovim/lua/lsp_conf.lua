@@ -10,6 +10,7 @@ local servers = {
 		filetypes = {
 			'vim'
 		},
+		root_dir = nvim_lsp.util.root_pattern('Package.swift', '.git')
 	},
 	{
 		name = 'bashls',
@@ -17,6 +18,7 @@ local servers = {
 		filetypes = {
 			'sh'
 		},
+		root_dir = nil
 	},
 	{
 		name = 'clangd',
@@ -29,6 +31,7 @@ local servers = {
 			'cuda',
 			'proto'
 		},
+		root_dir = nil
 	},
 	{
 		name = 'cmake',
@@ -36,6 +39,7 @@ local servers = {
 		filetypes = {
 			'cmake'
 		},
+		root_dir = nil
 	},
 	{
 		name = 'jsonls',
@@ -44,6 +48,7 @@ local servers = {
 			'json',
 			'jsonc'
 		},
+		root_dir = nil
 	},
 	{
 		name = 'cssls',
@@ -53,6 +58,7 @@ local servers = {
 			'scss',
 			'less'
 		},
+		root_dir = nil
 	},
 	{
 		name = 'eslint',
@@ -67,6 +73,7 @@ local servers = {
 			'vue',
 			'svelte'
 		},
+		root_dir = nil
 	},
 	{
 		name = 'html',
@@ -74,6 +81,7 @@ local servers = {
 		filetypes = {
 			'html'
 		},
+		root_dir = nil
 	},
 	{
 		name = 'java_language_server',
@@ -81,6 +89,7 @@ local servers = {
 		filetypes = {
 			'java'
 		},
+		root_dir = nil
 	},
 	{
 		name = 'kotlin_language_server',
@@ -88,6 +97,7 @@ local servers = {
 		filetypes = {
 			'kotlin'
 		},
+		root_dir = nil
 	},
 	{
 		name = 'lua_ls',
@@ -95,6 +105,7 @@ local servers = {
 		filetypes = {
 			'lua'
 		},
+		root_dir = nil
 	},
 	{
 		name = 'pyright',
@@ -102,6 +113,7 @@ local servers = {
 		filetypes = {
 			'python'
 		},
+		root_dir = nil
 	},
 	{
 		name = 'rust_analyzer',
@@ -109,6 +121,7 @@ local servers = {
 		filetypes = {
 			'rust'
 		},
+		root_dir = nil
 	},
 	{
 		name = 'solargraph',
@@ -116,6 +129,7 @@ local servers = {
 		filetypes = {
 			'ruby'
 		},
+		root_dir = nil
 	},
 	{
 		name = 'sourcekit',
@@ -125,6 +139,7 @@ local servers = {
 			'objective-c',
 			'objective-cpp'
 		},
+		root_dir = nil
 	},
 	{
 		name = 'tsserver',
@@ -137,6 +152,7 @@ local servers = {
 			'typescriptreact',
 			'typescript.tsx'
 		},
+		root_dir = nil
 	},
 	{
 		name = 'yamlls',
@@ -145,6 +161,7 @@ local servers = {
 			'yaml',
 			'yaml.docker-compose'
 		},
+		root_dir = nil
 	}
 }
 
@@ -214,10 +231,23 @@ local capabilities = vim.lsp.protocol.make_client_capabilities()
 capabilities = require('cmp_nvim_lsp').default_capabilities(capabilities)
 
 for _, lsp in ipairs(servers) do
-	nvim_lsp[lsp.name].setup {
-		cmd = lsp.cmd,
-		filetypes = lsp.filetypes,
-		on_attach = on_attach,
-		capabilities = capabilities,
-	}
+
+	local server_conf = {}
+
+	if lsp.root_dir == nil then
+		nvim_lsp[lsp.name].setup{
+			cmd = lsp.cmd,
+			filetypes = lsp.filetypes,
+			on_attach = on_attach,
+			capabilities = capabilities,
+		}
+	else
+		nvim_lsp[lsp.name].setup{
+			cmd = lsp.cmd,
+			filetypes = lsp.filetypes,
+			root_dir = lsp.root_dir,
+			on_attach = on_attach,
+			capabilities = capabilities,
+		}
+	end
 end
