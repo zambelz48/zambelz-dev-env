@@ -80,3 +80,5 @@ require('toggleterm_conf')
 require('gitsigns_conf')
 require('trouble_conf')
 require('nvim_web_devicons_conf')
+require('fugitive_conf')
+
