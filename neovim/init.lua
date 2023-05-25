@@ -1,4 +1,3 @@
-
 local install_path = vim.fn.stdpath 'data' .. '/site/pack/packer/start/packer.nvim'
 
 if vim.fn.empty(vim.fn.glob(install_path)) > 0 then
@@ -18,26 +17,27 @@ vim.api.nvim_exec(
 local use = require('packer').use
 require('packer').startup(function()
     use 'wbthomason/packer.nvim'
-	use 'nvim-tree/nvim-web-devicons'
+    use 'nvim-tree/nvim-web-devicons'
     use {
         'nvim-tree/nvim-tree.lua',
         requires = 'nvim-tree/nvim-web-devicons'
     }
-	use {
-		'nvim-lualine/lualine.nvim',
-		requires = {
-			'nvim-tree/nvim-web-devicons',
-			opt = true
-		}
-	}
+    use {
+        'nvim-lualine/lualine.nvim',
+        requires = {
+            'nvim-tree/nvim-web-devicons',
+            opt = true
+        }
+    }
     use 'tpope/vim-fugitive'
     use 'tpope/vim-commentary'
-	use 'nvim-lua/plenary.nvim'
+    use 'nvim-lua/plenary.nvim'
     use {
         'nvim-telescope/telescope.nvim',
         requires = { 'nvim-lua/plenary.nvim' }
     }
     use 'nvim-treesitter/nvim-treesitter'
+    use 'nvim-treesitter/playground'
     use 'neovim/nvim-lspconfig'
     use 'hrsh7th/nvim-cmp'
     use 'hrsh7th/cmp-nvim-lsp'
@@ -48,21 +48,21 @@ require('packer').startup(function()
         as = 'dracula'
     }
     use 'edkolev/tmuxline.vim'
-	use 'norcalli/nvim-colorizer.lua'
-	use {
-		'iamcco/markdown-preview.nvim',
-		run = 'cd app && yarn install'
-	}
-	use { 'puremourning/vimspector' }
-	use {
-		'akinsho/toggleterm.nvim',
-		tag = '*'
-	}
-	use 'lewis6991/gitsigns.nvim'
-	use {
-		'folke/trouble.nvim',
-		requires = 'nvim-tree/nvim-web-devicons'
-	}
+    use 'norcalli/nvim-colorizer.lua'
+    use {
+        'iamcco/markdown-preview.nvim',
+        run = 'cd app && yarn install'
+    }
+    use { 'puremourning/vimspector' }
+    use {
+        'akinsho/toggleterm.nvim',
+        tag = '*'
+    }
+    use 'lewis6991/gitsigns.nvim'
+    use {
+        'folke/trouble.nvim',
+        requires = 'nvim-tree/nvim-web-devicons'
+    }
 end)
 
 require('options')
@@ -80,4 +80,3 @@ require('toggleterm_conf')
 require('gitsigns_conf')
 require('trouble_conf')
 require('nvim_web_devicons_conf')
-
