@@ -30,7 +30,6 @@ require('packer').startup(function()
         }
     }
     use 'tpope/vim-fugitive'
-    use 'tpope/vim-commentary'
     use 'nvim-lua/plenary.nvim'
     use {
         'nvim-telescope/telescope.nvim',
@@ -71,6 +70,7 @@ require('packer').startup(function()
         requires = 'nvim-tree/nvim-web-devicons'
     }
 	use 'j-hui/fidget.nvim'
+	use 'numToStr/Comment.nvim'
 end)
 
 require('options')
@@ -90,4 +90,5 @@ require('trouble_conf')
 require('nvim_web_devicons_conf')
 require('fugitive_conf')
 require('fidget_conf')
+require('comment_conf')
 
