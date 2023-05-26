@@ -70,6 +70,7 @@ require('packer').startup(function()
         'folke/trouble.nvim',
         requires = 'nvim-tree/nvim-web-devicons'
     }
+	use 'j-hui/fidget.nvim'
 end)
 
 require('options')
@@ -88,4 +89,5 @@ require('gitsigns_conf')
 require('trouble_conf')
 require('nvim_web_devicons_conf')
 require('fugitive_conf')
+require('fidget_conf')
 
