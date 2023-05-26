@@ -5,7 +5,7 @@ require('toggleterm').setup({
 	open_mapping = [[<c-\>]],
 	hide_numbers = true,
 	shade_filetypes = {},
-	shade_terminals = true,
+	shade_terminals = false,
 	shading_factor = 2,
 	start_in_insert = true,
 	insert_mappings = true,
@@ -32,17 +32,5 @@ function _G.set_terminal_keymaps()
 	utils.tnoremap_buf('<C-l>', [[<C-\><C-n><C-W>l]])
 end
 
-vim.cmd('autocmd! TermOpen term://* lua set_terminal_keymaps()')
-
-local Terminal = require("toggleterm.terminal").Terminal
-
-local repl_node = Terminal:new({ cmd = "node", hidden = true })
-function _REPL_NODE()
-	repl_node:toggle()
-end
-
-local repl_swift = Terminal:new({ cmd = "swift repl", hidden = true })
-function _REPL_SWIFT()
-	repl_swift:toggle()
-end
+vim.cmd('autocmd! TermOpen term://*toggleterm#* lua set_terminal_keymaps()')
 
