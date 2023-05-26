@@ -42,7 +42,8 @@ require('packer').startup(function()
 	}
     use {
 		'nvim-treesitter/nvim-treesitter',
-		requires = 'nvim-treesitter/nvim-treesitter-textobjects'
+		requires = 'nvim-treesitter/nvim-treesitter-textobjects',
+		cmd = 'TSUpdate'
 	}
     use 'nvim-treesitter/playground'
     use 'neovim/nvim-lspconfig'
