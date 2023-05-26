@@ -1,6 +1,8 @@
+local treesitter_config = require 'nvim-treesitter.configs'
 -- Parsers must be installed manually via :TSInstall (https://github.com/nvim-treesitter/nvim-treesitter#language-parsers)
 -- list of execite this => :TSInstall bash c cmake cpp css dockerfile html java javascript jsdoc json json5 jsonc kotlin llvm lua python ruby rust scss swift toml tsx typescript vim yaml
-require('nvim-treesitter.configs').setup {
+
+treesitter_config.setup ({
 	-- Add languages to be installed here that you want installed for treesitter
 	ensure_installed = {
 		'bash',
@@ -121,4 +123,4 @@ require('nvim-treesitter.configs').setup {
 			show_help = '?',
 		},
 	}
-}
+})
