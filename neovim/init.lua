@@ -71,6 +71,7 @@ require('packer').startup(function()
     }
 	use 'j-hui/fidget.nvim'
 	use 'numToStr/Comment.nvim'
+	use 'mfussenegger/nvim-jdtls'
 end)
 
 require('options')
