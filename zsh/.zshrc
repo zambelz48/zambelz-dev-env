@@ -135,3 +135,5 @@ alias nx="npx nx"
 alias xcode-clean-data="rm -rf $HOME/Library/Developer/Xcode/DerivedData"
 alias xcode-show-data="ls -lah $HOME/Library/Developer/Xcode/DerivedData"
 
+alias python="python3"
+
