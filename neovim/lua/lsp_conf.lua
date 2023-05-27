@@ -156,6 +156,20 @@ local servers = {
 			}
 		},
 		root_dir = nvim_lsp.util.root_pattern('settings.gradle', 'settings.gradle.kts')
+	},
+	{
+		name = 'dockerls',
+		cmd = { 'docker-langserver', '--stdio' },
+		filetypes = { 'dockerfile' },
+		single_file_support = true,
+		root_dir = nvim_lsp.util.root_pattern('Dockerfile')
+	},
+	{
+		name = 'docker_compose_language_service',
+		cmd = { 'docker-compose-langserver', '--stdio' },
+		filetypes = { 'yaml' },
+		single_file_support = true,
+		root_dir = nvim_lsp.util.root_pattern('docker-compose.yaml')
 	}
 }
 
@@ -232,6 +246,10 @@ for _, lsp in ipairs(servers) do
 		on_attach = on_attach,
 		capabilities = capabilities,
 	}
+
+	if lsp.single_file_support then
+		server_conf = vim.tbl_extend('force', server_conf, { single_file_support = lsp.single_file_support })
+	end
 
 	if lsp.root_dir then
 		server_conf = vim.tbl_extend('force', server_conf, { root_dir = lsp.root_dir })
