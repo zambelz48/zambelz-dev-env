@@ -18,7 +18,6 @@ local servers = {
 		filetypes = {
 			'sh'
 		},
-		root_dir = nil
 	},
 	{
 		name = 'clangd',
@@ -31,7 +30,6 @@ local servers = {
 			'cuda',
 			'proto'
 		},
-		root_dir = nil
 	},
 	{
 		name = 'cmake',
@@ -39,7 +37,6 @@ local servers = {
 		filetypes = {
 			'cmake'
 		},
-		root_dir = nil
 	},
 	{
 		name = 'jsonls',
@@ -48,7 +45,6 @@ local servers = {
 			'json',
 			'jsonc'
 		},
-		root_dir = nil
 	},
 	{
 		name = 'cssls',
@@ -58,7 +54,6 @@ local servers = {
 			'scss',
 			'less'
 		},
-		root_dir = nil
 	},
 	{
 		name = 'eslint',
@@ -73,7 +68,6 @@ local servers = {
 			'vue',
 			'svelte'
 		},
-		root_dir = nil
 	},
 	{
 		name = 'html',
@@ -81,23 +75,6 @@ local servers = {
 		filetypes = {
 			'html'
 		},
-		root_dir = nil
-	},
-	{
-		name = 'java_language_server',
-		cmd = { '/Users/nanda/Dev/Projects/java-language-server/scripts/link_mac.sh' },
-		filetypes = {
-			'java'
-		},
-		root_dir = nil
-	},
-	{
-		name = 'kotlin_language_server',
-		cmd = { 'kotlin-language-server' },
-		filetypes = {
-			'kotlin'
-		},
-		root_dir = nil
 	},
 	{
 		name = 'lua_ls',
@@ -105,7 +82,6 @@ local servers = {
 		filetypes = {
 			'lua'
 		},
-		root_dir = nil
 	},
 	{
 		name = 'pyright',
@@ -113,7 +89,6 @@ local servers = {
 		filetypes = {
 			'python'
 		},
-		root_dir = nil
 	},
 	{
 		name = 'rust_analyzer',
@@ -121,7 +96,6 @@ local servers = {
 		filetypes = {
 			'rust'
 		},
-		root_dir = nil
 	},
 	{
 		name = 'solargraph',
@@ -129,7 +103,6 @@ local servers = {
 		filetypes = {
 			'ruby'
 		},
-		root_dir = nil
 	},
 	{
 		name = 'sourcekit',
@@ -139,7 +112,6 @@ local servers = {
 			'objective-c',
 			'objective-cpp'
 		},
-		root_dir = nil
 	},
 	{
 		name = 'tsserver',
@@ -152,7 +124,6 @@ local servers = {
 			'typescriptreact',
 			'typescript.tsx'
 		},
-		root_dir = nil
 	},
 	{
 		name = 'yamlls',
@@ -161,7 +132,30 @@ local servers = {
 			'yaml',
 			'yaml.docker-compose'
 		},
-		root_dir = nil
+	},
+	{
+		name = 'java_language_server',
+		cmd = { '/Users/nanda/Dev/Projects/java-language-server/scripts/link_mac.sh' },
+		filetypes = {
+			'java'
+		},
+	},
+	{
+		name = 'kotlin_language_server',
+		cmd = { 'kotlin-language-server' },
+		filetypes = { 'kotlin' },
+		root_dir = nvim_lsp.util.root_pattern('settings.gradle', 'settings.gradle.kts')
+	},
+	{
+		name = 'gradle_ls',
+		cmd = { 'gradle-language-server' },
+		filetypes = { 'groovy' },
+		init_options = {
+			settings = {
+				graldeWrapperEnabled = true
+			}
+		},
+		root_dir = nvim_lsp.util.root_pattern('settings.gradle', 'settings.gradle.kts')
 	}
 }
 
@@ -232,22 +226,21 @@ capabilities = require('cmp_nvim_lsp').default_capabilities(capabilities)
 
 for _, lsp in ipairs(servers) do
 
-	local server_conf = {}
+	local server_conf = {
+		cmd = lsp.cmd,
+		filetypes = lsp.filetypes,
+		on_attach = on_attach,
+		capabilities = capabilities,
+	}
 
-	if lsp.root_dir == nil then
-		nvim_lsp[lsp.name].setup{
-			cmd = lsp.cmd,
-			filetypes = lsp.filetypes,
-			on_attach = on_attach,
-			capabilities = capabilities,
-		}
-	else
-		nvim_lsp[lsp.name].setup{
-			cmd = lsp.cmd,
-			filetypes = lsp.filetypes,
-			root_dir = lsp.root_dir,
-			on_attach = on_attach,
-			capabilities = capabilities,
-		}
+	if lsp.root_dir then
+		server_conf = vim.tbl_extend('force', server_conf, { root_dir = lsp.root_dir })
 	end
+
+	if lsp.init_options then
+		server_conf = vim.tbl_extend('force', server_conf, { init_options = lsp.init_options })
+	end
+
+	nvim_lsp[lsp.name].setup(server_conf)
 end
+

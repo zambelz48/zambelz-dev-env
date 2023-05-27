@@ -101,7 +101,8 @@ export GEM_HOME=$HOME/.gem
 export RUBY_USER_HOME=$GEM_HOME/ruby/2.6.0
 export ANDROID_HOME=$HOME/Dev/AndroidSDK
 export BUCK_HOME=$HOME/Dev/Projects/buck
-export KOTLIN_LANGUAGE_SERVER_PATH=$HOME/Dev/Projects/kotlin-language-server/server/build/install/server/bin
+export KOTLIN_LANGUAGE_SERVER_PATH=$HOME/Dev/LSP/kotlin-language-server/server/build/install/server/bin
+export GRADLE_LANGUAGE_SERVER_PATH=$HOME/Dev/LSP/vscode-gradle/bin
 
 export PATH="$BREW_HOME/bin:$PATH"
 export PATH="$GEM_HOME/bin:$PATH"
@@ -111,6 +112,7 @@ export PATH="$ANDROID_HOME/cmdline-tools/latest/bin:$PATH"
 export PATH="$BUCK_HOME/bin:$PATH"
 export PATH="$HOME/.jenv/bin:$PATH"
 export PATH="$KOTLIN_LANGUAGE_SERVER_PATH:$PATH"
+export PATH="$GRADLE_LANGUAGE_SERVER_PATH:$PATH"
 
 eval "$(jenv init -)"
 
