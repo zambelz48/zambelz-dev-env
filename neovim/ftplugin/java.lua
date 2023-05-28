@@ -1,5 +1,13 @@
+local jdtls = require 'jdtls'
+local cmp_nvim_lsp = require 'cmp_nvim_lsp'
+
+local client_capabilities = vim.lsp.protocol.make_client_capabilities()
+local capabilities = cmp_nvim_lsp.default_capabilities(client_capabilities)
+
 -- See `:help vim.lsp.start_client` for an overview of the supported `config` options.
 local config = {
+	capabilities = capabilities,
+
 	-- The command that starts the language server
 	-- See: https://github.com/eclipse/eclipse.jdt.ls#running-from-the-command-line
 	cmd = {
@@ -46,8 +54,7 @@ local config = {
 	-- See https://github.com/eclipse/eclipse.jdt.ls/wiki/Running-the-JAVA-LS-server-from-the-command-line#initialize-request
 	-- for a list of options
 	settings = {
-		java = {
-		}
+		['java.format.settings.url'] = vim.fn.expand("~/formatter.xml")
 	},
 
 	-- Language server `initializationOptions`
@@ -58,9 +65,24 @@ local config = {
 	--
 	-- If you don't plan on using the debugger or other eclipse.jdt.ls plugins you can remove this
 	init_options = {
-		bundles = {}
+		-- https://github.com/eclipse/eclipse.jdt.ls/wiki/Language-Server-Settings-&-Capabilities#extended-client-capabilities
+		extendedClientCapabilities = jdtls.extendedClientCapabilities,
 	},
+
+	on_attach = function(client, bufnr)
+		-- https://github.com/mfussenegger/dotfiles/blob/833d634251ebf3bf7e9899ed06ac710735d392da/vim/.config/nvim/ftplugin/java.lua#L88-L94
+		local opts = { silent = true, buffer = bufnr }
+		vim.keymap.set('n', "<leader>lo", jdtls.organize_imports, { desc = 'Organize imports', buffer = bufnr })
+		-- Should 'd' be reserved for debug?
+		vim.keymap.set('n', "<leader>df", jdtls.test_class, opts)
+		vim.keymap.set('n', "<leader>dn", jdtls.test_nearest_method, opts)
+		vim.keymap.set('n', '<leader>rv', jdtls.extract_variable_all, { desc = 'Extract variable', buffer = bufnr })
+		vim.keymap.set('v', '<leader>rm', [[<ESC><CMD>lua require('jdtls').extract_method(true)<CR>]],
+			{ desc = 'Extract method', buffer = bufnr })
+		vim.keymap.set('n', '<leader>rc', jdtls.extract_constant, { desc = 'Extract constant', buffer = bufnr })
+	end
 }
 -- This starts a new client & server,
 -- or attaches to an existing client & server depending on the `root_dir`.
-require('jdtls').start_or_attach(config)
+jdtls.start_or_attach(config)
+

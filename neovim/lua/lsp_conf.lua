@@ -134,13 +134,6 @@ local servers = {
 		},
 	},
 	{
-		name = 'java_language_server',
-		cmd = { '/Users/nanda/Dev/Projects/java-language-server/scripts/link_mac.sh' },
-		filetypes = {
-			'java'
-		},
-	},
-	{
 		name = 'kotlin_language_server',
 		cmd = { 'kotlin-language-server' },
 		filetypes = { 'kotlin' },
