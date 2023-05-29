@@ -1,0 +1,6 @@
+[submodule ".lsp_vendors/kotlin-language-server"]
+	path = .lsp_vendors/kotlin-language-server
+	url = git@github.com:fwcd/kotlin-language-server.git
+[submodule ".lsp_vendors/vscode-gradle"]
+	path = .lsp_vendors/vscode-gradle
+	url = git@github.com:microsoft/vscode-gradle.git

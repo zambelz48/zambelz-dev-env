@@ -1,6 +1,11 @@
 local jdtls = require 'jdtls'
 local cmp_nvim_lsp = require 'cmp_nvim_lsp'
 
+local jdtls_path = '/Users/rg-nanda/zambelz-mac-configs/.lsp_vendors/jdtls'
+local launcher_jar = vim.fn.glob(jdtls_path .. '/plugins/org.eclipse.equinox.launcher_1.6.400.v20210924-0641.jar')
+local config_path = vim.fn.glob(jdtls_path .. '/config_mac')
+local workspace_dir = vim.fn.glob(jdtls_path .. '/project_data')
+
 local client_capabilities = vim.lsp.protocol.make_client_capabilities()
 local capabilities = cmp_nvim_lsp.default_capabilities(client_capabilities)
 
@@ -27,14 +32,14 @@ local config = {
 		'--add-opens', 'java.base/java.lang=ALL-UNNAMED',
 
 		-- 💀
-		'-jar', '/Users/rg-nanda/Dev/LSP/jdtls/plugins/org.eclipse.equinox.launcher_1.6.400.v20210924-0641.jar',
+		'-jar', launcher_jar,
 		-- ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^                                       ^^^^^^^^^^^^^^
 		-- Must point to the                                                     Change this to
 		-- eclipse.jdt.ls installation                                           the actual version
 
 
 		-- 💀
-		'-configuration', '/Users/rg-nanda/Dev/LSP/jdtls/config_mac',
+		'-configuration', config_path,
 		-- ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^        ^^^^^^
 		-- Must point to the                      Change to one of `linux`, `win` or `mac`
 		-- eclipse.jdt.ls installation            Depending on your system.
@@ -42,7 +47,7 @@ local config = {
 
 		-- 💀
 		-- See `data directory configuration` section in the README
-		'-data', '/Users/rg-nanda/Dev/LSP/jdtls/project_data'
+		'-data', workspace_dir
 	},
 
 	-- 💀

@@ -96,21 +96,15 @@ fi
 
 
 export BREW_HOME=/opt/homebrew
-export GROOVY_HOME=$BREW_HOME/opt/groovy/libexec
 export GEM_HOME=$HOME/.gem
 export RUBY_USER_HOME=$GEM_HOME/ruby/2.6.0
-export ANDROID_HOME=$HOME/Dev/AndroidSDK
-export BUCK_HOME=$HOME/Dev/Projects/buck
-export KOTLIN_LANGUAGE_SERVER_PATH=$HOME/Dev/LSP/kotlin-language-server/server/build/install/server/bin
-export GRADLE_LANGUAGE_SERVER_PATH=$HOME/Dev/LSP/vscode-gradle/bin
-export JAVA_LANGUAGE_SERVER_PATH=$HOME/Dev/LSP/jdtls/bin
+export LSP_VENDOR_ROOT_PATH=$HOME/zambelz-mac-configs/.lsp_vendors
+export KOTLIN_LANGUAGE_SERVER_PATH=$LSP_VENDOR_ROOT_PATH/kotlin-language-server/server/build/install/server/bin
+export GRADLE_LANGUAGE_SERVER_PATH=$LSP_VENDOR_ROOT_PATH/vscode-gradle/gradle-language-server/build/install/gradle-language-server/bin
+export JAVA_LANGUAGE_SERVER_PATH=$LSP_VENDOR_ROOT_PATH/jdtls/bin
 
 export PATH="$BREW_HOME/bin:$PATH"
 export PATH="$GEM_HOME/bin:$PATH"
-export PATH="$RUBY_USER_HOME/bin:$PATH"
-export PATH="$ANDROID_HOME/platform-tools:$PATH"
-export PATH="$ANDROID_HOME/cmdline-tools/latest/bin:$PATH"
-export PATH="$BUCK_HOME/bin:$PATH"
 export PATH="$HOME/.jenv/bin:$PATH"
 export PATH="$KOTLIN_LANGUAGE_SERVER_PATH:$PATH"
 export PATH="$GRADLE_LANGUAGE_SERVER_PATH:$PATH"
@@ -128,12 +122,7 @@ eval "$(mcfly init zsh)"
 # Example aliases
 # alias zshconfig="mate ~/.zshrc"
 # alias ohmyzsh="mate ~/.oh-my-zsh"
-alias pod-x86="arch -x86_64 pod"
-alias gem-x86="arch -x86_64 gem"
+
 alias nx="npx nx"
-
-alias xcode-clean-data="rm -rf $HOME/Library/Developer/Xcode/DerivedData"
-alias xcode-show-data="ls -lah $HOME/Library/Developer/Xcode/DerivedData"
-
 alias python="python3"
 
