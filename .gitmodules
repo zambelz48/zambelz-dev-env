@@ -4,3 +4,9 @@
 [submodule ".lsp_vendors/vscode-gradle"]
 	path = .lsp_vendors/vscode-gradle
 	url = git@github.com:microsoft/vscode-gradle.git
+[submodule "zsh/.themes/dracula"]
+	path = zsh/.themes/dracula
+	url = git@github.com:dracula/zsh.git
+[submodule "zsh/.themes/dracula-syntax-highlighting"]
+	path = zsh/.themes/dracula-syntax-highlighting
+	url = git@github.com:dracula/zsh-syntax-highlighting.git

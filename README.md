@@ -15,7 +15,15 @@
 1. tldr: (install using homebrew: `brew install tldr`) [source](https://tldr.sh)
 
 ## zsh configs
+#### Pre-requisites
+```
+# Dracula themes syntax highlighting
+# source: https://github.com/dracula/zsh-syntax-highlighting
 
+# zsh syntax highlighting
+# source: https://github.com/zsh-users/zsh-syntax-highlighting
+# install using homebrew: brew install zsh-syntax-highlighting
+```
 #### Installation
 ```sh
 $ bash /path/to/script/main.sh zsh

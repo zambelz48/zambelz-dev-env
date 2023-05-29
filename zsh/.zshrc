@@ -127,3 +127,12 @@ eval "$(mcfly init zsh)"
 alias nx="npx nx"
 alias python="python3"
 
+# Dracula themes syntax highlighting
+# source: https://github.com/dracula/zsh-syntax-highlighting
+source /Users/rg-nanda/zambelz-mac-configs/zsh/.themes/dracula-syntax-highlighting/zsh-syntax-highlighting.sh
+
+# zsh syntax highlighting
+# source: https://github.com/zsh-users/zsh-syntax-highlighting
+# install using homebrew: brew install zsh-syntax-highlighting
+source /opt/homebrew/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
+
