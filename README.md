@@ -26,15 +26,8 @@
 1. [TMUX Configs](#tmux-configs)
 
 ## Installation steps
-1. clone this repository anywhere (*recommendation is at $HOME*)  
-1. set `main.sh` executable by executing this command: `chmod +x main.sh`
-1. add below `envar` to your shell profile (the locations might be: `.bash_profile`, `.profile`, or `.zlogin`)  
-    ```
-    # zambelz mac configs
-    export ZAMBELZ_MAC_CONFIGS_PATH=$HOME/zambelz-mac-configs
-    alias zconf="$ZAMBELZ_MAC_CONFIGS_PATH/main.sh"
-    ```  
-1. source your shell's rc file or execute `exec $SHELL -l`
+1. clone this repository at $HOME path (IMPORTANT)
+1. source `.zshrc` file or execute `exec $SHELL -l`
 
 ## zsh configs
 #### Pre-requisites
