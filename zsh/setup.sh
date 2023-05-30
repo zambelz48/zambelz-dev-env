@@ -24,7 +24,7 @@ dracula_theme_lib="lib"
 dracula_theme_lib_source="$themes_dir/dracula/$dracula_theme_lib"
 dracula_theme_lib_destination="$omz_themes_dir/$dracula_theme_lib"
 
-if [ -L "$dracula_theme_destination" ]; then
+if [ -f "$dracula_theme_destination" ]; then
 	rm -rf "$dracula_theme_destination"
 fi
 
