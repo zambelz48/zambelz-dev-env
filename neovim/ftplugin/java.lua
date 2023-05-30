@@ -1,10 +1,14 @@
 local jdtls = require 'jdtls'
 local cmp_nvim_lsp = require 'cmp_nvim_lsp'
 
-local jdtls_path = '/Users/rg-nanda/zambelz-mac-configs/neovim/.lsp_vendors/jdtls'
-local launcher_jar = vim.fn.glob(jdtls_path .. '/plugins/org.eclipse.equinox.launcher_1.6.400.v20210924-0641.jar')
-local config_path = vim.fn.glob(jdtls_path .. '/config_mac')
-local workspace_dir = vim.fn.glob(jdtls_path .. '/project_data')
+local home_path = os.getenv('HOME')
+local jdtls_path = home_path .. '/zambelz-mac-configs/neovim/.lsp_vendors/jdtls'
+local launcher_jar = vim.fn.glob(jdtls_path .. '/plugins/org.eclipse.equinox.launcher_*.jar')
+local config_path = jdtls_path .. '/config_mac'
+
+local project_root_dir_markers = { 'gradlew', '.git' }
+local project_root_dir = require('jdtls.setup').find_root(project_root_dir_markers)
+local workspace_dir = jdtls_path .. '/project_data/' .. vim.fn.fnamemodify(project_root_dir, ':p:h:t')
 
 local client_capabilities = vim.lsp.protocol.make_client_capabilities()
 local capabilities = cmp_nvim_lsp.default_capabilities(client_capabilities)
@@ -75,6 +79,12 @@ local config = {
 	},
 
 	on_attach = function(client, bufnr)
+
+		jdtls.setup_dap({
+			hotcodereplace = 'auto'
+		})
+		jdtls.setup.add_commands()
+
 		-- https://github.com/mfussenegger/dotfiles/blob/833d634251ebf3bf7e9899ed06ac710735d392da/vim/.config/nvim/ftplugin/java.lua#L88-L94
 		local opts = { silent = true, buffer = bufnr }
 		vim.keymap.set('n', "<leader>lo", jdtls.organize_imports, { desc = 'Organize imports', buffer = bufnr })
