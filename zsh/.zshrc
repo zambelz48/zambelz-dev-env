@@ -102,6 +102,7 @@ export LSP_VENDOR_ROOT_PATH=$HOME/zambelz-mac-configs/neovim/.lsp_vendors
 export KOTLIN_LANGUAGE_SERVER_PATH=$LSP_VENDOR_ROOT_PATH/kotlin-language-server/server/build/install/server/bin
 export GRADLE_LANGUAGE_SERVER_PATH=$LSP_VENDOR_ROOT_PATH/vscode-gradle/gradle-language-server/build/install/gradle-language-server/bin
 export JAVA_LANGUAGE_SERVER_PATH=$LSP_VENDOR_ROOT_PATH/jdtls/bin
+export ZAMBELZ_MAC_CONFIGS_PATH="$HOME/zambelz-mac-configs"
 
 export PATH="$BREW_HOME/bin:$PATH"
 export PATH="$GEM_HOME/bin:$PATH"
@@ -112,7 +113,6 @@ export PATH="$GRADLE_LANGUAGE_SERVER_PATH:$PATH"
 export PATH="$JAVA_LANGUAGE_SERVER_PATH:$PATH"
 
 eval "$(jenv init -)"
-
 eval "$(mcfly init zsh)"
 
 # Set personal aliases, overriding those provided by oh-my-zsh libs,
@@ -124,15 +124,16 @@ eval "$(mcfly init zsh)"
 # alias zshconfig="mate ~/.zshrc"
 # alias ohmyzsh="mate ~/.oh-my-zsh"
 
+alias zconf="$ZAMBELZ_MAC_CONFIGS_PATH/main.sh"
 alias nx="npx nx"
 alias python="python3"
 
 # Dracula themes syntax highlighting
 # source: https://github.com/dracula/zsh-syntax-highlighting
-source /Users/rg-nanda/zambelz-mac-configs/zsh/.themes/dracula-syntax-highlighting/zsh-syntax-highlighting.sh
+source $ZAMBELZ_MAC_CONFIGS_PATH/zsh/.themes/dracula-syntax-highlighting/zsh-syntax-highlighting.sh
 
 # zsh syntax highlighting
 # source: https://github.com/zsh-users/zsh-syntax-highlighting
 # install using homebrew: brew install zsh-syntax-highlighting
-source /opt/homebrew/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
+source $BREW_HOME/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
 
