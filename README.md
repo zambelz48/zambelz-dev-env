@@ -85,9 +85,11 @@ $ npm install -g @microsoft/compose-language-service \
 source: https://github.com/mfussenegger/nvim-jdtls
 1. Download jdtls
     - cmd: curl -o neovim/.lsp_vendors/jdt-language-server-1.23.0-202304271346.tar.gz https://download.eclipse.org/jdtls/milestones/1.23.0/jdt-language-server-1.23.0-202304271346.tar.gz
-2. Unzip to specified location
-    - cmd: tar xf neovim/.lsp_verndors/jdt-language-server-1.23.0-202304271346.tar.gz --directory=neovim/.lsp_vendors/jdtls
-3. create workspace_data dir
+2. Create "jdtls" dir
+    - cmd: mkdir neovim/.lsp_vendors/jdtls
+3. Unzip to specified location
+    - cmd: tar xf neovim/.lsp_vendors/jdt-language-server-1.23.0-202304271346.tar.gz --directory=neovim/.lsp_vendors/jdtls
+4. create workspace_data dir
     - cmd: mkdir neovim/.lsp_vendors/jdtls/project_data
 
 # Setup "vscode-gradle" & "kotlin-language-server"
