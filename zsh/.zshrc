@@ -98,7 +98,7 @@ fi
 export BREW_HOME=/opt/homebrew
 export GEM_HOME=$HOME/.gem
 export RUBY_USER_HOME=$GEM_HOME/ruby/2.6.0
-export LSP_VENDOR_ROOT_PATH=$HOME/zambelz-mac-configs/.lsp_vendors
+export LSP_VENDOR_ROOT_PATH=$HOME/zambelz-mac-configs/neovim/.lsp_vendors
 export KOTLIN_LANGUAGE_SERVER_PATH=$LSP_VENDOR_ROOT_PATH/kotlin-language-server/server/build/install/server/bin
 export GRADLE_LANGUAGE_SERVER_PATH=$LSP_VENDOR_ROOT_PATH/vscode-gradle/gradle-language-server/build/install/gradle-language-server/bin
 export JAVA_LANGUAGE_SERVER_PATH=$LSP_VENDOR_ROOT_PATH/jdtls/bin

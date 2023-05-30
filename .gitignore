@@ -31,7 +31,7 @@ Temporary Items
 .apdisk
 
 # Others
-.lsp_vendors
+neovim/.lsp_vendors
 zsh/.themes
 
 # End of https://www.toptal.com/developers/gitignore/api/macos

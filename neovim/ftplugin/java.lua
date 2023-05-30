@@ -1,7 +1,7 @@
 local jdtls = require 'jdtls'
 local cmp_nvim_lsp = require 'cmp_nvim_lsp'
 
-local jdtls_path = '/Users/rg-nanda/zambelz-mac-configs/.lsp_vendors/jdtls'
+local jdtls_path = '/Users/rg-nanda/zambelz-mac-configs/neovim/.lsp_vendors/jdtls'
 local launcher_jar = vim.fn.glob(jdtls_path .. '/plugins/org.eclipse.equinox.launcher_1.6.400.v20210924-0641.jar')
 local config_path = vim.fn.glob(jdtls_path .. '/config_mac')
 local workspace_dir = vim.fn.glob(jdtls_path .. '/project_data')
