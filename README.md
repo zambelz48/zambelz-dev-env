@@ -10,6 +10,7 @@
 1. fzf: (install using homebrew: `brew install fzf`) [source](https://github.com/junegunn/fzf)
 1. fd: (install using homebrew: `brew install fd`) [source](https://github.com/sharkdp/fd)
 1. ripgrep: (install using homebrew: `brew install ripgrep`) [source](https://github.com/BurntSushi/ripgrep)
+1. marksman: (install using homebrew: `brew install marksman`) [source](https://github.com/artempyanykh/marksman)
 ### OPTIONAL
 1. mcfly: (install using homebrew: `brew instal mcfly`) [source](https://github.com/cantino/mcfly)
 1. tldr: (install using homebrew: `brew install tldr`) [source](https://tldr.sh)
@@ -58,11 +59,11 @@ $ gem install neovim --user-install
 # Setup "jdtls" (Java Language Server)
 source: https://github.com/mfussenegger/nvim-jdtls
 1. Download jdtls
-    - cmd: curl -o .lsp_vendors/jdt-language-server-1.23.0-202304271346.tar.gz https://download.eclipse.org/jdtls/milestones/1.23.0/jdt-language-server-1.23.0-202304271346.tar.gz
+    - cmd: curl -o neovim/.lsp_vendors/jdt-language-server-1.23.0-202304271346.tar.gz https://download.eclipse.org/jdtls/milestones/1.23.0/jdt-language-server-1.23.0-202304271346.tar.gz
 2. Unzip to specified location
-    - cmd: tar xf .lsp_verndors/jdt-language-server-1.23.0-202304271346.tar.gz --directory=.lsp_vendors/jdtls
+    - cmd: tar xf neovim/.lsp_verndors/jdt-language-server-1.23.0-202304271346.tar.gz --directory=neovim/.lsp_vendors/jdtls
 3. create workspace_data dir
-    - cmd: mkdir .lsp_vendors/jdtls/project_data
+    - cmd: mkdir neovim/.lsp_vendors/jdtls/project_data
 
 # Setup "vscode-gradle" & "kotlin-language-server"
     - cmd: git submodule update --init --recursive

@@ -163,6 +163,13 @@ local servers = {
 		filetypes = { 'yaml' },
 		single_file_support = true,
 		root_dir = nvim_lsp.util.root_pattern('docker-compose.yaml')
+	},
+	{
+		name = 'marksman',
+		cmd = { 'marksman', 'server' },
+		filetypes = { 'markdown' },
+		single_file_support = true,
+		root_dir = nvim_lsp.util.root_pattern('.git', '.marksman.toml')
 	}
 }
 
