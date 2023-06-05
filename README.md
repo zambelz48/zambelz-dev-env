@@ -86,6 +86,17 @@ $ npm install -g @microsoft/compose-language-service \
 ## Command:
 $ pip install cmake-language-server
 ```
+
+###### GO Packages
+```
+- gopls => go language server (https://github.com/golang/tools/tree/master/gopls#gopls-the-go-language-server)
+
+## Command:
+$ go install golang.org/x/tools/gopls@latest
+
+## Notes:
+- Make sure GOPATH already registered on your shell
+```
 ###### Custom
 ```
 # Setup "jdtls" (Java Language Server)

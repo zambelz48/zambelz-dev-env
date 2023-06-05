@@ -175,6 +175,13 @@ local servers = {
 		filetypes = { 'markdown' },
 		single_file_support = true,
 		root_dir = nvim_lsp.util.root_pattern('.git', '.marksman.toml')
+	},
+	{
+		name = 'gopls',
+		cmd = { 'gopls' },
+		filetypes = { 'go', 'gomod', 'gowork', 'gotmpl' },
+		single_file_support = true,
+		root_dir = nvim_lsp.util.root_pattern('go.work', 'go.mod', '.git')
 	}
 }
 

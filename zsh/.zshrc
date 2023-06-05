@@ -106,6 +106,7 @@ export LESS_TERMCAP_ue=$'\e[0m'         # reset underline
 export GROFF_NO_SGR=1                   # for konsole
 
 export BREW_HOME=/opt/homebrew
+export GOPATH=$(go env | grep GOPATH | awk -F= '{print $2}' | sed 's/"//g')
 export GEM_HOME=$HOME/.gem
 export RUBY_USER_HOME=$GEM_HOME/ruby/2.6.0
 export LSP_VENDOR_ROOT_PATH=$HOME/zambelz-mac-configs/neovim/.lsp_vendors
@@ -115,6 +116,7 @@ export JAVA_LANGUAGE_SERVER_PATH=$LSP_VENDOR_ROOT_PATH/jdtls/bin
 export ZAMBELZ_MAC_CONFIGS_PATH="$HOME/zambelz-mac-configs"
 
 export PATH="$BREW_HOME/bin:$PATH"
+export PATH="$GOPATH/bin:$PATH"
 export PATH="$GEM_HOME/bin:$PATH"
 export PATH="$HOME/.jenv/bin:$PATH"
 export PATH="$RUBY_USER_HOME/bin:$PATH"
@@ -122,6 +124,7 @@ export PATH="$KOTLIN_LANGUAGE_SERVER_PATH:$PATH"
 export PATH="$GRADLE_LANGUAGE_SERVER_PATH:$PATH"
 export PATH="$JAVA_LANGUAGE_SERVER_PATH:$PATH"
 
+# Dracula theme for fzf
 export FZF_DEFAULT_OPTS='--color=fg:#f8f8f2,bg:#282a36,hl:#bd93f9 --color=fg+:#f8f8f2,bg+:#44475a,hl+:#bd93f9 --color=info:#ffb86c,prompt:#50fa7b,pointer:#ff79c6 --color=marker:#ff79c6,spinner:#ffb86c,header:#6272a4'
 
 eval "$(jenv init -)"
