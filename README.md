@@ -79,6 +79,13 @@ $ npm install -g @microsoft/compose-language-service \
     vscode-langservers-extracted \
     yaml-language-server
 ```
+###### Python Packages
+```
+- CMAKE => cmake-language-server (https://github.com/regen100/cmake-language-server)
+
+## Command:
+$ pip install cmake-language-server
+```
 ###### Custom
 ```
 # Setup "jdtls" (Java Language Server)

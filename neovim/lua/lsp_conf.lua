@@ -37,6 +37,11 @@ local servers = {
 		filetypes = {
 			'cmake'
 		},
+		single_file_support = true,
+		init_options = {
+			buildDirectory = "build"
+		},
+		root_dir = nvim_lsp.util.root_pattern('CMakePresets.json', 'CTestConfig.cmake', '.git', 'build', 'cmake')
 	},
 	{
 		name = 'jsonls',
