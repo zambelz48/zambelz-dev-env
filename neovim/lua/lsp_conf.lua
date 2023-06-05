@@ -7,17 +7,13 @@ local servers = {
 	{
 		name = 'vimls',
 		cmd = { 'vim-language-server', '--stdio' },
-		filetypes = {
-			'vim'
-		},
+		filetypes = { 'vim' },
 		root_dir = nvim_lsp.util.root_pattern('Package.swift', '.git')
 	},
 	{
 		name = 'bashls',
 		cmd = { 'bash-language-server', 'start' },
-		filetypes = {
-			'sh'
-		},
+		filetypes = { 'sh' },
 	},
 	{
 		name = 'clangd',
@@ -34,9 +30,7 @@ local servers = {
 	{
 		name = 'cmake',
 		cmd = { 'cmake-language-server' },
-		filetypes = {
-			'cmake'
-		},
+		filetypes = { 'cmake' },
 		single_file_support = true,
 		init_options = {
 			buildDirectory = "build"
@@ -77,37 +71,35 @@ local servers = {
 	{
 		name = 'html',
 		cmd = { 'vscode-html-language-server', '--stdio' },
-		filetypes = {
-			'html'
-		},
+		filetypes = { 'html' },
 	},
 	{
 		name = 'lua_ls',
 		cmd = { 'lua-language-server' },
-		filetypes = {
-			'lua'
-		},
+		filetypes = { 'lua' },
 	},
 	{
 		name = 'pyright',
 		cmd = { 'pyright-langserver', '--stdio' },
-		filetypes = {
-			'python'
-		},
+		filetypes = { 'python' },
 	},
 	{
 		name = 'rust_analyzer',
 		cmd = { 'rust-analyzer' },
-		filetypes = {
-			'rust'
-		},
+		filetypes = { 'rust' },
 	},
 	{
 		name = 'solargraph',
 		cmd = { 'solargraph', 'stdio' },
-		filetypes = {
-			'ruby'
+		filetypes = { 'ruby' },
+		init_options = {
+			formatting = true
 		},
+		settings = {
+			solargraph = {
+				diagnostics = true
+			}
+		}
 	},
 	{
 		name = 'sourcekit',
@@ -269,6 +261,10 @@ for _, lsp in ipairs(servers) do
 
 	if lsp.init_options then
 		server_conf = vim.tbl_extend('force', server_conf, { init_options = lsp.init_options })
+	end
+
+	if lsp.settings then
+		server_conf = vim.tbl_extend('force', server_conf, { settings = lsp.settings })
 	end
 
 	nvim_lsp[lsp.name].setup(server_conf)
