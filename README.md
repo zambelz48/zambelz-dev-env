@@ -97,6 +97,17 @@ $ go install golang.org/x/tools/gopls@latest
 ## Notes:
 - Make sure GOPATH already registered on your shell
 ```
+
+###### Ruby GEM Packages
+```
+- solargraph => solargraph (https://solargraph.org)
+
+## Command:
+$ gem install solargraph --user-install
+
+## Notes:
+$ Make sure ruby version is >= 2.7.0 (you can install it with brew)
+```
 ###### Custom
 ```
 # Setup "jdtls" (Java Language Server)
