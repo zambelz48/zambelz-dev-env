@@ -161,6 +161,5 @@ source $ZAMBELZ_MAC_CONFIGS_PATH/zsh/.themes/dracula-syntax-highlighting/zsh-syn
 
 # zsh syntax highlighting
 # source: https://github.com/zsh-users/zsh-syntax-highlighting
-# install using homebrew: brew install zsh-syntax-highlighting
-source $BREW_HOME/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
+source $ZAMBELZ_MAC_CONFIGS_PATH/zsh/.themes/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
 
