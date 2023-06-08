@@ -1,5 +1,8 @@
+local utils = require 'utils'
 
-vim.g.python3_host_prog = '/opt/homebrew/bin/python3'
+local python3_path = utils.shell_cmd('which python3')
+vim.g.python3_host_prog = python3_path
+
 vim.g.loaded_perl_provider = 0
 
 vim.o.inccommand = 'nosplit'
