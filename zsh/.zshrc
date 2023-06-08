@@ -105,11 +105,17 @@ export LESS_TERMCAP_se=$'\e[0m'         # reset reverse video
 export LESS_TERMCAP_ue=$'\e[0m'         # reset underline
 export GROFF_NO_SGR=1                   # for konsole
 
-export BREW_HOME=/opt/homebrew
-export PATH="$BREW_HOME/bin:$PATH"
+if [ $(uname) == "Linux" ]; then
+	# Adds Linux related config here...
+elif [ $(uname) == "Darwin" ]; then
+	if [ -d "/opt/homebrew" ]; then
+		export BREW_HOME=/opt/homebrew
+		export PATH="$BREW_HOME/bin:$PATH"
 
-export RUBY_HOME=$BREW_HOME/opt/ruby
-export PATH="$RUBY_HOME/bin:$PATH"
+		export RUBY_HOME=$BREW_HOME/opt/ruby
+		export PATH="$RUBY_HOME/bin:$PATH"
+	fi
+fi
 
 export GEM_HOME=$HOME/.gem
 export PATH="$GEM_HOME/bin:$PATH"
@@ -128,9 +134,6 @@ export PATH="$GRADLE_LANGUAGE_SERVER_PATH:$PATH"
 export JAVA_LANGUAGE_SERVER_PATH=$LSP_VENDOR_ROOT_PATH/jdtls/bin
 export PATH="$JAVA_LANGUAGE_SERVER_PATH:$PATH"
 
-export JENV_HOME=$HOME/.jenv
-export PATH="$JENV_HOME/bin:$PATH"
-
 export GOPATH=$(go env | grep GOPATH | awk -F= '{print $2}' | sed 's/"//g')
 export PATH="$GOPATH/bin:$PATH"
 
@@ -139,7 +142,12 @@ export ZAMBELZ_MAC_CONFIGS_PATH="$HOME/zambelz-mac-configs"
 # Dracula theme for fzf
 export FZF_DEFAULT_OPTS='--color=fg:#f8f8f2,bg:#282a36,hl:#bd93f9 --color=fg+:#f8f8f2,bg+:#44475a,hl+:#bd93f9 --color=info:#ffb86c,prompt:#50fa7b,pointer:#ff79c6 --color=marker:#ff79c6,spinner:#ffb86c,header:#6272a4'
 
-eval "$(jenv init -)"
+if [ -d "$HOME/.jenv" ]; then
+	export JENV_HOME=$HOME/.jenv
+	export PATH="$JENV_HOME/bin:$PATH"
+	eval "$(jenv init -)"
+fi
+
 eval "$(mcfly init zsh)"
 
 # Set personal aliases, overriding those provided by oh-my-zsh libs,
