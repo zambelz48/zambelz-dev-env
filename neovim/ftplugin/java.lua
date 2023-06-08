@@ -1,10 +1,25 @@
 local jdtls = require 'jdtls'
 local cmp_nvim_lsp = require 'cmp_nvim_lsp'
+local utils = require 'utils'
+
+local function get_config_path()
+	local kernel_name = utils.shell_cmd('uname')
+
+	if kernel_name == 'Darwin' then
+		return 'config_mac'
+	end
+
+	if kernel_name == 'Linux' then
+		return 'config_linux'
+	end
+
+	return 'config_win'
+end
 
 local home_path = os.getenv('HOME')
 local jdtls_path = home_path .. '/zambelz-mac-configs/neovim/.lsp_vendors/jdtls'
 local launcher_jar = vim.fn.glob(jdtls_path .. '/plugins/org.eclipse.equinox.launcher_*.jar')
-local config_path = jdtls_path .. '/config_mac'
+local config_path = jdtls_path .. '/' .. get_config_path()
 
 local project_root_dir_markers = { 'gradlew', '.git' }
 local project_root_dir = require('jdtls.setup').find_root(project_root_dir_markers)
