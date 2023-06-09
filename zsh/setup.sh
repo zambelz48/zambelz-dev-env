@@ -15,7 +15,6 @@ if [ ! -d "$current_dir/.themes" ]; then
 	exit 1
 fi
 
-
 dracula_theme_name="dracula.zsh-theme"
 dracula_theme_source="$themes_dir/dracula/$dracula_theme_name"
 dracula_theme_destination="$omz_themes_dir/$dracula_theme_name"

@@ -3,7 +3,7 @@ local cmp_nvim_lsp = require 'cmp_nvim_lsp'
 local utils = require 'utils'
 
 local function get_config_path()
-	local kernel_name = utils.shell_cmd('uname')
+	local kernel_name = utils.shell_cmd('uname -s')
 
 	if kernel_name == 'Darwin' then
 		return 'config_mac'
