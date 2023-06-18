@@ -59,7 +59,6 @@ require('packer').startup(function()
         'iamcco/markdown-preview.nvim',
         run = 'cd app && yarn install'
     }
-    use { 'puremourning/vimspector' }
     use {
         'akinsho/toggleterm.nvim',
         tag = '*'
@@ -72,6 +71,9 @@ require('packer').startup(function()
 	use 'j-hui/fidget.nvim'
 	use 'numToStr/Comment.nvim'
 	use 'mfussenegger/nvim-jdtls'
+	use 'mfussenegger/nvim-dap'
+	use 'rcarriga/nvim-dap-ui'
+	use 'theHamsta/nvim-dap-virtual-text'
 end)
 
 require('options')
@@ -84,7 +86,6 @@ require('telescope_conf')
 require('lualine_conf')
 require('nvim_colorizer_conf')
 require('markdown_preview_conf')
-require('vimspector_conf')
 require('toggleterm_conf')
 require('gitsigns_conf')
 require('trouble_conf')
@@ -92,4 +93,5 @@ require('nvim_web_devicons_conf')
 require('fugitive_conf')
 require('fidget_conf')
 require('comment_conf')
+require('nvim_dap_conf')
 
