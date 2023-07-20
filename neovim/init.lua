@@ -68,7 +68,10 @@ require('packer').startup(function()
         'folke/trouble.nvim',
         requires = 'nvim-tree/nvim-web-devicons'
     }
-	use 'j-hui/fidget.nvim'
+	use {
+		'j-hui/fidget.nvim',
+		tag = 'legacy'
+	}
 	use 'numToStr/Comment.nvim'
 	use 'mfussenegger/nvim-jdtls'
 	use 'mfussenegger/nvim-dap'
