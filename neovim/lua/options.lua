@@ -7,6 +7,10 @@ vim.g.loaded_perl_provider = 0
 
 vim.o.inccommand = 'nosplit'
 
+-- disable netrw (nvim-tree suggestion: https://github.com/nvim-tree/nvim-tree.lua/blob/00741206c2df9c4b538055def19b99790f0c95c8/doc/nvim-tree-lua.txt#L85)
+vim.g.loaded_netrw = 1
+vim.g.loaded_netrwPlugin = 1
+
 -- Set highlight on search
 vim.o.hlsearch = false
 
