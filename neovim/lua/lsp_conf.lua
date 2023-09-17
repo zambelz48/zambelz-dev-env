@@ -143,6 +143,13 @@ local servers = {
 			'yaml',
 			'yaml.docker-compose'
 		},
+        settings = {
+            redhat = {
+                telemetry = {
+                    enabled = false
+                }
+            }
+        }
 	},
 	{
 		name = 'kotlin_language_server',
