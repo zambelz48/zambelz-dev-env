@@ -83,6 +83,9 @@ export PATH="$JAVA_LANGUAGE_SERVER_PATH:$PATH"
 export GOPATH=$(go env | grep GOPATH | awk -F= '{print $2}' | sed 's/"//g')
 export PATH="$GOPATH/bin:$PATH"
 
+export LUA_LANGUAGE_SERVER_PATH=$LSP_VENDOR_ROOT_PATH/lua-language-server/bin
+export PATH="$LUA_LANGUAGE_SERVER_PATH:$PATH"
+
 export ZAMBELZ_MAC_CONFIGS_PATH="$HOME/zambelz-mac-configs"
 
 # Dracula theme for fzf
