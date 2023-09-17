@@ -30,8 +30,11 @@ Network Trash Folder
 Temporary Items
 .apdisk
 
-# jdtls project data
+# jdtls language server
 neovim/.lsp_vendors/jdtls
+
+# marksman language server
+neovim/.lsp_vendors/marksman
 
 # End of https://www.toptal.com/developers/gitignore/api/macos
 
