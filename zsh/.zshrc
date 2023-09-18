@@ -99,7 +99,9 @@ if [ -d "$HOME/.jenv" ]; then
 	eval "$(jenv init -)"
 fi
 
-eval "$(mcfly init zsh)"
+if (which mycfly) > /dev/null 2>&1; then
+	eval "$(mcfly init zsh)"
+fi
 
 # Aliases
 alias zconf="$ZAMBELZ_MAC_CONFIGS_PATH/main.sh"
