@@ -67,12 +67,7 @@ export ZAMBELZ_MAC_CONFIGS_PATH="$HOME/zambelz-mac-configs"
 
 source "$HOME/.profile.zsh"
 
-export GEM_HOME="$HOME/.gem"
-export PATH="$GEM_HOME/bin:$PATH"
-
-export RUBY_USER_HOME="$GEM_HOME/ruby/3.2.0"
-export PATH="$RUBY_USER_HOME/bin:$PATH"
-
+# Neovim LSP
 export LSP_VENDOR_ROOT_PATH="$ZAMBELZ_MAC_CONFIGS_PATH/neovim/.lsp_vendors"
 
 export KOTLIN_LANGUAGE_SERVER_PATH="$LSP_VENDOR_ROOT_PATH/kotlin-language-server/server/build/install/server/bin"
