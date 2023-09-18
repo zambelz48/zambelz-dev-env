@@ -69,6 +69,7 @@ $ gem install neovim --user-install
 - VIM => vim-language-server  
 - HTML, CSS, etc => vscode-langservers-extracted  
 - YAML => yaml-language-server  
+- TAILWINDCSS => @tailwindcss/language-server
 
 ## Command:
 $ npm install -g @microsoft/compose-language-service \
@@ -77,7 +78,8 @@ $ npm install -g @microsoft/compose-language-service \
     typescript-language-server \
     vim-language-server \
     vscode-langservers-extracted \
-    yaml-language-server
+    yaml-language-server \
+    @tailwindcss/language-server
 ```
 ###### Python Packages
 ```
