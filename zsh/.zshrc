@@ -29,9 +29,9 @@ export LANG=en_US.UTF-8
 
 # Preferred editor for local and remote sessions
 if [[ -n $SSH_CONNECTION ]]; then
-  export EDITOR='vim'
+  export EDITOR="vim"
 else
-  export EDITOR='nvim'
+  export EDITOR="nvim"
 fi
 
 # Dracula theme for man pages using less
@@ -53,46 +53,45 @@ case "$KERNEL_NAME" in
 
     Darwin*)
         if [ -d "/opt/homebrew" ]; then
-            export BREW_HOME=/opt/homebrew
+            export BREW_HOME="/opt/homebrew"
             export PATH="$BREW_HOME/bin:$PATH"
 
-            export RUBY_HOME=$BREW_HOME/opt/ruby
+            export RUBY_HOME="$BREW_HOME/opt/ruby"
             export PATH="$RUBY_HOME/bin:$PATH"
         fi
         ;;
 
 esac
 
-export GEM_HOME=$HOME/.gem
-export PATH="$GEM_HOME/bin:$PATH"
-
-export RUBY_USER_HOME=$GEM_HOME/ruby/3.2.0
-export PATH="$RUBY_USER_HOME/bin:$PATH"
-
-export LSP_VENDOR_ROOT_PATH=$HOME/zambelz-mac-configs/neovim/.lsp_vendors
-
-export KOTLIN_LANGUAGE_SERVER_PATH=$LSP_VENDOR_ROOT_PATH/kotlin-language-server/server/build/install/server/bin
-export PATH="$KOTLIN_LANGUAGE_SERVER_PATH:$PATH"
-
-export GRADLE_LANGUAGE_SERVER_PATH=$LSP_VENDOR_ROOT_PATH/vscode-gradle/gradle-language-server/build/install/gradle-language-server/bin
-export PATH="$GRADLE_LANGUAGE_SERVER_PATH:$PATH"
-
-export JAVA_LANGUAGE_SERVER_PATH=$LSP_VENDOR_ROOT_PATH/jdtls/bin
-export PATH="$JAVA_LANGUAGE_SERVER_PATH:$PATH"
-
-export GOPATH=$(go env | grep GOPATH | awk -F= '{print $2}' | sed 's/"//g')
-export PATH="$GOPATH/bin:$PATH"
-
-export LUA_LANGUAGE_SERVER_PATH=$LSP_VENDOR_ROOT_PATH/lua-language-server/bin
-export PATH="$LUA_LANGUAGE_SERVER_PATH:$PATH"
-
 export ZAMBELZ_MAC_CONFIGS_PATH="$HOME/zambelz-mac-configs"
 
+source "$HOME/.profile.zsh"
+
+export GEM_HOME="$HOME/.gem"
+export PATH="$GEM_HOME/bin:$PATH"
+
+export RUBY_USER_HOME="$GEM_HOME/ruby/3.2.0"
+export PATH="$RUBY_USER_HOME/bin:$PATH"
+
+export LSP_VENDOR_ROOT_PATH="$ZAMBELZ_MAC_CONFIGS_PATH/neovim/.lsp_vendors"
+
+export KOTLIN_LANGUAGE_SERVER_PATH="$LSP_VENDOR_ROOT_PATH/kotlin-language-server/server/build/install/server/bin"
+export PATH="$KOTLIN_LANGUAGE_SERVER_PATH:$PATH"
+
+export GRADLE_LANGUAGE_SERVER_PATH="$LSP_VENDOR_ROOT_PATH/vscode-gradle/gradle-language-server/build/install/gradle-language-server/bin"
+export PATH="$GRADLE_LANGUAGE_SERVER_PATH:$PATH"
+
+export JAVA_LANGUAGE_SERVER_PATH="$LSP_VENDOR_ROOT_PATH/jdtls/bin"
+export PATH="$JAVA_LANGUAGE_SERVER_PATH:$PATH"
+
+export LUA_LANGUAGE_SERVER_PATH="$LSP_VENDOR_ROOT_PATH/lua-language-server/bin"
+export PATH="$LUA_LANGUAGE_SERVER_PATH:$PATH"
+
 # Dracula theme for fzf
-export FZF_DEFAULT_OPTS='--color=fg:#f8f8f2,bg:#282a36,hl:#bd93f9
+export FZF_DEFAULT_OPTS="--color=fg:#f8f8f2,bg:#282a36,hl:#bd93f9
     --color=fg+:#f8f8f2,bg+:#44475a,hl+:#bd93f9
     --color=info:#ffb86c,prompt:#50fa7b,pointer:#ff79c6
-    --color=marker:#ff79c6,spinner:#ffb86c,header:#6272a4'
+    --color=marker:#ff79c6,spinner:#ffb86c,header:#6272a4"
 
 if [ -d "$HOME/.jenv" ]; then
 	export JENV_HOME=$HOME/.jenv
@@ -107,11 +106,14 @@ alias zconf="$ZAMBELZ_MAC_CONFIGS_PATH/main.sh"
 alias nx="npx nx"
 alias python="python3"
 
+# Shell tools
+source "$ZAMBELZ_MAC_CONFIGS_PATH/zsh/tools/worktree_helper.sh"
+
 # Dracula themes syntax highlighting
 # source: https://github.com/dracula/zsh-syntax-highlighting
-source $ZAMBELZ_MAC_CONFIGS_PATH/zsh/.themes/dracula-syntax-highlighting/zsh-syntax-highlighting.sh
+source "$ZAMBELZ_MAC_CONFIGS_PATH/zsh/.themes/dracula-syntax-highlighting/zsh-syntax-highlighting.sh"
 
 # zsh syntax highlighting
 # source: https://github.com/zsh-users/zsh-syntax-highlighting
-source $ZAMBELZ_MAC_CONFIGS_PATH/zsh/.themes/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
+source "$ZAMBELZ_MAC_CONFIGS_PATH/zsh/.themes/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh"
 
