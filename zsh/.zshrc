@@ -103,9 +103,6 @@ alias zconf="$ZAMBELZ_MAC_CONFIGS_PATH/main.sh"
 alias nx="npx nx"
 alias python="python3"
 
-# Shell tools
-source "$ZAMBELZ_MAC_CONFIGS_PATH/zsh/tools/worktree_helper.sh"
-
 # Dracula themes syntax highlighting
 # source: https://github.com/dracula/zsh-syntax-highlighting
 source "$ZAMBELZ_MAC_CONFIGS_PATH/zsh/.themes/dracula-syntax-highlighting/zsh-syntax-highlighting.sh"
