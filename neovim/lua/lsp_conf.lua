@@ -8,7 +8,26 @@ local servers = {
 		name = 'vimls',
 		cmd = { 'vim-language-server', '--stdio' },
 		filetypes = { 'vim' },
-		root_dir = nvim_lsp.util.root_pattern('Package.swift', '.git')
+		single_file_support = true,
+		init_options = {
+			diagnostic = {
+				enable = true
+			},
+			indexes = {
+				count = 3,
+				gap = 100,
+				projectRootPatterns = { 'runtime', 'nvim', '.git', 'autoload', 'plugin' },
+				runtimepath = true
+			},
+			isNeovim = true,
+			iskeyword = '@,48-57,_,192-255,-#',
+			runtimepath = '',
+			suggest = {
+				fromRuntimepath = true,
+				fromVimruntime = true
+			},
+			vimruntime = ''
+		}
 	},
 	{
 		name = 'bashls',
@@ -33,7 +52,7 @@ local servers = {
 		filetypes = { 'cmake' },
 		single_file_support = true,
 		init_options = {
-			buildDirectory = "build"
+			buildDirectory = 'build'
 		},
 		root_dir = nvim_lsp.util.root_pattern('CMakePresets.json', 'CTestConfig.cmake', '.git', 'build', 'cmake')
 	},
@@ -87,7 +106,7 @@ local servers = {
 		filetypes = { 'html' },
 		single_file_support = true,
 		init_options = {
-			configurationSection = { "html", "css", "javascript" },
+			configurationSection = { 'html', 'css', 'javascript' },
 			embeddedLanguages = {
 				css = true,
 				javascript = true
@@ -99,6 +118,8 @@ local servers = {
 		name = 'lua_ls',
 		cmd = { 'lua-language-server' },
 		filetypes = { 'lua' },
+		single_file_support = true,
+		root_dir = nvim_lsp.util.root_pattern('.luarc.json', '.luarc.jsonc', '.luacheckrc', '.stylua.toml', 'stylua.toml', 'selene.toml', 'selene.yml', '.git')
 	},
 	{
 		name = 'pyright',
@@ -143,11 +164,11 @@ local servers = {
 			'typescriptreact',
 			'typescript.tsx'
 		},
-        single_file_support = true,
-        init_options = {
-            hostInfo = 'neovim'
-        },
-        root_dir = nvim_lsp.util.root_pattern('package.json', 'tsconfig.json', 'jsconfig.json', '.git')
+		single_file_support = true,
+		init_options = {
+			hostInfo = 'neovim'
+		},
+		root_dir = nvim_lsp.util.root_pattern('package.json', 'tsconfig.json', 'jsconfig.json', '.git')
 	},
 	{
 		name = 'yamlls',
@@ -156,13 +177,13 @@ local servers = {
 			'yaml',
 			'yaml.docker-compose'
 		},
-        settings = {
-            redhat = {
-                telemetry = {
-                    enabled = false
-                }
-            }
-        }
+		settings = {
+			redhat = {
+				telemetry = {
+					enabled = false
+				}
+			}
+		}
 	},
 	{
 		name = 'kotlin_language_server',
@@ -300,13 +321,13 @@ local on_attach = function(_, bufnr)
 end
 
 local signs = {
-	Error = "",
-	Warn = "",
-	Hint = "",
-	Info = "󰋽"
+	Error = '',
+	Warn = '',
+	Hint = '',
+	Info = '󰋽'
 }
 for type, icon in pairs(signs) do
-	local hl = "DiagnosticSign" .. type
+	local hl = 'DiagnosticSign' .. type
 	vim.fn.sign_define(hl,
 		{
 			text = icon,
@@ -317,13 +338,13 @@ for type, icon in pairs(signs) do
 end
 
 vim.diagnostic.config({
-  virtual_text = {
-    prefix = '●',
-  },
-  severity_sort = true,
-  float = {
-    source = "always",
-  },
+	virtual_text = {
+		prefix = '●',
+	},
+	severity_sort = true,
+	float = {
+		source = 'always',
+	},
 })
 
 -- nvim-cmp supports additional completion capabilities
@@ -331,7 +352,6 @@ local capabilities = vim.lsp.protocol.make_client_capabilities()
 capabilities = require('cmp_nvim_lsp').default_capabilities(capabilities)
 
 for _, lsp in ipairs(servers) do
-
 	local server_conf = {
 		cmd = lsp.cmd,
 		filetypes = lsp.filetypes,
@@ -357,4 +377,3 @@ for _, lsp in ipairs(servers) do
 
 	nvim_lsp[lsp.name].setup(server_conf)
 end
-
