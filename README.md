@@ -79,7 +79,9 @@ $ npm install -g @microsoft/compose-language-service \
     vim-language-server \
     vscode-langservers-extracted \
     yaml-language-server \
-    @tailwindcss/language-server
+    @tailwindcss/language-server \
+    graphql-language-service-cli \
+    @prisma/language-server
 ```
 ###### Python Packages
 ```
