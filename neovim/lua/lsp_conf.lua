@@ -283,6 +283,12 @@ local servers = {
 			'postcss.config.mjs', 'postcss.config.ts', 'package.json',
 			'node_modules', '.git'
 		)
+	},
+	{
+		name = 'graphql',
+		cmd = { 'graphql-lsp', 'server', '-m', 'stream' },
+		filtypes = { 'graphql', 'typescriptreact', 'javascriptreact' },
+		root_dir = nvim_lsp.util.root_pattern('.git', '.graphqlrc*', '.graphql.config.*', 'graphql.config.*')
 	}
 }
 
