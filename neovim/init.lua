@@ -69,14 +69,16 @@ require('packer').startup(function()
         requires = 'nvim-tree/nvim-web-devicons'
     }
 	use {
-		'j-hui/fidget.nvim',
-		tag = 'legacy'
+		'j-hui/fidget.nvim'
 	}
 	use 'numToStr/Comment.nvim'
 	use 'mfussenegger/nvim-jdtls'
 	use 'mfussenegger/nvim-dap'
 	use 'rcarriga/nvim-dap-ui'
 	use 'theHamsta/nvim-dap-virtual-text'
+	use 'tpope/vim-dadbod'
+	use 'kristijanhusak/vim-dadbod-ui'
+	use 'kristijanhusak/vim-dadbod-completion'
 end)
 
 require('options')
