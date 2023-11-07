@@ -34,6 +34,7 @@ treesitter_config.setup ({
 		'make',
 		'markdown',
 		'mermaid',
+		'prisma',
 		'proto',
 		'python',
 		'query',
