@@ -89,6 +89,11 @@ $ npm install -g @microsoft/compose-language-service \
 
 ## Command:
 $ pip install cmake-language-server
+
+- PYTHON Language Server => pyright (https://microsoft.github.io/pyright)
+
+## Command:
+$ pip install pyright
 ```
 
 ###### GO Packages

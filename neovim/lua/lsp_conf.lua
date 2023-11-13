@@ -119,12 +119,23 @@ local servers = {
 		cmd = { 'lua-language-server' },
 		filetypes = { 'lua' },
 		single_file_support = true,
-		root_dir = nvim_lsp.util.root_pattern('.luarc.json', '.luarc.jsonc', '.luacheckrc', '.stylua.toml', 'stylua.toml', 'selene.toml', 'selene.yml', '.git')
+		root_dir = nvim_lsp.util.root_pattern('.luarc.json', '.luarc.jsonc', '.luacheckrc', '.stylua.toml', 'stylua.toml',
+			'selene.toml', 'selene.yml', '.git')
 	},
 	{
 		name = 'pyright',
 		cmd = { 'pyright-langserver', '--stdio' },
 		filetypes = { 'python' },
+		single_file_support = true,
+		settings = {
+			python = {
+				analysis = {
+					autoSearchPaths = true,
+					diagnosticMode = "openFilesOnly",
+					useLibraryCodeForTypes = true
+				}
+			}
+		}
 	},
 	{
 		name = 'rust_analyzer',
