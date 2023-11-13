@@ -25,20 +25,12 @@
 1. [Neovim Configs](#neovim-configs)
 1. [TMUX Configs](#tmux-configs)
 
-## Installation steps
+## Prerequisites
 1. clone this repository at $HOME path (IMPORTANT)
-1. source `.zshrc` file or execute `exec $SHELL -l`
+1. init git submodule: `git submodule update --init --recursive`
+1. create symlink at `$HOME/.zshrc` pointing to `$HOME/zambelz-mac-configs/zsh/.zshrc`
 
 ## zsh configs
-#### Pre-requisites
-```
-# Dracula themes syntax highlighting
-# source: https://github.com/dracula/zsh-syntax-highlighting
-
-# zsh syntax highlighting
-# source: https://github.com/zsh-users/zsh-syntax-highlighting
-# install using homebrew: brew install zsh-syntax-highlighting
-```
 #### Installation
 ```sh
 $  zconf zsh
@@ -86,12 +78,10 @@ $ npm install -g @microsoft/compose-language-service \
 ###### Python Packages
 ```
 - CMAKE => cmake-language-server (https://github.com/regen100/cmake-language-server)
-
 ## Command:
 $ pip install cmake-language-server
 
 - PYTHON Language Server => pyright (https://microsoft.github.io/pyright)
-
 ## Command:
 $ pip install pyright
 ```
@@ -99,10 +89,8 @@ $ pip install pyright
 ###### GO Packages
 ```
 - gopls => go language server (https://github.com/golang/tools/tree/master/gopls#gopls-the-go-language-server)
-
 ## Command:
 $ go install golang.org/x/tools/gopls@latest
-
 ## Notes:
 - Make sure GOPATH already registered on your shell
 ```
@@ -120,6 +108,7 @@ $ Make sure ruby version is >= 2.7.0 (you can install it with brew)
 ###### Custom
 ```
 # Setup "jdtls" (Java Language Server)
+prerequisites: java 21+ (MANDATORY)
 source: https://github.com/mfussenegger/nvim-jdtls
 1. Download jdtls
     - cmd: curl -o neovim/.lsp_vendors/jdt-language-server-1.23.0-202304271346.tar.gz https://download.eclipse.org/jdtls/milestones/1.23.0/jdt-language-server-1.23.0-202304271346.tar.gz
@@ -130,9 +119,19 @@ source: https://github.com/mfussenegger/nvim-jdtls
 4. create workspace_data dir
     - cmd: mkdir neovim/.lsp_vendors/jdtls/project_data
 
-# Setup "vscode-gradle" & "kotlin-language-server"
-    - cmd: git submodule update --init --recursive
-    - change to latest tag
+# Setup "vscode-gradle"
+1. go to neovim/.lsp_vendors/vscode-gradle
+2. execute: ./gradlew installDist
+
+# Setup "kotlin-language-server"
+1. Make sure your java version is Java 11
+2. go to neovim/.lsp_vendors/kotlin-language-server
+3. execute: ./gradlew :server:installDist
+
+# Setup "lua-language-server"
+1. make sure [ninja](https://ninja-build.org/) is installed
+2. go to neovim/.lsp_vendors/lua-language-server
+3. execute: ./make.sh
 ```
 #### Installation
 ```sh
