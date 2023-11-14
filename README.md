@@ -20,7 +20,7 @@
 1. tldr: (install using homebrew: `brew install tldr`) [source](https://tldr.sh)
 
 ## Table of contents
-1. [Installation Steps](#installation-steps)
+1. [Prerequisites](#prerequisites)
 1. [ZSH Configs](#zsh-configs)
 1. [Neovim Configs](#neovim-configs)
 1. [TMUX Configs](#tmux-configs)
@@ -52,6 +52,32 @@ $ pip install neovim
 $ gem install neovim --user-install
 ```
 ##### Install LSP
+
+###### Using rustup
+```
+Prerequisites:  
+You have to install rust first (https://www.rust-lang.org/tools/install)  
+
+- Rust Language Server => rust-analyzer (https://rust-analyzer.github.io/manual.html#installation)
+## Command:
+$ rustup component add rust-src  
+$ rustup component add rust-analyzer
+```
+
+###### Cargo Crates
+```
+Prerequisites:  
+You have to install rust first (https://www.rust-lang.org/tools/install)  
+
+- Rust Language Server => rust-analyzer  
+## Command:  
+$ cargo install rust-analyzer  
+
+- CMake => neocmakelsp (https://github.com/Decodetalkers/neocmakelsp)  
+## Command:  
+$ cargo install neocmakelsp  
+```
+
 ###### NPM Modules
 ```
 - DOCKERCOMPOSE => @microsoft/compose-language-service  
@@ -75,12 +101,9 @@ $ npm install -g @microsoft/compose-language-service \
     graphql-language-service-cli \
     @prisma/language-server
 ```
+
 ###### Python Packages
 ```
-- CMAKE => cmake-language-server (https://github.com/regen100/cmake-language-server)
-## Command:
-$ pip install cmake-language-server
-
 - PYTHON Language Server => pyright (https://microsoft.github.io/pyright)
 ## Command:
 $ pip install pyright
@@ -105,6 +128,7 @@ $ gem install solargraph --user-install
 ## Notes:
 $ Make sure ruby version is >= 2.7.0 (you can install it with brew)
 ```
+
 ###### Custom
 ```
 # Setup "jdtls" (Java Language Server)

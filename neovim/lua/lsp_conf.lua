@@ -47,14 +47,11 @@ local servers = {
 		},
 	},
 	{
-		name = 'cmake',
-		cmd = { 'cmake-language-server' },
+		name = 'neocmake',
+		cmd = { 'neocmakelsp', '--stdio' },
 		filetypes = { 'cmake' },
 		single_file_support = true,
-		init_options = {
-			buildDirectory = 'build'
-		},
-		root_dir = nvim_lsp.util.root_pattern('CMakePresets.json', 'CTestConfig.cmake', '.git', 'build', 'cmake')
+		root_dir = nvim_lsp.util.root_pattern('.git', 'cmake')
 	},
 	{
 		name = 'jsonls',
