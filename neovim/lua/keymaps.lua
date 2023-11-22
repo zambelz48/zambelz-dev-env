@@ -1,5 +1,10 @@
-
 local utils = require('utils')
+
+-- quickfix list keymaps
+utils.nnoremap('<leader>co', ':copen<CR>', { silent = true })
+utils.nnoremap('[q', ':cprev<CR>', { silent = true })
+utils.nnoremap(']q', ':cnext<CR>', { silent = true })
+utils.nnoremap('<leader>k', ':call setqflist([], "r")')
 
 -- fugitive keymaps
 utils.nnoremap('<leader>gs', ':G<CR>', { silent = true })
