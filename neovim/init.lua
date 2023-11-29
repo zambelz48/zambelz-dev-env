@@ -74,6 +74,7 @@ require('packer').startup(function()
 		tag = 'legacy'
 	}
 	use 'numToStr/Comment.nvim'
+	use 'JoosepAlviste/nvim-ts-context-commentstring'
 	use 'mfussenegger/nvim-jdtls'
 	use 'mfussenegger/nvim-dap'
 	use 'rcarriga/nvim-dap-ui'

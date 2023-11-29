@@ -69,6 +69,8 @@ vim.wo.wrap = false
 
 vim.bo.expandtab = true
 
+vim.g.skip_ts_context_commentstring_module = true
+
 --Set colorscheme (order is important here)
 vim.o.termguicolors = true
 vim.g.onedark_terminal_italics = 2
