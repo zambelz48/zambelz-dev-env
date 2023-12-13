@@ -58,6 +58,8 @@ case "$KERNEL_NAME" in
 
             export RUBY_HOME="$BREW_HOME/opt/ruby"
             export PATH="$RUBY_HOME/bin:$PATH"
+
+            export HOMEBREW_NO_ANALYTICS=1
         fi
         ;;
 
