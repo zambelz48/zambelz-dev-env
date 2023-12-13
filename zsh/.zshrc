@@ -88,7 +88,7 @@ export FZF_DEFAULT_OPTS="--color=fg:#f8f8f2,bg:#282a36,hl:#bd93f9
     --color=info:#ffb86c,prompt:#50fa7b,pointer:#ff79c6
     --color=marker:#ff79c6,spinner:#ffb86c,header:#6272a4"
 
-if [ -d "$HOME/.jenv" ]; then
+if command -v jenv &> /dev/null; then
 	export JENV_HOME=$HOME/.jenv
 	export PATH="$JENV_HOME/bin:$PATH"
 	eval "$(jenv init -)"
