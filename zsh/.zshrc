@@ -96,7 +96,7 @@ if command -v jenv &> /dev/null; then
 	eval "$(jenv init -)"
 fi
 
-if (which mycfly) > /dev/null 2>&1; then
+if command -v mcfly &> /dev/null; then
 	eval "$(mcfly init zsh)"
 fi
 
