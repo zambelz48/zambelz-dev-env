@@ -156,6 +156,11 @@ source: https://github.com/mfussenegger/nvim-jdtls
 1. make sure [ninja](https://ninja-build.org/) is installed
 2. go to neovim/.lsp_vendors/lua-language-server
 3. execute: ./make.sh
+
+# Setup "lemminx" (xml language server)
+1. download the binary here: https://github.com/redhat-developer/vscode-xml/releases
+2. save the binary to the path: `neovim/.lsp_vendors/xml-lsp/lemminx`
+3. register the binary in PATH
 ```
 #### Installation
 ```sh

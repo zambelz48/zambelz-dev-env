@@ -36,5 +36,8 @@ neovim/.lsp_vendors/jdtls
 # marksman language server
 neovim/.lsp_vendors/marksman
 
+# xml language server
+neovim/.lsp_vendors/xml-lsp
+
 # End of https://www.toptal.com/developers/gitignore/api/macos
 
