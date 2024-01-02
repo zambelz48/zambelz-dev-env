@@ -82,6 +82,7 @@ require('packer').startup(function()
 	use 'tpope/vim-dadbod'
 	use 'kristijanhusak/vim-dadbod-ui'
 	use 'kristijanhusak/vim-dadbod-completion'
+	use 'github/copilot.vim'
 end)
 
 require('options')
