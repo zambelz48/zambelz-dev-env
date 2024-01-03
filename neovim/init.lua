@@ -70,8 +70,7 @@ require('packer').startup(function()
 		requires = 'nvim-tree/nvim-web-devicons'
 	}
 	use {
-		'j-hui/fidget.nvim',
-		tag = 'legacy'
+		'j-hui/fidget.nvim'
 	}
 	use 'numToStr/Comment.nvim'
 	use 'JoosepAlviste/nvim-ts-context-commentstring'
