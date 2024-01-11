@@ -105,6 +105,16 @@ alias zconf="$ZAMBELZ_MAC_CONFIGS_PATH/main.sh"
 alias nx="npx nx"
 alias python="python3"
 
+# Utils
+git_clean_pull() {
+	local branch=$1
+	git checkout -b temp && \
+		git branch -D $branch && \
+		git fetch && \
+		git checkout $branch && \
+		git branch -D temp
+}
+
 # Dracula themes syntax highlighting
 # source: https://github.com/dracula/zsh-syntax-highlighting
 source "$ZAMBELZ_MAC_CONFIGS_PATH/zsh/.themes/dracula-syntax-highlighting/zsh-syntax-highlighting.sh"
