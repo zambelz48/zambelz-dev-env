@@ -76,6 +76,7 @@ require('packer').startup(function()
 	use 'JoosepAlviste/nvim-ts-context-commentstring'
 	use 'mfussenegger/nvim-jdtls'
 	use 'mfussenegger/nvim-dap'
+    use 'nvim-neotest/nvim-nio'
 	use 'rcarriga/nvim-dap-ui'
 	use 'theHamsta/nvim-dap-virtual-text'
 	use 'tpope/vim-dadbod'
