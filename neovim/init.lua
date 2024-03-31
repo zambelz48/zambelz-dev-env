@@ -31,6 +31,7 @@ require('packer').startup(function()
 	}
 	use 'tpope/vim-fugitive'
 	use 'nvim-lua/plenary.nvim'
+	use 'ibhagwan/fzf-lua'
 	use {
 		'nvim-telescope/telescope.nvim',
 		requires = { 'nvim-lua/plenary.nvim' }
@@ -82,7 +83,19 @@ require('packer').startup(function()
 	use 'tpope/vim-dadbod'
 	use 'kristijanhusak/vim-dadbod-ui'
 	use 'kristijanhusak/vim-dadbod-completion'
-	use 'github/copilot.vim'
+	use {
+		'zbirenbaum/copilot.lua',
+		cmd = 'Copilot',
+		event = 'InsertEnter',
+		config = function()
+			require('copilot_conf')
+		end,
+	}
+	use 'AndreM222/copilot-lualine'
+	use {
+		'CopilotC-Nvim/CopilotChat.nvim',
+		branch = 'canary',
+	}
 end)
 
 require('options')
@@ -103,3 +116,4 @@ require('fidget_conf')
 require('comment_conf')
 require('nvim_dap_conf')
 require('keymaps')
+require('copilot_chat_conf')
