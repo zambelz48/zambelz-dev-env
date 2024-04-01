@@ -77,20 +77,13 @@ require('packer').startup(function()
 	use 'JoosepAlviste/nvim-ts-context-commentstring'
 	use 'mfussenegger/nvim-jdtls'
 	use 'mfussenegger/nvim-dap'
-    use 'nvim-neotest/nvim-nio'
+	use 'nvim-neotest/nvim-nio'
 	use 'rcarriga/nvim-dap-ui'
 	use 'theHamsta/nvim-dap-virtual-text'
 	use 'tpope/vim-dadbod'
 	use 'kristijanhusak/vim-dadbod-ui'
 	use 'kristijanhusak/vim-dadbod-completion'
-	use {
-		'zbirenbaum/copilot.lua',
-		cmd = 'Copilot',
-		event = 'InsertEnter',
-		config = function()
-			require('copilot_conf')
-		end,
-	}
+	use 'zbirenbaum/copilot.lua'
 	use 'AndreM222/copilot-lualine'
 	use {
 		'CopilotC-Nvim/CopilotChat.nvim',
@@ -116,4 +109,5 @@ require('fidget_conf')
 require('comment_conf')
 require('nvim_dap_conf')
 require('keymaps')
+require('copilot_conf')
 require('copilot_chat_conf')
