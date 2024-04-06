@@ -9,17 +9,11 @@ case $option in
     zsh)
         bash "$SCRIPT_DIR/zsh/setup.sh"
     ;;
-    vim)
-        bash "$SCRIPT_DIR/vim/setup.sh"
+    kitty)
+        bash "$SCRIPT_DIR/kitty/setup.sh"
     ;;
     neovim)
         bash "$SCRIPT_DIR/neovim/setup.sh"
-    ;;
-    alacritty)
-        bash "$SCRIPT_DIR/alacritty/setup.sh"
-    ;;
-    kitty)
-        bash "$SCRIPT_DIR/kitty/setup.sh"
     ;;
     tmux)
         bash "$SCRIPT_DIR/tmux/setup.sh"
