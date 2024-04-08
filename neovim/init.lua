@@ -92,6 +92,7 @@ require('packer').startup(function()
 		'CopilotC-Nvim/CopilotChat.nvim',
 		branch = 'canary',
 	}
+	use "pmizio/typescript-tools.nvim"
 end)
 
 require('options')
@@ -99,6 +100,7 @@ require('mappings')
 require('treesitter_conf')
 require('lsp_conf')
 require('cmp_conf')
+require('typescript_tools_conf')
 require('nvim_tree_conf')
 require('telescope_conf')
 require('lualine_conf')

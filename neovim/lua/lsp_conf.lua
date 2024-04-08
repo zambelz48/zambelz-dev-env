@@ -194,23 +194,6 @@ local servers = {
 		},
 	},
 	{
-		name = 'tsserver',
-		cmd = { 'typescript-language-server', '--stdio' },
-		filetypes = {
-			'javascript',
-			'javascriptreact',
-			'javascript.jsx',
-			'typescript',
-			'typescriptreact',
-			'typescript.tsx'
-		},
-		single_file_support = true,
-		init_options = {
-			hostInfo = 'neovim'
-		},
-		root_dir = nvim_lsp.util.root_pattern('package.json', 'tsconfig.json', 'jsconfig.json', '.git')
-	},
-	{
 		name = 'yamlls',
 		cmd = { 'yaml-language-server', '--stdio' },
 		filetypes = {
