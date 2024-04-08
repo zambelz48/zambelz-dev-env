@@ -65,12 +65,12 @@ case "$KERNEL_NAME" in
 
 esac
 
-export ZAMBELZ_MAC_CONFIGS_PATH="$HOME/zambelz-mac-configs"
+export ZAMBELZ_DEV_ENV_PATH="$HOME/zambelz-dev-env"
 
 source "$HOME/.profile.zsh"
 
 # Neovim LSP
-export LSP_VENDOR_ROOT_PATH="$ZAMBELZ_MAC_CONFIGS_PATH/neovim/.lsp_vendors"
+export LSP_VENDOR_ROOT_PATH="$ZAMBELZ_DEV_ENV_PATH/neovim/.lsp_vendors"
 
 export KOTLIN_LANGUAGE_SERVER_PATH="$LSP_VENDOR_ROOT_PATH/kotlin-language-server/server/build/install/server/bin"
 export PATH="$KOTLIN_LANGUAGE_SERVER_PATH:$PATH"
@@ -101,7 +101,7 @@ if command -v mcfly &> /dev/null; then
 fi
 
 # Aliases
-alias zconf="$ZAMBELZ_MAC_CONFIGS_PATH/main.sh"
+alias zconf="$ZAMBELZ_DEV_ENV_PATH/main.sh"
 
 # Utils
 git_clean_pull() {
@@ -116,9 +116,9 @@ git_clean_pull() {
 
 # Dracula themes syntax highlighting
 # source: https://github.com/dracula/zsh-syntax-highlighting
-source "$ZAMBELZ_MAC_CONFIGS_PATH/zsh/.themes/dracula-syntax-highlighting/zsh-syntax-highlighting.sh"
+source "$ZAMBELZ_DEV_ENV_PATH/zsh/.themes/dracula-syntax-highlighting/zsh-syntax-highlighting.sh"
 
 # zsh syntax highlighting
 # source: https://github.com/zsh-users/zsh-syntax-highlighting
-source "$ZAMBELZ_MAC_CONFIGS_PATH/zsh/.themes/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh"
+source "$ZAMBELZ_DEV_ENV_PATH/zsh/.themes/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh"
 

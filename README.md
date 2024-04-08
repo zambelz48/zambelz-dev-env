@@ -1,47 +1,50 @@
-# Zambelz Mac Dev Environment
-
-## Pre-requisites
-#### MANDATORY
-1. **Terminal emulator**: [iTerm](https://iterm2.com) or [alacritty](https://github.com/alacritty/alacritty) or [kitty](https://github.com/kovidgoyal/kitty)
-1. **Xcode**: https://developer.apple.com/xcode
-1. **Xcode command line utilities**: `xcode-select --install`
-1. **Rosetta**(*for Apple M1 Users*): `softwareupdate --install-rosetta`
-1. **Homebrew**: https://docs.brew.sh/Installation
-1. **zsh**: [oh-my-zsh](https://github.com/ohmyzsh/ohmyzsh)
-1. **nvm**: https://github.com/nvm-sh/nvm
-1. **jenv**: manage multiple java versions (install using homebrew: `brew install jenv`) [source](https://github.com/jenv/jenv)
-1. **tmux**: (install using homebrew: `brew install tmux`)
-1. **fzf**: (install using homebrew: `brew install fzf`) [source](https://github.com/junegunn/fzf)
-1. **fd**: (install using homebrew: `brew install fd`) [source](https://github.com/sharkdp/fd)
-1. **ripgrep**: (install using homebrew: `brew install ripgrep`) [source](https://github.com/BurntSushi/ripgrep)
-1. **marksman**: (install using homebrew: `brew install marksman`) [source](https://github.com/artempyanykh/marksman)
-#### OPTIONAL
-1. mcfly: (install using homebrew: `brew instal mcfly`) [source](https://github.com/cantino/mcfly)
-1. tldr: (install using homebrew: `brew install tldr`) [source](https://tldr.sh)
+# Zambelz Dev Environment
 
 ## Table of contents
-1. [Prerequisites](#prerequisites)
+1. [Pre-requisites](#pre-requisites)
 1. [ZSH Configs](#zsh-configs)
 1. [Neovim Configs](#neovim-configs)
 1. [TMUX Configs](#tmux-configs)
 
-## Prerequisites
+## Pre-requisites
+1. Make sure your shell is `zsh` [see this guide](https://github.com/ohmyzsh/ohmyzsh/wiki/Installing-ZSH)
+1. install required tools
+   - **MANDATORY**
+        - General
+            - Terminal emulator: [kitty](https://github.com/kovidgoyal/kitty)
+            - oh-my-zsh: [source](https://github.com/ohmyzsh/ohmyzsh)
+            - tmux: [source](https://github.com/tmux/tmux/wiki)
+            - fzf: [source](https://github.com/junegunn/fzf)
+            - fd: [source](https://github.com/sharkdp/fd)
+            - ripgrep: [source](https://github.com/BurntSushi/ripgrep)
+            - marksman: [source](https://github.com/artempyanykh/marksman)
+        - Mac only
+            - Xcode: https://developer.apple.com/xcode
+            - Xcode command line utilities: `xcode-select --install`
+            - Rosetta(*for Apple M chip users*): `softwareupdate --install-rosetta`
+            - Homebrew: https://docs.brew.sh/Installation
+    - **OPTIONAL**
+        - mcfly: [source](https://github.com/cantino/mcfly)
+        - tldr: [source](https://tldr.sh)
+        - jenv (*manage multiple java versions*): [source](https://github.com/jenv/jenv)
+        - nvm (*manage multiple nodejs versions*): [source](https://github.com/nvm-sh/nvm)
 1. clone this repository at $HOME path (IMPORTANT)
 1. init git submodule: `git submodule update --init --recursive`
 1. create symlink at `$HOME/.zshrc` pointing to `$HOME/zambelz-mac-configs/zsh/.zshrc`
+1. source your `.zshrc` or restart the terminal
 
 ## zsh configs
 #### Installation
 ```sh
-$  zconf zsh
+$ zconf zsh
 ```
-note: *don't forget to source .zshrc*
+note: *you can source your .zshrc or restart the terminal after executin above command*
 
 ## neovim configs
 
 #### Pre-requisites
 ##### Install Neovim Module
-```
+```sh
 # NPM Module
 $ npm install -g neovim
 
@@ -54,7 +57,7 @@ $ gem install neovim --user-install
 ##### Install LSP
 
 ###### Using rustup
-```
+```sh
 Prerequisites:  
 You have to install rust first (https://www.rust-lang.org/tools/install)  
 
@@ -65,7 +68,7 @@ $ rustup component add rust-analyzer
 ```
 
 ###### Cargo Crates
-```
+```sh
 Prerequisites:  
 You have to install rust first (https://www.rust-lang.org/tools/install)  
 
@@ -79,11 +82,10 @@ $ cargo install neocmakelsp
 ```
 
 ###### NPM Modules
-```
+```sh
 - DOCKERCOMPOSE => @microsoft/compose-language-service  
 - BASH => bash-language-server  
 - DOCKERFILE => dockerfile-language-server-nodejs  
-- TYPESCRIPT => typescript-language-server  
 - VIM => vim-language-server  
 - HTML, CSS, etc => vscode-langservers-extracted  
 - YAML => yaml-language-server  
@@ -93,7 +95,6 @@ $ cargo install neocmakelsp
 $ npm install -g @microsoft/compose-language-service \
     bash-language-server \
     dockerfile-language-server-nodejs \
-    typescript-language-server \
     vim-language-server \
     vscode-langservers-extracted \
     yaml-language-server \
@@ -103,14 +104,14 @@ $ npm install -g @microsoft/compose-language-service \
 ```
 
 ###### Python Packages
-```
+```sh
 - PYTHON Language Server => pyright (https://microsoft.github.io/pyright)
 ## Command:
 $ pip install pyright
 ```
 
 ###### GO Packages
-```
+```sh
 - gopls => go language server (https://github.com/golang/tools/tree/master/gopls#gopls-the-go-language-server)
 ## Command:
 $ go install golang.org/x/tools/gopls@latest
@@ -119,7 +120,7 @@ $ go install golang.org/x/tools/gopls@latest
 ```
 
 ###### Ruby GEM Packages
-```
+```sh
 - solargraph => solargraph (https://solargraph.org)
 
 ## Command:
@@ -130,7 +131,7 @@ $ Make sure ruby version is >= 2.7.0 (you can install it with brew)
 ```
 
 ###### Custom
-```
+```sh
 # Setup "jdtls" (Java Language Server)
 prerequisites: java 21+ (MANDATORY)
 source: https://github.com/mfussenegger/nvim-jdtls
@@ -168,7 +169,7 @@ $  zconf neovim
 ```
 
 #### Activate neovim plugins
-1. open neovim (`nvim`)
+1. open neovim
 1. execute this command: `:PackerInstall`
 
 ## tmux configs
