@@ -5,74 +5,74 @@ vim.g.python3_host_prog = python3_path
 
 vim.g.loaded_perl_provider = 0
 
-vim.o.inccommand = 'nosplit'
+vim.opt.inccommand = 'nosplit'
 
 -- disable netrw (nvim-tree suggestion: https://github.com/nvim-tree/nvim-tree.lua/blob/00741206c2df9c4b538055def19b99790f0c95c8/doc/nvim-tree-lua.txt#L85)
 vim.g.loaded_netrw = 1
 vim.g.loaded_netrwPlugin = 1
 
 -- Set highlight on search
-vim.o.hlsearch = false
+vim.opt.hlsearch = false
 
-vim.o.hidden = true
+vim.opt.hidden = true
 
 -- Enable mouse mode
-vim.o.mouse = ''
+vim.opt.mouse = ''
 
-vim.o.breakindent = true
+vim.opt.breakindent = true
 
-vim.o.ignorecase = true
+vim.opt.ignorecase = true
 
-vim.o.smartcase = true
+vim.opt.smartcase = true
 
-vim.o.colorcolumn = '80'
+vim.opt.colorcolumn = '80'
 
-vim.o.signcolumn = 'yes'
+vim.opt.signcolumn = 'yes'
 
 -- Decrease update time
-vim.o.updatetime = 250
-vim.o.timeout = true
-vim.o.timeoutlen = 300
+vim.opt.updatetime = 250
+vim.opt.timeout = true
+vim.opt.timeoutlen = 300
 
-vim.o.guifont = 'Hack Nerd Font 12'
+vim.opt.guifont = 'Hack Nerd Font 12'
 
-vim.o.guicursor = ''
+vim.opt.guicursor = ''
 
-vim.o.swapfile = false
+vim.opt.swapfile = false
 
-vim.o.backup = false
+vim.opt.backup = false
 
-vim.o.showmode = false
+vim.opt.showmode = false
 
-vim.o.scrolloff = 8
+vim.opt.scrolloff = 8
 
-vim.o.cmdheight = 2
+vim.opt.cmdheight = 2
 
-vim.o.smartindent = true
+vim.opt.smartindent = true
 
-vim.o.errorbells = false
+vim.opt.errorbells = false
 
-vim.o.tabstop = 4
+vim.opt.tabstop = 4
 
-vim.o.softtabstop = 4
+vim.opt.softtabstop = 4
 
-vim.o.shiftwidth = 4
+vim.opt.shiftwidth = 4
 
-vim.o.completeopt = 'menuone,noselect'
+vim.opt.completeopt = 'menuone,noselect'
 
 -- Make line numbers default
-vim.wo.number = true
+vim.opt.number = true
 
-vim.wo.signcolumn = 'yes'
+vim.opt.signcolumn = 'yes'
 
-vim.wo.wrap = false
+vim.opt.wrap = false
 
-vim.bo.expandtab = true
+vim.opt.expandtab = true
 
 vim.g.skip_ts_context_commentstring_module = true
 
 --Set colorscheme (order is important here)
-vim.o.termguicolors = true
+vim.opt.termguicolors = true
 vim.g.onedark_terminal_italics = 2
 vim.cmd [[colorscheme dracula]]
 
