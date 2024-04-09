@@ -90,8 +90,9 @@ require('packer').startup(function()
         'CopilotC-Nvim/CopilotChat.nvim',
         branch = 'canary',
     }
-    use "pmizio/typescript-tools.nvim"
-    use "folke/todo-comments.nvim"
+    use 'pmizio/typescript-tools.nvim'
+    use 'folke/todo-comments.nvim'
+    use 'HiPhish/rainbow-delimiters.nvim'
 end)
 
 require('options')
@@ -101,6 +102,7 @@ require('treesitter_conf')
 require('treesitter_context_conf')
 require('lsp_conf')
 require('cmp_conf')
+require('rainbow_delimiters_conf')
 require('typescript_tools_conf')
 require('nvim_tree_conf')
 require('telescope_conf')
