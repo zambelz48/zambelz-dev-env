@@ -16,8 +16,8 @@ local function get_config_path()
 	return 'config_win'
 end
 
-local home_path = os.getenv('HOME')
-local jdtls_path = home_path .. '/zambelz-mac-configs/neovim/.lsp_vendors/jdtls'
+local z_dev_env_path = os.getenv('ZAMBELZ_DEV_ENV_PATH')
+local jdtls_path = z_dev_env_path .. '/neovim/.lsp_vendors/jdtls'
 local launcher_jar = vim.fn.glob(jdtls_path .. '/plugins/org.eclipse.equinox.launcher_*.jar')
 local config_path = jdtls_path .. '/' .. get_config_path()
 
