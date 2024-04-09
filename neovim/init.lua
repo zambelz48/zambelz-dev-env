@@ -93,6 +93,7 @@ require('packer').startup(function()
 		branch = 'canary',
 	}
 	use "pmizio/typescript-tools.nvim"
+    use "folke/todo-comments.nvim"
 end)
 
 require('options')
@@ -114,5 +115,6 @@ require('fidget_conf')
 require('comment_conf')
 require('nvim_dap_conf')
 require('keymaps')
+require('todo_comments_conf')
 require('copilot_conf')
 require('copilot_chat_conf')
