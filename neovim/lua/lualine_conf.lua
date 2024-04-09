@@ -2,7 +2,7 @@ local lualine = require 'lualine'
 lualine.setup({
 	options = {
 		icons_enabled = true,
-		theme = 'dracula',
+		theme = 'dracula-nvim',
 
 		-- This causing neovim intro message disappear
 		component_separators = { left = '', right = '' },

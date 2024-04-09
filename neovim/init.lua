@@ -55,10 +55,7 @@ require('packer').startup(function()
         'L3MON4D3/LuaSnip',
         run = "make install_jsregexp"
     }
-    use {
-        'dracula/vim',
-        as = 'dracula'
-    }
+    use 'Mofiqul/dracula.nvim'
     use 'edkolev/tmuxline.vim'
     use 'norcalli/nvim-colorizer.lua'
     use {
@@ -98,6 +95,7 @@ require('packer').startup(function()
 end)
 
 require('options')
+require('dracula_theme_conf')
 require('mappings')
 require('treesitter_conf')
 require('treesitter_context_conf')
