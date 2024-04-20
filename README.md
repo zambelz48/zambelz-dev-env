@@ -144,6 +144,7 @@ source: https://github.com/mfussenegger/nvim-jdtls
     - cmd: tar xf neovim/.lsp_vendors/jdt-language-server-1.34.0-202404031240.tar.gz --directory=neovim/.lsp_vendors/jdtls
 4. create workspace_data dir
     - cmd: mkdir neovim/.lsp_vendors/jdtls/project_data
+5. create new file `neovim/.lsp_vendors/jdtls/config/intellij-java-google-style.xml` and copy the content from: https://github.com/google/styleguide/blob/gh-pages/intellij-java-google-style.xml
 
 # Setup "vscode-gradle"
 1. go to neovim/.lsp_vendors/vscode-gradle
