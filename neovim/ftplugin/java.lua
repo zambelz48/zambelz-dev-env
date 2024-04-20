@@ -85,7 +85,7 @@ local config = {
             format = {
                 enabled = true,
                 settings = {
-                    url = jdtls_path .. "/config/lang_servers/intellij-java-google-style.xml",
+                    url = jdtls_path .. "/config/intellij-java-google-style.xml",
                     profile = "GoogleStyle",
                 },
             },
