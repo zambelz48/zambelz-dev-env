@@ -134,13 +134,14 @@ $ Make sure ruby version is >= 2.7.0 (you can install it with brew)
 ```sh
 # Setup "jdtls" (Java Language Server)
 prerequisites: java 21+ (MANDATORY)
+see here for updated JDTLS version: https://download.eclipse.org/jdtls/milestones/?d
 source: https://github.com/mfussenegger/nvim-jdtls
-1. Download jdtls
-    - cmd: curl -o neovim/.lsp_vendors/jdt-language-server-1.23.0-202304271346.tar.gz https://download.eclipse.org/jdtls/milestones/1.23.0/jdt-language-server-1.23.0-202304271346.tar.gz
+1. Download jdtls 
+    - cmd: curl -o neovim/.lsp_vendors/jdt-language-server-1.34.0-202404031240.tar.gz https://download.eclipse.org/jdtls/milestones/1.34.0/jdt-language-server-1.34.0-202404031240.tar.gz
 2. Create "jdtls" dir
     - cmd: mkdir neovim/.lsp_vendors/jdtls
 3. Unzip to specified location
-    - cmd: tar xf neovim/.lsp_vendors/jdt-language-server-1.23.0-202304271346.tar.gz --directory=neovim/.lsp_vendors/jdtls
+    - cmd: tar xf neovim/.lsp_vendors/jdt-language-server-1.34.0-202404031240.tar.gz --directory=neovim/.lsp_vendors/jdtls
 4. create workspace_data dir
     - cmd: mkdir neovim/.lsp_vendors/jdtls/project_data
 
