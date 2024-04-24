@@ -45,7 +45,6 @@ require('packer').startup(function()
         'nvim-treesitter/nvim-treesitter',
         requires = { 'nvim-treesitter/nvim-treesitter-textobjects' }
     }
-    use 'nvim-treesitter/nvim-treesitter-context'
     use 'nvim-treesitter/playground'
     use 'neovim/nvim-lspconfig'
     use 'hrsh7th/nvim-cmp'
@@ -92,17 +91,14 @@ require('packer').startup(function()
     }
     use 'pmizio/typescript-tools.nvim'
     use 'folke/todo-comments.nvim'
-    use 'HiPhish/rainbow-delimiters.nvim'
 end)
 
 require('options')
 require('dracula_theme_conf')
 require('mappings')
 require('treesitter_conf')
-require('treesitter_context_conf')
 require('lsp_conf')
 require('cmp_conf')
-require('rainbow_delimiters_conf')
 require('typescript_tools_conf')
 require('nvim_tree_conf')
 require('telescope_conf')
