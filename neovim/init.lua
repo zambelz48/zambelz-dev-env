@@ -91,6 +91,7 @@ require('packer').startup(function()
     }
     use 'pmizio/typescript-tools.nvim'
     use 'folke/todo-comments.nvim'
+    use 'Hoffs/omnisharp-extended-lsp.nvim'
 end)
 
 require('options')
@@ -98,6 +99,7 @@ require('dracula_theme_conf')
 require('mappings')
 require('treesitter_conf')
 require('lsp_conf')
+require('omnisharp_conf')
 require('cmp_conf')
 require('typescript_tools_conf')
 require('nvim_tree_conf')

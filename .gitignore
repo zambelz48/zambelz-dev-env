@@ -30,6 +30,8 @@ Network Trash Folder
 Temporary Items
 .apdisk
 
+.certificates
+
 # jdtls language server
 neovim/.lsp_vendors/jdtls
 
@@ -38,6 +40,9 @@ neovim/.lsp_vendors/marksman
 
 # xml language server
 neovim/.lsp_vendors/xml-lsp
+
+# omnisharp language server
+neovim/.lsp_vendors/omnisharp
 
 # End of https://www.toptal.com/developers/gitignore/api/macos
 

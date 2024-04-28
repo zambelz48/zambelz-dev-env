@@ -132,6 +132,14 @@ $ Make sure ruby version is >= 2.7.0 (you can install it with brew)
 
 ###### Custom
 ```sh
+# Setup "omnisharp" (C# Language Server)
+prerequisites: .NET SDK
+1. create 'omnisharp' dir
+    - cmd: mkdir neovim/.lsp_vendors/omnisharp
+2. download omnisharp-roslyn here: https://github.com/OmniSharp/omnisharp-roslyn/releases
+3. extract content of omnisharp-roslyn in neovim/.lsp_vendors/omnisharp
+4. enforce https: https://learn.microsoft.com/en-us/aspnet/core/security/enforcing-ssl?view=aspnetcore-8.0&tabs=visual-studio%2Clinux-rhel#trust-the-aspnet-core-https-development-certificate-on-windows-and-macos
+
 # Setup "jdtls" (Java Language Server)
 prerequisites: java 21+ (MANDATORY)
 see here for updated JDTLS version: https://download.eclipse.org/jdtls/milestones/?d

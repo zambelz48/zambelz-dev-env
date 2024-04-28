@@ -7,6 +7,7 @@ treesitter_config.setup({
         'c',
         'cmake',
         'cpp',
+        'c_sharp',
         'css',
         'dockerfile',
         'go',
