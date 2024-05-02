@@ -41,8 +41,6 @@ local servers = {
         filetypes = {
             'c',
             'cpp',
-            'objc',
-            'objcpp',
             'cuda',
             'proto'
         },
