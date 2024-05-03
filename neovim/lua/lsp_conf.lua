@@ -337,7 +337,39 @@ local servers = {
         cmd = { 'lemminx' },
         filetypes = { 'xml', 'xsd', 'xsl', 'xslt', 'svg' },
         single_file_support = true
-    }
+    },
+    {
+        name = 'terraformls',
+        cmd = { 'terraform-ls', 'serve' },
+        filetypes = { 'terraform', 'terraform-vars' },
+        root_dir = nvim_lsp.util.root_pattern('.terraform', '.git')
+    },
+    {
+        name = 'ansiblels',
+        cmd = { 'ansible-language-server', '--stdio' },
+        filetypes = { 'yaml.ansible' },
+        settings = {
+            ansible = {
+                ansible = {
+                    path = "ansible"
+                },
+                executionEnvironment = {
+                    enabled = false
+                },
+                python = {
+                    interpreterPath = "python"
+                },
+                validation = {
+                    enabled = true,
+                    lint = {
+                        enabled = true,
+                        path = "ansible-lint"
+                    }
+                }
+            }
+        },
+        single_file_support = true
+    },
 }
 
 local on_attach = function(_, bufnr)

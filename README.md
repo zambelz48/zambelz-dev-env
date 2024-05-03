@@ -100,7 +100,11 @@ $ npm install -g @microsoft/compose-language-service \
     yaml-language-server \
     @tailwindcss/language-server \
     graphql-language-service-cli \
-    @prisma/language-server
+    @prisma/language-server \
+    @ansible/ansible-language-server
+
+### Notes:
+- install ansible-lint for ansible lsp: https://ansible.readthedocs.io/projects/lint/installing/#installing-the-latest-version
 ```
 
 ###### Python Packages
@@ -172,6 +176,9 @@ source: https://github.com/mfussenegger/nvim-jdtls
 1. download the binary here: https://github.com/redhat-developer/vscode-xml/releases
 2. save the binary to the path: `neovim/.lsp_vendors/xml-lsp/lemminx`
 3. register the binary in PATH
+
+# Setup "terraform-ls" (terraform language server)
+1. go to: https://github.com/hashicorp/terraform-ls
 ```
 #### Installation
 ```sh

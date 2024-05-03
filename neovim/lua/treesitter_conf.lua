@@ -38,6 +38,7 @@ treesitter_config.setup({
         'sql',
         'swift',
         'toml',
+        'terraform',
         'tsx',
         'typescript',
         'vim',
