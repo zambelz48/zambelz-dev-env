@@ -3,6 +3,9 @@ local utils = require 'utils'
 local python3_path = utils.shell_cmd('which python3')
 vim.g.python3_host_prog = python3_path
 
+local ruby_path = utils.shell_cmd('which ruby')
+vim.g.ruby_host_prog = ruby_path
+
 vim.g.loaded_perl_provider = 0
 
 vim.opt.inccommand = 'nosplit'

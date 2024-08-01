@@ -27,6 +27,7 @@
         - mcfly: [source](https://github.com/cantino/mcfly)
         - tldr: [source](https://tldr.sh)
         - jenv (*manage multiple java versions*): [source](https://github.com/jenv/jenv)
+        - rbenv (*manage multiple ruby versions*): [source](https://github.com/rbenv/rbenv)
         - nvm (*manage multiple nodejs versions*): [source](https://github.com/nvm-sh/nvm)
 1. clone this repository at $HOME path (IMPORTANT)
 1. init git submodule: `git submodule update --init --recursive`
@@ -52,7 +53,7 @@ $ npm install -g neovim
 $ pip install neovim
 
 # Ruby Module
-$ gem install neovim --user-install
+$ gem install neovim
 ```
 ##### Install LSP
 
@@ -128,10 +129,10 @@ $ go install golang.org/x/tools/gopls@latest
 - solargraph => solargraph (https://solargraph.org)
 
 ## Command:
-$ gem install solargraph --user-install
+$ gem install solargraph
 
 ## Notes:
-$ Make sure ruby version is >= 2.7.0 (you can install it with brew)
+$ Make sure ruby version is >= 2.7.0
 ```
 
 ###### Custom
