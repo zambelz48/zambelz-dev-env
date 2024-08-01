@@ -65,9 +65,11 @@ case "$KERNEL_NAME" in
 
 esac
 
-export ZAMBELZ_DEV_ENV_PATH="$HOME/zambelz-dev-env"
-
 source "$HOME/.profile.zsh"
+
+if [ "$ZAMBELZ_DEV_ENV_PATH" = "" ]; then
+    echo "ZAMBELZ_DEV_ENV_PATH not found in .profile.zsh"
+fi
 
 # Neovim LSP
 export LSP_VENDOR_ROOT_PATH="$ZAMBELZ_DEV_ENV_PATH/neovim/.lsp_vendors"
@@ -84,6 +86,16 @@ export PATH="$JAVA_LANGUAGE_SERVER_PATH:$PATH"
 export LUA_LANGUAGE_SERVER_PATH="$LSP_VENDOR_ROOT_PATH/lua-language-server/bin"
 export PATH="$LUA_LANGUAGE_SERVER_PATH:$PATH"
 
+if [ "$KERNEL_NAME" = "Linux" ]; then
+	export XML_LANGUAGE_SERVER_PATH="$LSP_VENDOR_ROOT_PATH/xml-lsp/linux"
+	export PATH="$XML_LANGUAGE_SERVER_PATH:$PATH"
+fi
+
+if [ "$KERNEL_NAME" = "Darwin" ]; then
+	export XML_LANGUAGE_SERVER_PATH="$LSP_VENDOR_ROOT_PATH/xml-lsp/darwin"
+	export PATH="$XML_LANGUAGE_SERVER_PATH:$PATH"
+fi
+
 # Dracula theme for fzf
 export FZF_DEFAULT_OPTS="--color=fg:#f8f8f2,bg:#282a36,hl:#bd93f9
     --color=fg+:#f8f8f2,bg+:#44475a,hl+:#bd93f9
@@ -94,6 +106,10 @@ if command -v jenv &> /dev/null; then
 	export JENV_HOME=$HOME/.jenv
 	export PATH="$JENV_HOME/bin:$PATH"
 	eval "$(jenv init -)"
+fi
+
+if command -v rbenv &> /dev/null; then
+	eval "$(rbenv init - zsh)"
 fi
 
 if command -v mcfly &> /dev/null; then
