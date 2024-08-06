@@ -23,6 +23,7 @@ vim.keymap.set('n', '<leader>sp', [[<cmd>lua require('telescope.builtin').live_g
 vim.keymap.set('n', '<leader>so', [[<cmd>lua require('telescope.builtin').tags{ only_current_buffer = true }<CR>]], { noremap = true, silent = true })
 vim.keymap.set('n', '<leader>?', [[<cmd>lua require('telescope.builtin').oldfiles()<CR>]], { noremap = true, silent = true })
 
+
 vim.keymap.set('n', '<leader>/', function()
   -- You can pass additional configuration to telescope to change theme, layout, etc.
   require('telescope.builtin').current_buffer_fuzzy_find(require('telescope.themes').get_dropdown {
@@ -31,3 +32,6 @@ vim.keymap.set('n', '<leader>/', function()
   })
 end, { desc = '[/] Fuzzily search in current buffer' })
 
+-- Additional keymaps
+-- Find files in specific directory
+vim.keymap.set('n', '<leader>sfc', ':Telescope find_files search_dirs=', { noremap = true })
