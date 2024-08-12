@@ -1,4 +1,5 @@
 local dap = require 'dap'
+local z_dev_env_path = os.getenv('ZAMBELZ_DEV_ENV_PATH')
 
 -- Signs
 vim.fn.sign_define('DapBreakpoint', { text = '󰻃' })
@@ -12,7 +13,7 @@ dap.adapters.lldb = {
     type = 'server',
     port = "${port}",
     executable = {
-        command = '/Users/rg-nanda/.vscode/extensions/vadimcn.vscode-lldb-1.9.2/adapter/codelldb',
+        command = z_dev_env_path .. '/neovim/.dap/vscode-codelldb/extension/adapter/codelldb',
         args = { "--port", "${port}" }
     }
 }
