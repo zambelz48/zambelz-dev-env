@@ -186,6 +186,9 @@ source: https://github.com/mfussenegger/nvim-jdtls
 ```sh
 1. download latest release of vscode-codelldb (.vsix) here: https://github.com/vadimcn/codelldb/releases
 2. unzip to: `neovim/.dap/vscode-codelldb`
+
+# To add debug config
+- Create launch.json file inside `.vscode` in your root project
 ```
 
 #### Installation
