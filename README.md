@@ -181,6 +181,13 @@ source: https://github.com/mfussenegger/nvim-jdtls
 # Setup "terraform-ls" (terraform language server)
 1. go to: https://github.com/hashicorp/terraform-ls
 ```
+##### Install Debug Adapter Protocol
+##### vscode-codelldb (c, cpp & rust)
+```sh
+1. download latest release of vscode-codelldb (.vsix) here: https://github.com/vadimcn/codelldb/releases
+2. unzip to: `neovim/.dap/vscode-codelldb`
+```
+
 #### Installation
 ```sh
 $  zconf neovim
