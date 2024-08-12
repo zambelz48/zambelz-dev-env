@@ -41,5 +41,8 @@ neovim/.lsp_vendors/marksman
 # omnisharp language server
 neovim/.lsp_vendors/omnisharp
 
+# vscode-codelldb debugger
+neovim/.dap/vscode-codelldb
+
 # End of https://www.toptal.com/developers/gitignore/api/macos
 
