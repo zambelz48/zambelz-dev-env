@@ -18,6 +18,18 @@ dap.adapters.lldb = {
     }
 }
 
+dap.adapters.dart = {
+    type = 'executable',
+    command = 'dart',
+    args = { 'debug_adapter' },
+}
+
+dap.adapters.flutter = {
+    type = 'executable',
+    command = 'flutter',
+    args = { 'debug_adapter' },
+}
+
 -- nvim-dap-ui setup
 local nvim_dap_ui = require 'dapui'
 nvim_dap_ui.setup(
