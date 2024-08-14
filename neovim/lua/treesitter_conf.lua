@@ -9,6 +9,7 @@ treesitter_config.setup({
         'cpp',
         'c_sharp',
         'css',
+        'dart',
         'dockerfile',
         'go',
         'gomod',
@@ -41,6 +42,7 @@ treesitter_config.setup({
         'terraform',
         'tsx',
         'typescript',
+        'vue',
         'vim',
         'vimdoc',
         'yaml'
