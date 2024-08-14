@@ -10,6 +10,7 @@ treesitter_config.setup({
         'c_sharp',
         'css',
         'dart',
+        'diff',
         'dockerfile',
         'go',
         'gomod',
