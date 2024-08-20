@@ -47,8 +47,11 @@ require('packer').startup(function()
     }
     use 'nvim-treesitter/playground'
     use 'neovim/nvim-lspconfig'
-    use 'hrsh7th/nvim-cmp'
     use 'hrsh7th/cmp-nvim-lsp'
+    use 'hrsh7th/cmp-buffer'
+    use 'hrsh7th/cmp-path'
+    use 'hrsh7th/cmp-cmdline'
+    use 'hrsh7th/nvim-cmp'
     use 'saadparwaiz1/cmp_luasnip'
     use {
         'L3MON4D3/LuaSnip',
@@ -98,8 +101,8 @@ require('options')
 require('dracula_theme_conf')
 require('mappings')
 require('treesitter_conf')
-require('lsp_conf')
 require('cmp_conf')
+require('lsp_conf')
 require('nvim_tree_conf')
 require('telescope_conf')
 require('lualine_conf')
