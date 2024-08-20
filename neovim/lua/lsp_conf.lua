@@ -33,7 +33,13 @@ local servers = {
     {
         name = 'bashls',
         cmd = { 'bash-language-server', 'start' },
-        filetypes = { 'sh' },
+        filetypes = { 'sh', 'zsh' },
+        settings = {
+            bashIde = {
+                globPattern = "*@(.sh|.inc|.bash|.command|.zsh|.zshrc)"
+            },
+        },
+        single_file_support = true,
     },
     {
         name = 'clangd',
@@ -169,6 +175,8 @@ local servers = {
         name = 'rust_analyzer',
         cmd = { 'rust-analyzer' },
         filetypes = { 'rust' },
+        root_dir = nvim_lsp.util.root_pattern('Cargo.toml', 'rust-project.json'),
+        single_file_support = true,
     },
     {
         name = 'solargraph',
