@@ -485,3 +485,27 @@ for _, lsp in ipairs(servers) do
 
     nvim_lsp[lsp.name].setup(server_conf)
 end
+
+local lsp_border_style = 'rounded'
+local lsp_hover_style = {
+    border = lsp_border_style,
+    max_width = 120,
+    max_height = 80
+}
+
+vim.lsp.handlers['textDocument/hover'] = vim.lsp.with(
+    vim.lsp.handlers.hover, lsp_hover_style
+)
+
+vim.lsp.handlers['textDocument/signatureHelp'] = vim.lsp.with(
+    vim.lsp.handlers.signature_help, lsp_hover_style
+)
+
+vim.diagnostic.config {
+    float = lsp_hover_style
+}
+
+require('lspconfig.ui.windows').default_options = {
+    border = lsp_border_style
+}
+
