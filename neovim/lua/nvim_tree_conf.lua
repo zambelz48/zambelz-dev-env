@@ -53,7 +53,7 @@ require 'nvim-tree'.setup {
     },
 
     git                 = {
-        ignore = true
+        ignore = false
     },
 
     filters             = {
