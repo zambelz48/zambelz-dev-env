@@ -123,6 +123,7 @@ local nvim_dap_virtual_text = require 'nvim-dap-virtual-text'
 nvim_dap_virtual_text.setup()
 
 -- Mappings
+-- dap
 vim.api.nvim_set_keymap('n', '<F5>', [[<cmd>lua require('dap').continue()<CR>]], { noremap = true })
 vim.api.nvim_set_keymap('n', '<F10>', [[<cmd>lua require('dap').step_over()<CR>]], { noremap = true })
 vim.api.nvim_set_keymap('n', '<F11>', [[<cmd>lua require('dap').step_into()<CR>]], { noremap = true })
@@ -134,3 +135,6 @@ vim.api.nvim_set_keymap('n', '<Leader>lp',
 vim.api.nvim_set_keymap('n', '<Leader>dr', [[<cmd>lua require('dap').repl.open()<CR>]], { noremap = true })
 vim.api.nvim_set_keymap('n', '<Leader>dl', [[<cmd>lua require('dap').run_last()<CR>]], { noremap = true })
 vim.api.nvim_set_keymap('n', '<leader><ESC>', [[<cmd>lua require('dap').terminate()<CR>]], { noremap = true })
+
+-- dapui
+vim.api.nvim_set_keymap('n', '<leader>dt', [[<cmd>lua require('dapui').toggle()<CR>]], { noremap = true })

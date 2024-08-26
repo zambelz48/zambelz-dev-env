@@ -1,7 +1,8 @@
+local nvim_tree = require 'nvim-tree'
 -- keymap
 vim.api.nvim_set_keymap('n', '<leader>e', '<cmd>:NvimTreeToggle<CR>', { noremap = true, silent = true })
 
-require 'nvim-tree'.setup {
+nvim_tree.setup({
     -- disables netrw completely
     disable_netrw       = true,
     -- hijack netrw window on startup
@@ -109,4 +110,12 @@ require 'nvim-tree'.setup {
         },
         root_folder_label = false
     }
-}
+})
+
+local nvim_tree_api = require 'nvim-tree.api'
+local Event = nvim_tree_api.events.Event
+nvim_tree_api.events.subscribe(Event.TreeClose, function()
+    if require('dap').session() then
+        require('dapui').open({ reset = true })
+    end
+end)
