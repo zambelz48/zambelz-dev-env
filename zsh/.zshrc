@@ -7,6 +7,9 @@ export ZSH=$HOME/.oh-my-zsh
 # See https://github.com/ohmyzsh/ohmyzsh/wiki/Themes
 ZSH_THEME="dracula"
 
+# Disable auto-update.
+DISABLE_AUTO_UPDATE="true"
+
 # Disable auto-setting terminal title.
 DISABLE_AUTO_TITLE="true"
 
@@ -118,11 +121,12 @@ export FZF_DEFAULT_OPTS="--color=fg:#f8f8f2,bg:#282a36,hl:#bd93f9
 if command -v jenv &> /dev/null; then
 	export JENV_HOME=$HOME/.jenv
 	export PATH="$JENV_HOME/bin:$PATH"
-    _evalcache jenv init -
+    _evalcache jenv init - --no-rehash
+    (jenv rehash &) 2> /dev/null
 fi
 
 if command -v rbenv &> /dev/null; then
-    _evalcache rbenv init - zsh
+    _evalcache rbenv init --no-rehash - zsh
 fi
 
 if command -v mcfly &> /dev/null; then
