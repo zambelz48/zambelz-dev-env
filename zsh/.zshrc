@@ -122,11 +122,16 @@ if command -v jenv &> /dev/null; then
 	export JENV_HOME=$HOME/.jenv
 	export PATH="$JENV_HOME/bin:$PATH"
     _evalcache jenv init - --no-rehash
+
+    # perform background rehash
     (jenv rehash &) 2> /dev/null
 fi
 
 if command -v rbenv &> /dev/null; then
     _evalcache rbenv init --no-rehash - zsh
+
+    # perform background rehash
+    (rbenv rehash &) 2> /dev/null
 fi
 
 if command -v mcfly &> /dev/null; then
