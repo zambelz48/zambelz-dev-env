@@ -10,15 +10,27 @@ ZSH_THEME="dracula"
 # Disable auto-setting terminal title.
 DISABLE_AUTO_TITLE="true"
 
+# https://github.com/ohmyzsh/ohmyzsh/wiki/Settings/7b490e3385a01937655d0a103322b572b4d23c3f#disable_untracked_files_dirty
+DISABLE_UNTRACKED_FILES_DIRTY=true
+
 # Terminal title
 precmd () {print -Pn "\e]0;%~\a"}
+
+# https://github.com/lukechilds/zsh-nvm?tab=readme-ov-file#lazy-loading
+export NVM_LAZY_LOAD=true
+
+# https://github.com/lukechilds/zsh-nvm?tab=readme-ov-file#extra-commands-to-trigger-lazy-loading
+export NVM_LAZY_LOAD_EXTRA_COMMANDS=('vim' 'nvim')
+
+# https://github.com/lukechilds/zsh-nvm?tab=readme-ov-file#auto-use
+export NVM_AUTO_USE=true
 
 # ZSH Plugins
 # Standard plugins can be found in $ZSH/plugins/
 # Custom plugins may be added to $ZSH_CUSTOM/plugins/
 # Example format: plugins=(rails git textmate ruby lighthouse)
 # Add wisely, as too many plugins slow down shell startup.
-plugins=(git)
+plugins=(evalcache zsh-nvm git)
 
 ZSH_DISABLE_COMPFIX=true
 
@@ -66,10 +78,11 @@ case "$KERNEL_NAME" in
 esac
 
 source "$HOME/.profile.zsh"
-
 if [ "$ZAMBELZ_DEV_ENV_PATH" = "" ]; then
     echo "ZAMBELZ_DEV_ENV_PATH not found in .profile.zsh"
 fi
+
+ZAMBELZ_HELPER_PATH="$ZAMBELZ_DEV_ENV_PATH/zsh/helpers"
 
 # Neovim LSP
 export LSP_VENDOR_ROOT_PATH="$ZAMBELZ_DEV_ENV_PATH/neovim/.lsp_vendors"
@@ -105,30 +118,23 @@ export FZF_DEFAULT_OPTS="--color=fg:#f8f8f2,bg:#282a36,hl:#bd93f9
 if command -v jenv &> /dev/null; then
 	export JENV_HOME=$HOME/.jenv
 	export PATH="$JENV_HOME/bin:$PATH"
-	eval "$(jenv init -)"
+    _evalcache jenv init -
 fi
 
 if command -v rbenv &> /dev/null; then
-	eval "$(rbenv init - zsh)"
+    _evalcache rbenv init - zsh
 fi
 
 if command -v mcfly &> /dev/null; then
-	eval "$(mcfly init zsh)"
+    _evalcache mcfly init zsh
 fi
 
 # Aliases
 alias zconf="$ZAMBELZ_DEV_ENV_PATH/main.sh"
 
-# Utils
-git_clean_pull() {
-    local branch=$1
-    git checkout -b temp && \
-        git branch -D $branch && \
-        git fetch --prune --all && \
-        git checkout $branch && \
-        git branch -D temp && \
-        git gc
-}
+# Helper functions
+source "$ZAMBELZ_HELPER_PATH/git.sh"
+source "$ZAMBELZ_HELPER_PATH/utils.sh"
 
 # Dracula themes syntax highlighting
 # source: https://github.com/dracula/zsh-syntax-highlighting
