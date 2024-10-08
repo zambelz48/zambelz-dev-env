@@ -73,4 +73,3 @@ vim.opt.wrap = false
 vim.opt.expandtab = true
 
 vim.g.skip_ts_context_commentstring_module = true
-

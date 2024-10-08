@@ -1,6 +1,7 @@
 local nvim_tree = require 'nvim-tree'
 -- keymap
-vim.api.nvim_set_keymap('n', '<leader>e', '<cmd>:NvimTreeToggle<CR>', { noremap = true, silent = true })
+vim.api.nvim_set_keymap('n', '<leader>e', '<cmd>:NvimTreeToggle<CR>',
+    { noremap = true, silent = true })
 
 nvim_tree.setup({
     -- disables netrw completely

@@ -4,7 +4,8 @@ local utils = require('utils')
 utils.nnoremap('<leader>co', ':copen<CR>', { silent = true })
 utils.nnoremap('[q', ':cprev<CR>', { silent = true })
 utils.nnoremap(']q', ':cnext<CR>', { silent = true })
-utils.nnoremap('<leader>k', ':call setqflist([], "r")<CR> :ccl<CR>', { silent = true })
+utils.nnoremap('<leader>k', ':call setqflist([], "r")<CR> :ccl<CR>',
+    { silent = true })
 
 -- fugitive keymaps
 utils.nnoremap('<leader>gs', ':G<CR>', { silent = true })
@@ -21,4 +22,3 @@ utils.nnoremap('<leader>EF', ':EslintFixAll<CR>', { silent = true })
 -- markdown previewer keymaps
 utils.nnoremap('<leader>mp', ':MarkdownPreview<CR>', { silent = true })
 utils.nnoremap('<leader>mps', ':MarkdownPreviewStop<CR>', { silent = true })
-

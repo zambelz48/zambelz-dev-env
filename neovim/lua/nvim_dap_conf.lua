@@ -13,7 +13,8 @@ dap.adapters.lldb = {
     type = 'server',
     port = "${port}",
     executable = {
-        command = z_dev_env_path .. '/neovim/.dap/vscode-codelldb/extension/adapter/codelldb',
+        command = z_dev_env_path ..
+        '/neovim/.dap/vscode-codelldb/extension/adapter/codelldb',
         args = { "--port", "${port}" }
     }
 }
@@ -106,16 +107,16 @@ nvim_dap_ui.setup(
 )
 
 dap.listeners.before.attach.dapui_config = function()
-  nvim_dap_ui.open()
+    nvim_dap_ui.open()
 end
 dap.listeners.before.launch.dapui_config = function()
-  nvim_dap_ui.open()
+    nvim_dap_ui.open()
 end
 dap.listeners.before.event_terminated.dapui_config = function()
-  nvim_dap_ui.close()
+    nvim_dap_ui.close()
 end
 dap.listeners.before.event_exited.dapui_config = function()
-  nvim_dap_ui.close()
+    nvim_dap_ui.close()
 end
 
 -- dap vertual text setup
@@ -124,17 +125,28 @@ nvim_dap_virtual_text.setup()
 
 -- Mappings
 -- dap
-vim.api.nvim_set_keymap('n', '<F5>', [[<cmd>lua require('dap').continue()<CR>]], { noremap = true })
-vim.api.nvim_set_keymap('n', '<F10>', [[<cmd>lua require('dap').step_over()<CR>]], { noremap = true })
-vim.api.nvim_set_keymap('n', '<F11>', [[<cmd>lua require('dap').step_into()<CR>]], { noremap = true })
-vim.api.nvim_set_keymap('n', '<F12>', [[<cmd>lua require('dap').step_out()<CR>]], { noremap = true })
-vim.api.nvim_set_keymap('n', '<Leader>b', [[<cmd>lua require('dap').toggle_breakpoint()<CR>]], { noremap = true })
-vim.api.nvim_set_keymap('n', '<Leader>B', [[<cmd>lua require('dap').set_breakpoint()<CR>]], { noremap = true })
+vim.api.nvim_set_keymap('n', '<F5>', [[<cmd>lua require('dap').continue()<CR>]],
+    { noremap = true })
+vim.api.nvim_set_keymap('n', '<F10>', [[<cmd>lua require('dap').step_over()<CR>]],
+    { noremap = true })
+vim.api.nvim_set_keymap('n', '<F11>', [[<cmd>lua require('dap').step_into()<CR>]],
+    { noremap = true })
+vim.api.nvim_set_keymap('n', '<F12>', [[<cmd>lua require('dap').step_out()<CR>]],
+    { noremap = true })
+vim.api.nvim_set_keymap('n', '<Leader>b',
+    [[<cmd>lua require('dap').toggle_breakpoint()<CR>]], { noremap = true })
+vim.api.nvim_set_keymap('n', '<Leader>B',
+    [[<cmd>lua require('dap').set_breakpoint()<CR>]], { noremap = true })
 vim.api.nvim_set_keymap('n', '<Leader>lp',
-    [[<cmd>lua require('dap').set_breakpoint(nil, nil, vim.fn.input('Log point message: '))<CR>]], { noremap = true })
-vim.api.nvim_set_keymap('n', '<Leader>dr', [[<cmd>lua require('dap').repl.open()<CR>]], { noremap = true })
-vim.api.nvim_set_keymap('n', '<Leader>dl', [[<cmd>lua require('dap').run_last()<CR>]], { noremap = true })
-vim.api.nvim_set_keymap('n', '<leader><ESC>', [[<cmd>lua require('dap').terminate()<CR>]], { noremap = true })
+    [[<cmd>lua require('dap').set_breakpoint(nil, nil, vim.fn.input('Log point message: '))<CR>]],
+    { noremap = true })
+vim.api.nvim_set_keymap('n', '<Leader>dr',
+    [[<cmd>lua require('dap').repl.open()<CR>]], { noremap = true })
+vim.api.nvim_set_keymap('n', '<Leader>dl',
+    [[<cmd>lua require('dap').run_last()<CR>]], { noremap = true })
+vim.api.nvim_set_keymap('n', '<leader><ESC>',
+    [[<cmd>lua require('dap').terminate()<CR>]], { noremap = true })
 
 -- dapui
-vim.api.nvim_set_keymap('n', '<leader>dt', [[<cmd>lua require('dapui').toggle()<CR>]], { noremap = true })
+vim.api.nvim_set_keymap('n', '<leader>dt',
+    [[<cmd>lua require('dapui').toggle()<CR>]], { noremap = true })

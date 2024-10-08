@@ -9,26 +9,26 @@ trap cleanup EXIT
 
 function cleanup {
 
-    local exitCode=$?
+  local exitCode=$?
 
-    if [ "$exitCode" -gt 0 ]; then
-        reset
-    fi
+  if [ "$exitCode" -gt 0 ]; then
+    reset
+  fi
 }
 
 function reset {
 
-   if [ -d "$nvim_config" ]; then
-      rm -rf "$nvim_config"
-   fi
+  if [ -d "$nvim_config" ]; then
+    rm -rf "$nvim_config"
+  fi
 
-   if [ -d "$nvim_lua" ]; then
-       rm -rf "$nvim_lua"
-   fi
+  if [ -d "$nvim_lua" ]; then
+    rm -rf "$nvim_lua"
+  fi
 
-   if [ -d "$nvim_ftplugin" ]; then
-       rm -rf "$nvim_ftplugin"
-   fi
+  if [ -d "$nvim_ftplugin" ]; then
+    rm -rf "$nvim_ftplugin"
+  fi
 }
 
 reset
@@ -46,8 +46,8 @@ shopt -s nullglob
 conf_files=("$source_config_dir"/*.lua)
 
 for conf_file in "${conf_files[@]}"; do
-	conf_file_name="${conf_file[@]##*/}"
-	ln -s "$source_config_dir/$conf_file_name" "$nvim_lua/$conf_file_name"
+  conf_file_name="${conf_file[@]##*/}"
+  ln -s "$source_config_dir/$conf_file_name" "$nvim_lua/$conf_file_name"
 done
 
 source_ftplugin_dir="$current_dir/ftplugin"
@@ -57,7 +57,7 @@ shopt -s nullglob
 ftplugin_files=("$source_ftplugin_dir"/*.lua)
 
 for ftplugin_file in "${ftplugin_files[@]}"; do
-	ftplugin_file_name="${ftplugin_file[@]##*/}"
-	ln -s "$source_ftplugin_dir/$ftplugin_file_name" "$nvim_ftplugin/$ftplugin_file_name"
+  ftplugin_file_name="${ftplugin_file[@]##*/}"
+  ln -s "$source_ftplugin_dir/$ftplugin_file_name" "$nvim_ftplugin/$ftplugin_file_name"
 done
 

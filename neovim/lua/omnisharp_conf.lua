@@ -2,12 +2,14 @@ local nvim_lsp = require 'lspconfig'
 local utils = require 'utils'
 
 local z_dev_env_path = os.getenv('ZAMBELZ_DEV_ENV_PATH')
-local omnisharp_dll_path = z_dev_env_path .. '/neovim/.lsp_vendors/omnisharp/OmniSharp.dll'
+local omnisharp_dll_path = z_dev_env_path ..
+    '/neovim/.lsp_vendors/omnisharp/OmniSharp.dll'
 
 nvim_lsp.omnisharp.setup({
     cmd = { "dotnet", omnisharp_dll_path },
     filetypes = { "cs" },
-    root_dir = nvim_lsp.util.root_pattern('*.sln', '*.csproj', 'omnisharp.json', "function.json"),
+    root_dir = nvim_lsp.util.root_pattern('*.sln', '*.csproj', 'omnisharp.json',
+        "function.json"),
     settings = {
         FormattingOptions = {
             -- Enables support for reading code style, naming convention and analyzer
@@ -47,17 +49,6 @@ nvim_lsp.omnisharp.setup({
         },
     },
     on_attach = function(_, bufnr)
-        utils.set_omnifunc_option(bufnr)
-
-        local opts = { noremap = true, silent = true }
-
-        utils.create_keymap(bufnr, 'n', 'H', '<cmd>lua vim.lsp.buf.hover()<CR>', opts)
-        utils.create_keymap(bufnr, 'n', '<leader>rn', '<cmd>lua vim.lsp.buf.rename()<CR>', opts)
-
-        utils.create_keymap(bufnr, 'n', 'gd', '<cmd>lua require("omnisharp_extended").lsp_definition()<CR>', opts)
-        utils.create_keymap(bufnr, 'n', '<leader>D', '<cmd>lua require("omnisharp_extended").lsp_type_definition()<CR>',
-            opts)
-        utils.create_keymap(bufnr, 'n', 'gr', '<cmd>lua require("omnisharp_extended").lsp_references()<CR>', opts)
-        utils.create_keymap(bufnr, 'n', 'gi', '<cmd>lua require("omnisharp_extended").lsp_implementation()<CR>', opts)
+        utils.lsp_shared_keymaps(bufnr)
     end
 })

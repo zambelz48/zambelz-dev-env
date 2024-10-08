@@ -153,7 +153,8 @@ local servers = {
         cmd = { 'lua-language-server' },
         filetypes = { 'lua' },
         single_file_support = true,
-        root_dir = nvim_lsp.util.root_pattern('.luarc.json', '.luarc.jsonc', '.luacheckrc', '.stylua.toml', 'stylua.toml',
+        root_dir = nvim_lsp.util.root_pattern('.luarc.json', '.luarc.jsonc',
+            '.luacheckrc', '.stylua.toml', 'stylua.toml',
             'selene.toml', 'selene.yml', '.git')
     },
     {
@@ -219,7 +220,8 @@ local servers = {
         name = 'kotlin_language_server',
         cmd = { 'kotlin-language-server' },
         filetypes = { 'kotlin' },
-        root_dir = nvim_lsp.util.root_pattern('settings.gradle', 'settings.gradle.kts')
+        root_dir = nvim_lsp.util.root_pattern('settings.gradle',
+            'settings.gradle.kts')
     },
     {
         name = 'gradle_ls',
@@ -230,7 +232,8 @@ local servers = {
                 graldeWrapperEnabled = true
             }
         },
-        root_dir = nvim_lsp.util.root_pattern('settings.gradle', 'settings.gradle.kts')
+        root_dir = nvim_lsp.util.root_pattern('settings.gradle',
+            'settings.gradle.kts')
     },
     {
         name = 'dockerls',
@@ -327,7 +330,8 @@ local servers = {
         name = 'graphql',
         cmd = { 'graphql-lsp', 'server', '-m', 'stream' },
         filtypes = { 'graphql', 'typescriptreact', 'javascriptreact' },
-        root_dir = nvim_lsp.util.root_pattern('.git', '.graphqlrc*', '.graphql.config.*', 'graphql.config.*')
+        root_dir = nvim_lsp.util.root_pattern('.git', '.graphqlrc*',
+            '.graphql.config.*', 'graphql.config.*')
     },
     {
         name = 'prismals',
@@ -468,19 +472,23 @@ for _, lsp in ipairs(servers) do
     }
 
     if lsp.single_file_support then
-        server_conf = vim.tbl_extend('force', server_conf, { single_file_support = lsp.single_file_support })
+        server_conf = vim.tbl_extend('force', server_conf,
+            { single_file_support = lsp.single_file_support })
     end
 
     if lsp.root_dir then
-        server_conf = vim.tbl_extend('force', server_conf, { root_dir = lsp.root_dir })
+        server_conf = vim.tbl_extend('force', server_conf,
+            { root_dir = lsp.root_dir })
     end
 
     if lsp.init_options then
-        server_conf = vim.tbl_extend('force', server_conf, { init_options = lsp.init_options })
+        server_conf = vim.tbl_extend('force', server_conf,
+            { init_options = lsp.init_options })
     end
 
     if lsp.settings then
-        server_conf = vim.tbl_extend('force', server_conf, { settings = lsp.settings })
+        server_conf = vim.tbl_extend('force', server_conf,
+            { settings = lsp.settings })
     end
 
     nvim_lsp[lsp.name].setup(server_conf)
@@ -508,4 +516,3 @@ vim.diagnostic.config {
 require('lspconfig.ui.windows').default_options = {
     border = lsp_border_style
 }
-
