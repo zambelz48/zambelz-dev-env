@@ -8,10 +8,10 @@ export ZSH=$HOME/.oh-my-zsh
 ZSH_THEME="dracula"
 
 # Disable auto-update.
-DISABLE_AUTO_UPDATE="true"
+DISABLE_AUTO_UPDATE=true
 
 # Disable auto-setting terminal title.
-DISABLE_AUTO_TITLE="true"
+DISABLE_AUTO_TITLE=true
 
 # https://github.com/ohmyzsh/ohmyzsh/wiki/Settings/7b490e3385a01937655d0a103322b572b4d23c3f#disable_untracked_files_dirty
 DISABLE_UNTRACKED_FILES_DIRTY=true
