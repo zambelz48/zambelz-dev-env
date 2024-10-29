@@ -23,7 +23,7 @@ precmd () {print -Pn "\e]0;%~\a"}
 export NVM_LAZY_LOAD=true
 
 # https://github.com/lukechilds/zsh-nvm?tab=readme-ov-file#extra-commands-to-trigger-lazy-loading
-export NVM_LAZY_LOAD_EXTRA_COMMANDS=('vim' 'nvim')
+export NVM_LAZY_LOAD_EXTRA_COMMANDS=('nvim')
 
 # https://github.com/lukechilds/zsh-nvm?tab=readme-ov-file#auto-use
 export NVM_AUTO_USE=true
