@@ -110,8 +110,6 @@ export FZF_DEFAULT_OPTS="--color=fg:#f8f8f2,bg:#282a36,hl:#bd93f9
     --color=marker:#ff79c6,spinner:#ffb86c,header:#6272a4"
 
 if command -v fnm &> /dev/null; then
-    export FNM_PATH="$HOME/.fnm"
-    export PATH="$FNM_PATH:$PATH"
     eval "$(fnm env --use-on-cd --shell zsh)"
 fi
 
