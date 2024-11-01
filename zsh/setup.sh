@@ -46,7 +46,7 @@ function install_plugins {
     return
   fi
 
-  local target_plugins=("evalcache" "zsh-nvm")
+  local target_plugins=("evalcache")
 
   for plugin in "${target_plugins[@]}"; do
     plugin_source="$plugins_dir/$plugin"

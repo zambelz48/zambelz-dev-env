@@ -19,21 +19,12 @@ DISABLE_UNTRACKED_FILES_DIRTY=true
 # Terminal title
 precmd () {print -Pn "\e]0;%~\a"}
 
-# https://github.com/lukechilds/zsh-nvm?tab=readme-ov-file#lazy-loading
-export NVM_LAZY_LOAD=true
-
-# https://github.com/lukechilds/zsh-nvm?tab=readme-ov-file#extra-commands-to-trigger-lazy-loading
-export NVM_LAZY_LOAD_EXTRA_COMMANDS=('nvim')
-
-# https://github.com/lukechilds/zsh-nvm?tab=readme-ov-file#auto-use
-export NVM_AUTO_USE=true
-
 # ZSH Plugins
 # Standard plugins can be found in $ZSH/plugins/
 # Custom plugins may be added to $ZSH_CUSTOM/plugins/
 # Example format: plugins=(rails git textmate ruby lighthouse)
 # Add wisely, as too many plugins slow down shell startup.
-plugins=(evalcache zsh-nvm git)
+plugins=(evalcache git)
 
 ZSH_DISABLE_COMPFIX=true
 
@@ -117,6 +108,12 @@ export FZF_DEFAULT_OPTS="--color=fg:#f8f8f2,bg:#282a36,hl:#bd93f9
     --color=fg+:#f8f8f2,bg+:#44475a,hl+:#bd93f9
     --color=info:#ffb86c,prompt:#50fa7b,pointer:#ff79c6
     --color=marker:#ff79c6,spinner:#ffb86c,header:#6272a4"
+
+if command -v fnm &> /dev/null; then
+    export FNM_PATH="$HOME/.fnm"
+    export PATH="$FNM_PATH:$PATH"
+    eval "$(fnm env --use-on-cd --shell zsh)"
+fi
 
 # TODO: jenv is slow, need to find alternative
 if command -v jenv &> /dev/null; then

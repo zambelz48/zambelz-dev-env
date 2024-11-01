@@ -19,6 +19,3 @@
 [submodule "zsh/.plugins/evalcache"]
 	path = zsh/.plugins/evalcache
 	url = https://github.com/mroth/evalcache
-[submodule "zsh/.plugins/zsh-nvm"]
-	path = zsh/.plugins/zsh-nvm
-	url = https://github.com/lukechilds/zsh-nvm
