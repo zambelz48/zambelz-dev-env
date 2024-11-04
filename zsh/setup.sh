@@ -10,7 +10,7 @@ fi
 
 function install_theme {
   local themes_dir="$current_dir/.themes"
-  local omz_themes_dir="$omz_dir/themes"
+  local omz_themes_dir="$omz_dir/custom/themes"
 
   if [ ! -d "$current_dir/.themes" ]; then
     echo ".themes dir's not found. please clone the theme first"
