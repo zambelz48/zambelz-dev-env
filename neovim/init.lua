@@ -31,7 +31,7 @@ require('packer').startup(function()
     }
     use {
         'nvim-lualine/lualine.nvim',
-        commit = '2a5bae9',
+        commit = '640260d',
         requires = {
             'nvim-tree/nvim-web-devicons',
             opt = true
