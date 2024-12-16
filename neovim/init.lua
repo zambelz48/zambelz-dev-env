@@ -54,8 +54,8 @@ require('packer').startup(function()
     }
     use {
         'nvim-telescope/telescope-fzf-native.nvim',
-        commit = 'cf48d4d',
-        run = 'cmake -S. -Bbuild -DCMAKE_BUILD_TYPE=Release && cmake --build build --config Release && cmake --install build --prefix build'
+        commit = 'dae2eac',
+        run = 'cmake -S. -Bbuild -DCMAKE_BUILD_TYPE=Release && cmake --build build --config Release'
     }
     use {
         'nvim-treesitter/nvim-treesitter',
