@@ -1,4 +1,8 @@
-require('telescope').setup {
+local telescope = require 'telescope'
+local telescope_builtin = require 'telescope.builtin'
+local telescope_themes = require 'telescope.themes'
+
+telescope.setup({
     defaults = {
         mappings = {
             i = {
@@ -7,10 +11,16 @@ require('telescope').setup {
             },
         },
     },
-}
+    extensions = {
+        fzf = {}
+    },
+})
 
 -- Enable telescope fzf native, if installed
-pcall(require('telescope').load_extension, 'fzf')
+telescope.load_extension('fzf')
+
+-- Get current working directory
+local cwd = vim.uv.cwd()
 
 -- Keymaps
 vim.keymap.set('n', '<leader><space>',
@@ -21,7 +31,7 @@ vim.keymap.set('n', '<leader>sf',
     [[<cmd>lua require('telescope.builtin').find_files({previewer = true})<CR>]],
     { noremap = true, silent = true })
 
-vim.keymap.set('n', '<leader>sfc', ':Telescope find_files search_dirs=',
+vim.keymap.set('n', '<leader>sfc', ':Telescope find_files search_dirs=' .. cwd,
     { noremap = true })
 
 vim.keymap.set('n', '<leader>sh',
@@ -37,7 +47,7 @@ vim.keymap.set('n', '<leader>sd',
     { noremap = true, silent = true })
 
 vim.keymap.set('n', '<leader>sdi', function()
-    require('telescope.builtin').grep_string({
+    telescope_builtin.grep_string({
         search = vim.fn.input('Find word: '),
         only_sort_text = true,
     })
@@ -57,9 +67,12 @@ vim.keymap.set('n', '<leader>?',
 
 vim.keymap.set('n', '<leader>/', function()
     -- You can pass additional configuration to telescope to change theme, layout, etc.
-    require('telescope.builtin').current_buffer_fuzzy_find(require(
-    'telescope.themes').get_dropdown {
-        winblend = 10,
-        previewer = false,
-    })
-end, { desc = '[/] Fuzzily search in current buffer' })
+    telescope_builtin.current_buffer_fuzzy_find(
+        telescope_themes.get_dropdown {
+            winblend = 10,
+            previewer = false,
+        }
+    )
+end, {
+    desc = '[/] Fuzzily search in current buffer'
+})
