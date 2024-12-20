@@ -26,7 +26,7 @@ require('packer').startup(function()
     }
     use {
         'nvim-tree/nvim-tree.lua',
-        tag = 'nvim-tree-v1.8.0',
+        tag = 'nvim-tree-v1.9.0',
         requires = 'nvim-tree/nvim-web-devicons'
     }
     use {
@@ -43,7 +43,7 @@ require('packer').startup(function()
     }
     use {
         'ibhagwan/fzf-lua',
-        commit = 'ce97847'
+        commit = 'a6761dd'
     }
     use {
         'nvim-telescope/telescope.nvim',
@@ -59,7 +59,7 @@ require('packer').startup(function()
     }
     use {
         'nvim-treesitter/nvim-treesitter',
-        tag = 'v0.9.3',
+        commit = 'fa915a3',
         requires = {
             'nvim-treesitter/nvim-treesitter-textobjects'
         }
@@ -70,11 +70,11 @@ require('packer').startup(function()
     }
     use {
         'neovim/nvim-lspconfig',
-        tag = 'v1.0.0'
+        tag = 'v1.1.0'
     }
     use {
         'hrsh7th/cmp-nvim-lsp',
-        commit = '39e2eda'
+        commit = '99290b3'
     }
     use {
         'hrsh7th/cmp-buffer',
@@ -82,7 +82,7 @@ require('packer').startup(function()
     }
     use {
         'hrsh7th/nvim-cmp',
-        commit = 'ed31156'
+        commit = 'b555203'
     }
     use {
         'L3MON4D3/LuaSnip',
@@ -95,7 +95,7 @@ require('packer').startup(function()
     }
     use {
         'Mofiqul/dracula.nvim',
-        commit = 'e6128ec'
+        commit = '515acae'
     }
     use {
         'edkolev/tmuxline.vim',
@@ -127,7 +127,7 @@ require('packer').startup(function()
     }
     use {
         'j-hui/fidget.nvim',
-        commit = 'e2a175c'
+        commit = '9238947'
     }
     use {
         'numToStr/Comment.nvim',
@@ -135,7 +135,7 @@ require('packer').startup(function()
     }
     use {
         'JoosepAlviste/nvim-ts-context-commentstring',
-        commit = '9c74db6'
+        commit = '1b212c2'
     }
     use {
         'mfussenegger/nvim-jdtls',
@@ -143,7 +143,7 @@ require('packer').startup(function()
     }
     use {
         'mfussenegger/nvim-dap',
-        commit = 'cc92b05'
+        commit = '7e48a80'
     }
     use {
         'nvim-neotest/nvim-nio',
@@ -171,7 +171,7 @@ require('packer').startup(function()
     }
     use {
         'zbirenbaum/copilot.lua',
-        commit = 'f8d8d87'
+        commit = 'd3783b9'
     }
     use {
         'AndreM222/copilot-lualine',
@@ -179,11 +179,11 @@ require('packer').startup(function()
     }
     use {
         'CopilotC-Nvim/CopilotChat.nvim',
-        tag = 'v3.2.0',
+        tag = 'v3.3.3',
     }
     use {
         'pmizio/typescript-tools.nvim',
-        commit = '346062e'
+        commit = '35e397c'
     }
     use {
         'folke/todo-comments.nvim',
