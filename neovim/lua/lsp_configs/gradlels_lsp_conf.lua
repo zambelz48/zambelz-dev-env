@@ -6,9 +6,13 @@ return {
     filetypes = { 'groovy' },
     init_options = {
         settings = {
-            graldeWrapperEnabled = true
+            gradleWrapperEnabled = true
         }
     },
-    root_dir = nvim_lsp.util.root_pattern('settings.gradle',
-        'settings.gradle.kts')
+    root_dir = nvim_lsp.util.root_pattern(
+        'settings.gradle',
+        'settings.gradle.kts',
+        'build.gradle',
+        'build.gradle.kts'
+    )
 }
