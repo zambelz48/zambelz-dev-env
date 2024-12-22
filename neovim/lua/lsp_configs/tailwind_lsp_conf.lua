@@ -11,11 +11,17 @@ return {
         'mustache', 'njk', 'nunjucks', 'php', 'razor', 'slim', 'twig',
         'css', 'less', 'postcss', 'sass', 'scss', 'stylus', 'sugarss',
         'javascript', 'javascriptreact', 'reason', 'rescript', 'typescript',
-        'typescriptreact', 'vue', 'svelte'
+        'typescriptreact', 'vue', 'svelte', 'templ'
     },
     settings = {
         taildwindCSS = {
             classAttributes = { 'class', 'className', 'class:list', 'classList', 'ngClass' },
+            includeLanguages = {
+                eelixir = "html-eex",
+                eruby = "erb",
+                htmlangular = "html",
+                templ = "html"
+            },
             lint = {
                 cssConflict = 'warning',
                 invalidApply = 'error',
