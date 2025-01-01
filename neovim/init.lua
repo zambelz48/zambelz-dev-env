@@ -43,7 +43,7 @@ require('packer').startup(function()
     }
     use {
         'ibhagwan/fzf-lua',
-        commit = 'a6761dd'
+        commit = 'c054a21'
     }
     use {
         'nvim-telescope/telescope.nvim',
@@ -59,7 +59,7 @@ require('packer').startup(function()
     }
     use {
         'nvim-treesitter/nvim-treesitter',
-        commit = 'fa915a3',
+        commit = 'e947d35',
         requires = {
             'nvim-treesitter/nvim-treesitter-textobjects'
         }
@@ -70,7 +70,7 @@ require('packer').startup(function()
     }
     use {
         'neovim/nvim-lspconfig',
-        tag = 'v1.1.0'
+        tag = 'v1.2.0'
     }
     use {
         'hrsh7th/cmp-nvim-lsp',
@@ -143,7 +143,7 @@ require('packer').startup(function()
     }
     use {
         'mfussenegger/nvim-dap',
-        commit = '7e48a80'
+        commit = '0e673ac'
     }
     use {
         'nvim-neotest/nvim-nio',
@@ -151,11 +151,11 @@ require('packer').startup(function()
     }
     use {
         'rcarriga/nvim-dap-ui',
-        commit = 'ffa8983'
+        commit = 'e94d986'
     }
     use {
         'theHamsta/nvim-dap-virtual-text',
-        commit = '76d80c3'
+        commit = 'df66808'
     }
     use {
         'tpope/vim-dadbod',
@@ -171,7 +171,7 @@ require('packer').startup(function()
     }
     use {
         'zbirenbaum/copilot.lua',
-        commit = 'd3783b9'
+        commit = '886ee73'
     }
     use {
         'AndreM222/copilot-lualine',
