@@ -22,7 +22,7 @@ require('packer').startup(function()
     use 'nvim-lua/plenary.nvim'
     use {
         'nvim-tree/nvim-web-devicons',
-        commit = 'edbe0a6'
+        commit = '4023772'
     }
     use {
         'nvim-tree/nvim-tree.lua',
@@ -39,11 +39,11 @@ require('packer').startup(function()
     }
     use {
         'tpope/vim-fugitive',
-        commit = '320b18f'
+        commit = 'b068eaf'
     }
     use {
         'ibhagwan/fzf-lua',
-        commit = 'd5ca404'
+        commit = 'b3e9303'
     }
     use {
         'nvim-telescope/telescope.nvim',
@@ -59,7 +59,7 @@ require('packer').startup(function()
     }
     use {
         'nvim-treesitter/nvim-treesitter',
-        commit = 'f3d7c0d',
+        commit = 'da89532',
         requires = {
             'nvim-treesitter/nvim-treesitter-textobjects'
         }
@@ -70,7 +70,7 @@ require('packer').startup(function()
     }
     use {
         'neovim/nvim-lspconfig',
-        tag = 'v1.4.0'
+        tag = 'v1.6.0'
     }
     use {
         'hrsh7th/cmp-nvim-lsp',
@@ -116,18 +116,18 @@ require('packer').startup(function()
     }
     use {
         'lewis6991/gitsigns.nvim',
-        commit = 'd8918f0'
+        tag = 'v1.0.0'
     }
     use {
         'folke/trouble.nvim',
-        commit = '50481f4',
+        tag = 'v3.7.0',
         requires = {
             'nvim-tree/nvim-web-devicons'
         }
     }
     use {
         'j-hui/fidget.nvim',
-        commit = 'v1.5.0'
+        commit = 'v1.6.1'
     }
     use {
         'numToStr/Comment.nvim',
@@ -139,11 +139,11 @@ require('packer').startup(function()
     }
     use {
         'mfussenegger/nvim-jdtls',
-        commit = '3efcd07'
+        commit = '3cdd09f'
     }
     use {
         'mfussenegger/nvim-dap',
-        commit = '1c96e48'
+        commit = '52302f0'
     }
     use {
         'rcarriga/nvim-dap-ui',
@@ -159,15 +159,15 @@ require('packer').startup(function()
     }
     use {
         'tpope/vim-dadbod',
-        commit = '96997da'
+        commit = '9f0ca8b'
     }
     use {
         'kristijanhusak/vim-dadbod-ui',
-        commit = '65454e2'
+        commit = 'f4d37b7'
     }
     use {
         'kristijanhusak/vim-dadbod-completion',
-        commit = '95cbcf2'
+        commit = 'c7f1be2'
     }
     use {
         'zbirenbaum/copilot.lua',
@@ -179,7 +179,7 @@ require('packer').startup(function()
     }
     use {
         'CopilotC-Nvim/CopilotChat.nvim',
-        tag = 'v3.4.0',
+        tag = 'v3.5.0',
     }
     use {
         'pmizio/typescript-tools.nvim',
