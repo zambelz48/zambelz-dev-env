@@ -28,7 +28,8 @@
         - tldr: [source](https://tldr.sh)
         - jenv (*manage multiple java versions*): [source](https://github.com/jenv/jenv)
         - rbenv (*manage multiple ruby versions*): [source](https://github.com/rbenv/rbenv)
-        - nvm (*manage multiple nodejs versions*): [source](https://github.com/nvm-sh/nvm)
+        - pyenv (*manage multiple python versions*): [source](https://github.com/pyenv/pyenv)
+        - fnm (*manage multiple nodejs versions*): [source](https://github.com/Schniz/fnm)
 1. clone this repository at $HOME path (IMPORTANT)
 1. init git submodule: `git submodule update --init --recursive`
 1. create symlink at `$HOME/.zshrc` pointing to `$HOME/zambelz-mac-configs/zsh/.zshrc`
@@ -142,6 +143,8 @@ prerequisites: .NET SDK
 1. create 'omnisharp' dir
     - cmd: mkdir neovim/.lsp_vendors/omnisharp
 2. download omnisharp-roslyn here: https://github.com/OmniSharp/omnisharp-roslyn/releases
+    - mac: `omnisharp-osx-arm64-net6.0.zip`
+    - linux: `omnisharp-linux-<ARCH>-net6.0.zip`
 3. extract content of omnisharp-roslyn in neovim/.lsp_vendors/omnisharp
 4. enforce https: https://learn.microsoft.com/en-us/aspnet/core/security/enforcing-ssl?view=aspnetcore-8.0&tabs=visual-studio%2Clinux-rhel#trust-the-aspnet-core-https-development-certificate-on-windows-and-macos
 

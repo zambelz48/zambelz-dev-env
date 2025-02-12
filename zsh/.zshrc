@@ -53,30 +53,30 @@ export GROFF_NO_SGR=1                   # for konsole
 
 case "$KERNEL_NAME" in
 
-    Linux*)
-        # Adds Linux related config here...
-        ;;
+  Linux*)
+    # Adds Linux related config here...
+    ;;
 
-    Darwin*)
-        if [ -d "/opt/homebrew" ]; then
-            export BREW_HOME="/opt/homebrew"
-            export PATH="$BREW_HOME/bin:$PATH"
+  Darwin*)
+    if [ -d "/opt/homebrew" ]; then
+      export BREW_HOME="/opt/homebrew"
+      export PATH="$BREW_HOME/bin:$PATH"
 
-            export RUBY_HOME="$BREW_HOME/opt/ruby"
-            export PATH="$RUBY_HOME/bin:$PATH"
+      export RUBY_HOME="$BREW_HOME/opt/ruby"
+      export PATH="$RUBY_HOME/bin:$PATH"
 
-            export HOMEBREW_NO_ANALYTICS=1
-        fi
-        ;;
+      export HOMEBREW_NO_ANALYTICS=1
+    fi
+    ;;
 
-esac
+  esac
 
-source "$HOME/.profile.zsh"
-if [ "$ZAMBELZ_DEV_ENV_PATH" = "" ]; then
+  source "$HOME/.profile.zsh"
+  if [ "$ZAMBELZ_DEV_ENV_PATH" = "" ]; then
     echo "ZAMBELZ_DEV_ENV_PATH not found in .profile.zsh"
-fi
+  fi
 
-ZAMBELZ_HELPER_PATH="$ZAMBELZ_DEV_ENV_PATH/zsh/helpers"
+  ZAMBELZ_HELPER_PATH="$ZAMBELZ_DEV_ENV_PATH/zsh/helpers"
 
 # Neovim LSP
 export LSP_VENDOR_ROOT_PATH="$ZAMBELZ_DEV_ENV_PATH/neovim/.lsp_vendors"
@@ -94,49 +94,55 @@ export LUA_LANGUAGE_SERVER_PATH="$LSP_VENDOR_ROOT_PATH/lua-language-server/bin"
 export PATH="$LUA_LANGUAGE_SERVER_PATH:$PATH"
 
 if [ "$KERNEL_NAME" = "Linux" ]; then
-	export XML_LANGUAGE_SERVER_PATH="$LSP_VENDOR_ROOT_PATH/xml-lsp/linux"
-	export PATH="$XML_LANGUAGE_SERVER_PATH:$PATH"
+  export XML_LANGUAGE_SERVER_PATH="$LSP_VENDOR_ROOT_PATH/xml-lsp/linux"
+  export PATH="$XML_LANGUAGE_SERVER_PATH:$PATH"
 fi
 
 if [ "$KERNEL_NAME" = "Darwin" ]; then
-	export XML_LANGUAGE_SERVER_PATH="$LSP_VENDOR_ROOT_PATH/xml-lsp/darwin"
-	export PATH="$XML_LANGUAGE_SERVER_PATH:$PATH"
+  export XML_LANGUAGE_SERVER_PATH="$LSP_VENDOR_ROOT_PATH/xml-lsp/darwin"
+  export PATH="$XML_LANGUAGE_SERVER_PATH:$PATH"
 fi
 
 # Dracula theme for fzf
 export FZF_DEFAULT_OPTS="--color=fg:#f8f8f2,bg:#282a36,hl:#bd93f9
-    --color=fg+:#f8f8f2,bg+:#44475a,hl+:#bd93f9
-    --color=info:#ffb86c,prompt:#50fa7b,pointer:#ff79c6
-    --color=marker:#ff79c6,spinner:#ffb86c,header:#6272a4"
+--color=fg+:#f8f8f2,bg+:#44475a,hl+:#bd93f9
+--color=info:#ffb86c,prompt:#50fa7b,pointer:#ff79c6
+--color=marker:#ff79c6,spinner:#ffb86c,header:#6272a4"
 
 FNM_DIR="$HOME/.local/share/fnm"
 if [ -d "$FNM_DIR" ]; then
-    export PATH="$FNM_DIR:$PATH"
+  export PATH="$FNM_DIR:$PATH"
 fi
 
 if command -v fnm &> /dev/null; then
-    eval "$(fnm env --use-on-cd --shell zsh)"
+  eval "$(fnm env --use-on-cd --shell zsh)"
 fi
 
 # TODO: jenv is slow, need to find alternative
 if command -v jenv &> /dev/null; then
-	export JENV_HOME=$HOME/.jenv
-	export PATH="$JENV_HOME/bin:$PATH"
-    _evalcache jenv init - --no-rehash
+  export JENV_HOME=$HOME/.jenv
+  export PATH="$JENV_HOME/bin:$PATH"
+  _evalcache jenv init - --no-rehash
 
     # perform background rehash
     (jenv rehash &) 2> /dev/null
 fi
 
 if command -v rbenv &> /dev/null; then
-    _evalcache rbenv init --no-rehash - zsh
+  _evalcache rbenv init --no-rehash - zsh
 
     # perform background rehash
     (rbenv rehash &) 2> /dev/null
 fi
 
+if command -v pyenv &> /dev/null; then
+  export PYENV_ROOT="$HOME/.pyenv"
+  [[ -d $PYENV_ROOT/bin ]] && export PATH="$PYENV_ROOT/bin:$PATH"
+  _evalcache pyenv init - zsh
+fi
+
 if command -v mcfly &> /dev/null; then
-    _evalcache mcfly init zsh
+  _evalcache mcfly init zsh
 fi
 
 # Aliases
