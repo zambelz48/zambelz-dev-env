@@ -63,13 +63,15 @@ vim.opt.shiftwidth = 4
 
 vim.opt.completeopt = 'menuone,noselect'
 
--- Make line numbers default
-vim.opt.number = true
-
+-- Show sign, number & relativenumber respectively
 vim.opt.signcolumn = 'yes'
+vim.opt.number = true
+vim.opt.relativenumber = true
+vim.opt.statuscolumn = '%s %l %r'
 
 vim.opt.wrap = false
 
 vim.opt.expandtab = true
 
 vim.g.skip_ts_context_commentstring_module = true
+
