@@ -1,4 +1,50 @@
 local lualine = require 'lualine'
+
+local copilot_status_line = function()
+    local coding_assistant = os.getenv('CODING_ASSISTANT')
+    if coding_assistant == 'copilot' then
+        return {
+            'copilot',
+            symbols = {
+                status = {
+                    icons = {
+                        enabled = " ",
+                        sleep = " ", -- auto-trigger disabled
+                        disabled = " ",
+                        warning = " ",
+                        unknown = " "
+                    },
+                    hl = {
+                        enabled = "#50FA7B",
+                        sleep = "#c1f7cf",
+                        disabled = "#6272A4",
+                        warning = "#FFB86C",
+                        unknown = "#FF5555"
+                    }
+                },
+                spinners = require("copilot-lualine.spinners").dots,
+                spinner_color = "#bd93f9"
+            },
+            show_colors = true,
+            show_loading = true
+        }
+    else
+        return {}
+    end
+end
+
+local lualine_x_content = function()
+    local initial_content = {}
+    local coding_assistant = os.getenv('CODING_ASSISTANT')
+    if coding_assistant == 'copilot' then
+        table.insert(initial_content, copilot_status_line())
+    end
+
+    table.insert(initial_content, 'encoding')
+    table.insert(initial_content, 'filetype')
+    return initial_content
+end
+
 lualine.setup({
     options = {
         icons_enabled = true,
@@ -25,35 +71,7 @@ lualine.setup({
         lualine_a = { 'mode' },
         lualine_b = { 'branch', 'diff', 'diagnostics' },
         lualine_c = { 'filename' },
-        lualine_x = {
-            {
-                'copilot',
-                symbols = {
-                    status = {
-                        icons = {
-                            enabled = " ",
-                            sleep = " ", -- auto-trigger disabled
-                            disabled = " ",
-                            warning = " ",
-                            unknown = " "
-                        },
-                        hl = {
-                            enabled = "#50FA7B",
-                            sleep = "#c1f7cf",
-                            disabled = "#6272A4",
-                            warning = "#FFB86C",
-                            unknown = "#FF5555"
-                        }
-                    },
-                    spinners = require("copilot-lualine.spinners").dots,
-                    spinner_color = "#bd93f9"
-                },
-                show_colors = true,
-                show_loading = true
-            },
-            'encoding',
-            'filetype',
-        },
+        lualine_x = lualine_x_content(),
         lualine_y = { 'progress' },
         lualine_z = { 'location' }
     },

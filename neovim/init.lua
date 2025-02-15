@@ -189,6 +189,14 @@ require('packer').startup(function()
         'folke/todo-comments.nvim',
         tag = 'v1.4.0'
     }
+    use {
+        'Exafunction/codeium.nvim',
+        requires = {
+            'nvim-lua/plenary.nvim',
+            'hrsh7th/nvim-cmp',
+        },
+        commit = 'ebed4f7'
+    }
 end)
 
 require('options')
@@ -215,3 +223,4 @@ require('copilot_conf')
 require('copilot_chat_conf')
 require('omnisharp_conf')
 require('typescript_tools_conf')
+require('codeium_conf')

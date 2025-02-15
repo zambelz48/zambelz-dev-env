@@ -1,8 +1,13 @@
 local copilot_lua = require 'copilot'
 
+local is_copilot_enabled = function()
+    local coding_assistant = os.getenv('CODING_ASSISTANT')
+    return coding_assistant == 'copilot'
+end
+
 copilot_lua.setup({
     panel = {
-        enabled = true,
+        enabled = is_copilot_enabled(),
         auto_refresh = false,
         keymap = {
             jump_prev = "[[",
@@ -17,7 +22,7 @@ copilot_lua.setup({
         },
     },
     suggestion = {
-        enabled = true,
+        enabled = is_copilot_enabled(),
         auto_trigger = true,
         debounce = 75,
         keymap = {

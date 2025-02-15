@@ -51,6 +51,9 @@ export LESS_TERMCAP_se=$'\e[0m'         # reset reverse video
 export LESS_TERMCAP_ue=$'\e[0m'         # reset underline
 export GROFF_NO_SGR=1                   # for konsole
 
+# Coding assistant options ("copilot" or "codium")
+export CODING_ASSISTANT="copilot"
+
 case "$KERNEL_NAME" in
 
   Linux*)
@@ -69,14 +72,15 @@ case "$KERNEL_NAME" in
     fi
     ;;
 
-  esac
+esac
 
-  source "$HOME/.profile.zsh"
-  if [ "$ZAMBELZ_DEV_ENV_PATH" = "" ]; then
-    echo "ZAMBELZ_DEV_ENV_PATH not found in .profile.zsh"
-  fi
+source "$HOME/.profile.zsh"
 
-  ZAMBELZ_HELPER_PATH="$ZAMBELZ_DEV_ENV_PATH/zsh/helpers"
+if [ "$ZAMBELZ_DEV_ENV_PATH" = "" ]; then
+  echo "ZAMBELZ_DEV_ENV_PATH not found in .profile.zsh"
+fi
+
+ZAMBELZ_HELPER_PATH="$ZAMBELZ_DEV_ENV_PATH/zsh/helpers"
 
 # Neovim LSP
 export LSP_VENDOR_ROOT_PATH="$ZAMBELZ_DEV_ENV_PATH/neovim/.lsp_vendors"
