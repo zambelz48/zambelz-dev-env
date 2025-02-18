@@ -63,11 +63,9 @@ vim.opt.shiftwidth = 4
 
 vim.opt.completeopt = 'menuone,noselect'
 
--- Show sign, number & relativenumber respectively
 vim.opt.signcolumn = 'yes'
+
 vim.opt.number = true
-vim.opt.relativenumber = true
-vim.opt.statuscolumn = '%s %l %r'
 
 vim.opt.wrap = false
 
