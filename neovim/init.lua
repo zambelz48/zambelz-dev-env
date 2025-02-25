@@ -197,6 +197,10 @@ require('packer').startup(function()
         },
         commit = 'ebed4f7'
     }
+    use {
+        'hinell/lsp-timeout.nvim',
+        commit = '6325906'
+    }
 end)
 
 require('options')
@@ -205,6 +209,7 @@ require('mappings')
 require('treesitter_conf')
 require('cmp_conf')
 require('lsp_conf')
+require('lsp_timeout_conf')
 require('nvim_tree_conf')
 require('telescope_conf')
 require('lualine_conf')
