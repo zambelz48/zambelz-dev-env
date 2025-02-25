@@ -1,6 +1,6 @@
 vim.g.lspTimeoutConfig = {
-    stopTimeout = 1000 * 60 * 2, -- ms, timeout before stopping all LSPs
-    startTimeout = 1000 * 5,     -- ms, timeout before restart
+    stopTimeout = 60000, -- ms, timeout before stopping all LSPs
+    startTimeout = 2000, -- ms, timeout before restart
     silent = false,
     filetypes = {
         ignore = {
