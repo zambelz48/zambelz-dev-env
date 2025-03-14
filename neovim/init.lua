@@ -59,7 +59,7 @@ require('packer').startup(function()
     }
     use {
         'nvim-treesitter/nvim-treesitter',
-        commit = '93ce9fe',
+        commit = '8b79cdd',
         requires = {
             'nvim-treesitter/nvim-treesitter-textobjects'
         }
@@ -143,7 +143,7 @@ require('packer').startup(function()
     }
     use {
         'mfussenegger/nvim-dap',
-        commit = '379cf26'
+        commit = 'a720d49'
     }
     use {
         'rcarriga/nvim-dap-ui',
@@ -179,7 +179,7 @@ require('packer').startup(function()
     }
     use {
         'CopilotC-Nvim/CopilotChat.nvim',
-        tag = 'v3.8.0',
+        tag = 'v3.9.1',
     }
     use {
         'pmizio/typescript-tools.nvim',
@@ -195,7 +195,7 @@ require('packer').startup(function()
             'nvim-lua/plenary.nvim',
             'hrsh7th/nvim-cmp',
         },
-        commit = 'ebed4f7'
+        commit = '2b10c17'
     }
     use {
         'hinell/lsp-timeout.nvim',
