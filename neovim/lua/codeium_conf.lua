@@ -6,8 +6,12 @@ local is_codeium_enabled = function()
 end
 
 codeium_lua.setup({
+    -- suppress completion errors (https://github.com/Exafunction/codeium.nvim/pull/283)
+    quiet = true,
+
     -- Optionally disable cmp source if using virtual text only
     enable_cmp_source = false,
+
     virtual_text = {
         enabled = is_codeium_enabled(),
 
