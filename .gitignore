@@ -44,5 +44,7 @@ neovim/.lsp_vendors/omnisharp
 # vscode-codelldb debugger
 neovim/.dap/vscode-codelldb
 
+# others
+tmux/.tmp
 # End of https://www.toptal.com/developers/gitignore/api/macos
 
