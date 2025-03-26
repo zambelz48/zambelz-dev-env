@@ -22,7 +22,7 @@ require('packer').startup(function()
     use 'nvim-lua/plenary.nvim'
     use {
         'nvim-tree/nvim-web-devicons',
-        commit = '1020869'
+        commit = '4c3a584'
     }
     use {
         'nvim-tree/nvim-tree.lua',
@@ -31,6 +31,7 @@ require('packer').startup(function()
     }
     use {
         'nvim-lualine/lualine.nvim',
+        -- stick to '640260d' for now, since the newest one is noticeable slow
         commit = '640260d',
         requires = {
             'nvim-tree/nvim-web-devicons',
@@ -43,23 +44,23 @@ require('packer').startup(function()
     }
     use {
         'ibhagwan/fzf-lua',
-        commit = '9b84b53'
+        commit = 'ac6a34e'
     }
     use {
         'nvim-telescope/telescope.nvim',
-        commit = '814f102',
+        commit = 'a4ed825',
         requires = {
             'nvim-lua/plenary.nvim'
         }
     }
     use {
         'nvim-telescope/telescope-fzf-native.nvim',
-        commit = '2a5ceff',
+        commit = '1f08ed6',
         run = 'cmake -S. -Bbuild -DCMAKE_BUILD_TYPE=Release && cmake --build build --config Release'
     }
     use {
         'nvim-treesitter/nvim-treesitter',
-        commit = '8b79cdd',
+        commit = '85168f1',
         requires = {
             'nvim-treesitter/nvim-treesitter-textobjects'
         }
@@ -82,7 +83,7 @@ require('packer').startup(function()
     }
     use {
         'hrsh7th/nvim-cmp',
-        commit = '5a11682'
+        commit = '1e1900b'
     }
     use {
         'L3MON4D3/LuaSnip',
@@ -116,7 +117,7 @@ require('packer').startup(function()
     }
     use {
         'lewis6991/gitsigns.nvim',
-        tag = 'v1.0.1'
+        tag = 'v1.0.2'
     }
     use {
         'folke/trouble.nvim',
@@ -143,7 +144,7 @@ require('packer').startup(function()
     }
     use {
         'mfussenegger/nvim-dap',
-        commit = 'a720d49'
+        commit = '6a5bba0'
     }
     use {
         'rcarriga/nvim-dap-ui',
@@ -163,15 +164,15 @@ require('packer').startup(function()
     }
     use {
         'kristijanhusak/vim-dadbod-ui',
-        commit = 'f4d37b7'
+        commit = '685e75b'
     }
     use {
         'kristijanhusak/vim-dadbod-completion',
-        commit = '464da30'
+        commit = 'a8dac0b'
     }
     use {
         'zbirenbaum/copilot.lua',
-        commit = '30321e3'
+        commit = 'b9300fb'
     }
     use {
         'AndreM222/copilot-lualine',
