@@ -4,8 +4,12 @@ local utils = require 'utils'
 
 local function get_config_path()
     local kernel_name = utils.shell_cmd('uname -s')
+    local kernel_arch = utils.shell_cmd('uname -m')
 
     if kernel_name == 'Darwin' then
+        if kernel_arch == 'arm64' then
+            return 'config_mac_arm'
+        end
         return 'config_mac'
     end
 
