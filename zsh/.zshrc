@@ -1,4 +1,5 @@
 KERNEL_NAME=$(uname -s)
+KERNEL_ARCH=$(uname -m)
 
 # Path to your oh-my-zsh installation.
 export ZSH=$HOME/.oh-my-zsh
@@ -103,7 +104,11 @@ if [ "$KERNEL_NAME" = "Linux" ]; then
 fi
 
 if [ "$KERNEL_NAME" = "Darwin" ]; then
-  export XML_LANGUAGE_SERVER_PATH="$LSP_VENDOR_ROOT_PATH/xml-lsp/darwin"
+  if [ "$KERNEL_ARCH" = "arm64" ]; then
+    export XML_LANGUAGE_SERVER_PATH="$LSP_VENDOR_ROOT_PATH/xml-lsp/darwin/arm"
+  else
+    export XML_LANGUAGE_SERVER_PATH="$LSP_VENDOR_ROOT_PATH/xml-lsp/darwin/x86"
+  fi
   export PATH="$XML_LANGUAGE_SERVER_PATH:$PATH"
 fi
 
