@@ -21,44 +21,6 @@ require('packer').startup(function()
     use 'wbthomason/packer.nvim'
     use 'nvim-lua/plenary.nvim'
     use {
-        'nvim-tree/nvim-web-devicons',
-        commit = '4c3a584'
-    }
-    use {
-        'nvim-tree/nvim-tree.lua',
-        tag = 'nvim-tree-v1.11.0',
-        requires = 'nvim-tree/nvim-web-devicons'
-    }
-    use {
-        'nvim-lualine/lualine.nvim',
-        -- stick to '640260d' for now, since the newest one is noticeable slow
-        commit = '640260d',
-        requires = {
-            'nvim-tree/nvim-web-devicons',
-            opt = true
-        }
-    }
-    use {
-        'tpope/vim-fugitive',
-        commit = '4a745ea'
-    }
-    use {
-        'ibhagwan/fzf-lua',
-        commit = 'ac6a34e'
-    }
-    use {
-        'nvim-telescope/telescope.nvim',
-        commit = 'a4ed825',
-        requires = {
-            'nvim-lua/plenary.nvim'
-        }
-    }
-    use {
-        'nvim-telescope/telescope-fzf-native.nvim',
-        commit = '1f08ed6',
-        run = 'cmake -S. -Bbuild -DCMAKE_BUILD_TYPE=Release && cmake --build build --config Release'
-    }
-    use {
         'nvim-treesitter/nvim-treesitter',
         commit = '85168f1',
         requires = {
@@ -95,25 +57,36 @@ require('packer').startup(function()
         commit = '98d9cb5'
     }
     use {
-        'Mofiqul/dracula.nvim',
-        commit = '96c9d19'
+        'mfussenegger/nvim-dap',
+        commit = '6a5bba0'
     }
     use {
-        'edkolev/tmuxline.vim',
-        commit = '4119c55'
+        'rcarriga/nvim-dap-ui',
+        commit = 'bc81f8d'
     }
     use {
-        'norcalli/nvim-colorizer.lua',
-        commit = 'a065833'
+        'theHamsta/nvim-dap-virtual-text',
+        commit = 'df66808'
     }
     use {
-        'iamcco/markdown-preview.nvim',
-        commit = 'a923f5f',
-        run = function() vim.fn["mkdp#util#install"]() end
+        'ibhagwan/fzf-lua',
+        commit = 'ac6a34e'
     }
     use {
-        'akinsho/toggleterm.nvim',
-        tag = 'v2.13.1'
+        'nvim-telescope/telescope.nvim',
+        commit = 'a4ed825',
+        requires = {
+            'nvim-lua/plenary.nvim'
+        }
+    }
+    use {
+        'nvim-telescope/telescope-fzf-native.nvim',
+        commit = '1f08ed6',
+        run = 'cmake -S. -Bbuild -DCMAKE_BUILD_TYPE=Release && cmake --build build --config Release'
+    }
+    use {
+        'tpope/vim-fugitive',
+        commit = '4a745ea'
     }
     use {
         'lewis6991/gitsigns.nvim',
@@ -139,20 +112,16 @@ require('packer').startup(function()
         commit = '1b212c2'
     }
     use {
+        'folke/todo-comments.nvim',
+        tag = 'v1.4.0'
+    }
+    use {
         'mfussenegger/nvim-jdtls',
         commit = '2f7bff9'
     }
     use {
-        'mfussenegger/nvim-dap',
-        commit = '6a5bba0'
-    }
-    use {
-        'rcarriga/nvim-dap-ui',
-        commit = 'bc81f8d'
-    }
-    use {
-        'theHamsta/nvim-dap-virtual-text',
-        commit = 'df66808'
+        'pmizio/typescript-tools.nvim',
+        commit = '35e397c'
     }
     use {
         'nvim-neotest/nvim-nio',
@@ -175,20 +144,8 @@ require('packer').startup(function()
         commit = 'b9300fb'
     }
     use {
-        'AndreM222/copilot-lualine',
-        commit = 'dc4b8ed'
-    }
-    use {
         'CopilotC-Nvim/CopilotChat.nvim',
         tag = 'v3.9.1',
-    }
-    use {
-        'pmizio/typescript-tools.nvim',
-        commit = '35e397c'
-    }
-    use {
-        'folke/todo-comments.nvim',
-        tag = 'v1.4.0'
     }
     use {
         'Exafunction/codeium.nvim',
@@ -199,8 +156,53 @@ require('packer').startup(function()
         commit = '2b10c17'
     }
     use {
+        'Mofiqul/dracula.nvim',
+        commit = '96c9d19'
+    }
+    use {
+        'nvim-lualine/lualine.nvim',
+        -- stick to '640260d' for now, since the newest one is noticeable slow
+        commit = '640260d',
+        requires = {
+            'nvim-tree/nvim-web-devicons',
+            opt = true
+        }
+    }
+    use {
+        'edkolev/tmuxline.vim',
+        commit = '4119c55'
+    }
+    use {
+        'AndreM222/copilot-lualine',
+        commit = 'dc4b8ed'
+    }
+    use {
+        'nvim-tree/nvim-tree.lua',
+        tag = 'nvim-tree-v1.11.0',
+        requires = 'nvim-tree/nvim-web-devicons'
+    }
+    use {
+        'akinsho/toggleterm.nvim',
+        tag = 'v2.13.1'
+    }
+    use {
         'hinell/lsp-timeout.nvim',
         commit = '6325906'
+    }
+    use {
+        'nvim-tree/nvim-web-devicons',
+        commit = '4c3a584'
+    }
+    use {
+        'norcalli/nvim-colorizer.lua',
+        commit = 'a065833'
+    }
+    use {
+        'iamcco/markdown-preview.nvim',
+        commit = 'a923f5f',
+        run = function()
+            vim.fn["mkdp#util#install"]()
+        end
     }
 end)
 
