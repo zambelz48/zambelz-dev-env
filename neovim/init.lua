@@ -22,7 +22,7 @@ require('packer').startup(function()
     use 'nvim-lua/plenary.nvim'
     use {
         'nvim-treesitter/nvim-treesitter',
-        commit = '85168f1',
+        commit = '523a9e1',
         requires = {
             'nvim-treesitter/nvim-treesitter-textobjects'
         }
@@ -37,15 +37,15 @@ require('packer').startup(function()
     }
     use {
         'hrsh7th/cmp-nvim-lsp',
-        commit = '99290b3'
+        commit = 'a8912b8'
     }
     use {
         'hrsh7th/cmp-buffer',
-        commit = '3022dbc'
+        commit = 'b74fab3'
     }
     use {
         'hrsh7th/nvim-cmp',
-        commit = '1e1900b'
+        commit = '059e894'
     }
     use {
         'L3MON4D3/LuaSnip',
@@ -58,11 +58,11 @@ require('packer').startup(function()
     }
     use {
         'mfussenegger/nvim-dap',
-        commit = '6a5bba0'
+        tag = '0.10.0'
     }
     use {
         'rcarriga/nvim-dap-ui',
-        commit = 'bc81f8d'
+        tag = 'v4.0.0'
     }
     use {
         'theHamsta/nvim-dap-virtual-text',
@@ -70,7 +70,7 @@ require('packer').startup(function()
     }
     use {
         'ibhagwan/fzf-lua',
-        commit = 'ac6a34e'
+        commit = '6488ada'
     }
     use {
         'nvim-telescope/telescope.nvim',
@@ -121,7 +121,7 @@ require('packer').startup(function()
     }
     use {
         'pmizio/typescript-tools.nvim',
-        commit = '35e397c'
+        commit = 'e0887c1'
     }
     use {
         'nvim-neotest/nvim-nio',
@@ -141,11 +141,11 @@ require('packer').startup(function()
     }
     use {
         'zbirenbaum/copilot.lua',
-        commit = 'b9300fb'
+        commit = '228cd74'
     }
     use {
         'CopilotC-Nvim/CopilotChat.nvim',
-        tag = 'v3.9.1',
+        tag = 'v3.10.1',
     }
     use {
         'Exafunction/codeium.nvim',
@@ -153,7 +153,7 @@ require('packer').startup(function()
             'nvim-lua/plenary.nvim',
             'hrsh7th/nvim-cmp',
         },
-        commit = '2b10c17'
+        commit = '9569c90'
     }
     use {
         'Mofiqul/dracula.nvim',
