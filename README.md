@@ -31,6 +31,7 @@
         - pyenv (*manage multiple python versions*): [source](https://github.com/pyenv/pyenv)
         - fnm (*manage multiple nodejs versions*): [source](https://github.com/Schniz/fnm)
         - glow (*render markdown in terminal*): [source](https://github.com/charmbracelet/glow)
+        - chafa (*render images in terminal*): [source](https://github.com/hpjansson/chafa)
 1. clone this repository at $HOME path (IMPORTANT)
 1. init git submodule: `git submodule update --init --recursive`
 1. create symlink at `$HOME/.zshrc` pointing to `$HOME/zambelz-mac-configs/zsh/.zshrc`

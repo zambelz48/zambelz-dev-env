@@ -69,6 +69,10 @@ require('packer').startup(function()
         commit = 'df66808'
     }
     use {
+        -- NOTE: required for 'CopilotC-Nvim/CopilotChat.nvim'
+        -- TODO: Find out customization options to maximize potential usage of
+        -- the plugins, particularly in combining with 'telescope' and
+        -- 'telescope-fzf-native'
         'ibhagwan/fzf-lua',
         commit = '6488ada'
     }
