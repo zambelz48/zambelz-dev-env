@@ -22,7 +22,7 @@ require('packer').startup(function()
     use 'nvim-lua/plenary.nvim'
     use {
         'nvim-treesitter/nvim-treesitter',
-        commit = '523a9e1',
+        commit = '0e21ee8',
         requires = {
             'nvim-treesitter/nvim-treesitter-textobjects'
         }
@@ -33,7 +33,7 @@ require('packer').startup(function()
     }
     use {
         'neovim/nvim-lspconfig',
-        tag = 'v1.7.0'
+        tag = 'v1.8.0'
     }
     use {
         'hrsh7th/cmp-nvim-lsp',
@@ -125,7 +125,7 @@ require('packer').startup(function()
     }
     use {
         'pmizio/typescript-tools.nvim',
-        commit = 'e0887c1'
+        commit = 'a4109c7'
     }
     use {
         'nvim-neotest/nvim-nio',
@@ -145,11 +145,11 @@ require('packer').startup(function()
     }
     use {
         'zbirenbaum/copilot.lua',
-        commit = '228cd74'
+        commit = 'd1b6e6c'
     }
     use {
         'CopilotC-Nvim/CopilotChat.nvim',
-        tag = 'v3.10.1',
+        tag = 'v3.11.0',
     }
     use {
         'Exafunction/codeium.nvim',
