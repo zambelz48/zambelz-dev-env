@@ -22,7 +22,7 @@ require('packer').startup(function()
     use 'nvim-lua/plenary.nvim'
     use {
         'nvim-treesitter/nvim-treesitter',
-        commit = '0e21ee8',
+        commit = '684eeac',
         requires = {
             'nvim-treesitter/nvim-treesitter-textobjects'
         }
@@ -33,7 +33,7 @@ require('packer').startup(function()
     }
     use {
         'neovim/nvim-lspconfig',
-        tag = 'v1.8.0'
+        tag = 'v2.0.0'
     }
     use {
         'hrsh7th/cmp-nvim-lsp',
@@ -45,7 +45,7 @@ require('packer').startup(function()
     }
     use {
         'hrsh7th/nvim-cmp',
-        commit = '059e894'
+        commit = 'b5311ab'
     }
     use {
         'L3MON4D3/LuaSnip',
@@ -62,7 +62,7 @@ require('packer').startup(function()
     }
     use {
         'rcarriga/nvim-dap-ui',
-        tag = 'v4.0.0'
+        commit = '881a69e'
     }
     use {
         'theHamsta/nvim-dap-virtual-text',
@@ -74,7 +74,7 @@ require('packer').startup(function()
         -- the plugins, particularly in combining with 'telescope' and
         -- 'telescope-fzf-native'
         'ibhagwan/fzf-lua',
-        commit = '6488ada'
+        commit = '40fbbb6'
     }
     use {
         'nvim-telescope/telescope.nvim',
@@ -121,7 +121,7 @@ require('packer').startup(function()
     }
     use {
         'mfussenegger/nvim-jdtls',
-        commit = '2f7bff9'
+        commit = '5ecf13c'
     }
     use {
         'pmizio/typescript-tools.nvim',
@@ -137,7 +137,7 @@ require('packer').startup(function()
     }
     use {
         'kristijanhusak/vim-dadbod-ui',
-        commit = '685e75b'
+        commit = '4604323'
     }
     use {
         'kristijanhusak/vim-dadbod-completion',
@@ -145,7 +145,7 @@ require('packer').startup(function()
     }
     use {
         'zbirenbaum/copilot.lua',
-        commit = 'd1b6e6c'
+        commit = '0b43549'
     }
     use {
         'CopilotC-Nvim/CopilotChat.nvim',
@@ -178,7 +178,7 @@ require('packer').startup(function()
     }
     use {
         'AndreM222/copilot-lualine',
-        commit = 'dc4b8ed'
+        commit = '6bc29ba'
     }
     use {
         'nvim-tree/nvim-tree.lua',
@@ -195,7 +195,7 @@ require('packer').startup(function()
     }
     use {
         'nvim-tree/nvim-web-devicons',
-        commit = '4c3a584'
+        commit = 'c90dee4'
     }
     use {
         'norcalli/nvim-colorizer.lua',

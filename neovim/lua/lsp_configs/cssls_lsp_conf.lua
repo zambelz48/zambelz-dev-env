@@ -20,5 +20,8 @@ return {
             validate = true
         }
     },
+    init_options =   {
+        provideFormatter = true
+    },
     root_dir = nvim_lsp.util.root_pattern('package.json', '.git')
 }

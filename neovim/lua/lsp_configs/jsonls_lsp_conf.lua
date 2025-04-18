@@ -5,4 +5,7 @@ return {
         'json',
         'jsonc'
     },
+    init_options =   {
+        provideFormatter = true
+    },
 }

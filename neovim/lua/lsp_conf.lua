@@ -86,6 +86,11 @@ for _, lsp in ipairs(servers) do
             { root_dir = lsp.root_dir })
     end
 
+    if lsp.root_markers then
+        server_conf = vim.tbl_extend('force', server_conf,
+            { root_markers = lsp.root_markers })
+    end
+
     if lsp.init_options then
         server_conf = vim.tbl_extend('force', server_conf,
             { init_options = lsp.init_options })
