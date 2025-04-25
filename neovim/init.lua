@@ -62,7 +62,7 @@ require('packer').startup(function()
     }
     use {
         'rcarriga/nvim-dap-ui',
-        commit = '881a69e'
+        commit = '73a26ab'
     }
     use {
         'theHamsta/nvim-dap-virtual-text',
@@ -74,7 +74,7 @@ require('packer').startup(function()
         -- the plugins, particularly in combining with 'telescope' and
         -- 'telescope-fzf-native'
         'ibhagwan/fzf-lua',
-        commit = '40fbbb6'
+        commit = '18ac8df'
     }
     use {
         'nvim-telescope/telescope.nvim',
@@ -121,11 +121,11 @@ require('packer').startup(function()
     }
     use {
         'mfussenegger/nvim-jdtls',
-        commit = '5ecf13c'
+        commit = 'c23f200'
     }
     use {
         'pmizio/typescript-tools.nvim',
-        commit = 'a4109c7'
+        commit = '3c501d7'
     }
     use {
         'nvim-neotest/nvim-nio',
@@ -145,11 +145,11 @@ require('packer').startup(function()
     }
     use {
         'zbirenbaum/copilot.lua',
-        commit = '0b43549'
+        commit = '2f50ec4'
     }
     use {
         'CopilotC-Nvim/CopilotChat.nvim',
-        tag = 'v3.11.0',
+        tag = 'v3.11.1',
     }
     use {
         'Exafunction/codeium.nvim',
@@ -157,7 +157,7 @@ require('packer').startup(function()
             'nvim-lua/plenary.nvim',
             'hrsh7th/nvim-cmp',
         },
-        commit = '9569c90'
+        commit = '6e4a661'
     }
     use {
         'Mofiqul/dracula.nvim',
@@ -182,7 +182,7 @@ require('packer').startup(function()
     }
     use {
         'nvim-tree/nvim-tree.lua',
-        tag = 'nvim-tree-v1.11.0',
+        tag = 'nvim-tree-v1.12.0',
         requires = 'nvim-tree/nvim-web-devicons'
     }
     use {
@@ -195,7 +195,7 @@ require('packer').startup(function()
     }
     use {
         'nvim-tree/nvim-web-devicons',
-        commit = 'c90dee4'
+        commit = '50b5b06'
     }
     use {
         'norcalli/nvim-colorizer.lua',
