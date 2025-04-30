@@ -128,8 +128,8 @@ if command -v fnm &> /dev/null; then
 fi
 
 # TODO: jenv is slow, need to find alternative
-if command -v jenv &> /dev/null; then
-  export JENV_HOME=$HOME/.jenv
+JENV_HOME=$HOME/.jenv
+if [ -d "$JENV_HOME" ] || command -v jenv &> /dev/null; then
   export PATH="$JENV_HOME/bin:$PATH"
   _evalcache jenv init - --no-rehash
 
@@ -137,17 +137,17 @@ if command -v jenv &> /dev/null; then
     (jenv rehash &) 2> /dev/null
 fi
 
+PYENV_HOME="$HOME/.pyenv"
+if [ -d "$PYENV_HOME" ] || command -v pyenv &> /dev/null; then
+  [[ -d $PYENV_HOME/bin ]] && export PATH="$PYENV_HOME/bin:$PATH"
+  _evalcache pyenv init - zsh
+fi
+
 if command -v rbenv &> /dev/null; then
   _evalcache rbenv init --no-rehash - zsh
 
     # perform background rehash
     (rbenv rehash &) 2> /dev/null
-fi
-
-if command -v pyenv &> /dev/null; then
-  export PYENV_ROOT="$HOME/.pyenv"
-  [[ -d $PYENV_ROOT/bin ]] && export PATH="$PYENV_ROOT/bin:$PATH"
-  _evalcache pyenv init - zsh
 fi
 
 if command -v mcfly &> /dev/null; then
