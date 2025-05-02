@@ -9,6 +9,7 @@ return {
         outline = true,
         suggestFromUnimportedLibraries = true
     },
+    root_markers = { "pubspec.yaml" },
     settings = {
         dart = {
             completeFunctionCalls = true,
