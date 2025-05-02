@@ -148,9 +148,11 @@ prerequisites: .NET SDK
     - mac: `omnisharp-osx-arm64-net6.0.zip`
     - linux: `omnisharp-linux-<ARCH>-net6.0.zip`
 3. extract content of omnisharp-roslyn in neovim/.lsp_vendors/omnisharp
-4. create symlink to the 'OmniSharp' executable or add
-   'neovim/.lsp_vendors/omnisharp' to the PATH.
-4. enforce https: https://learn.microsoft.com/en-us/aspnet/core/security/enforcing-ssl?view=aspnetcore-8.0&tabs=visual-studio%2Clinux-rhel#trust-the-aspnet-core-https-development-certificate-on-windows-and-macos
+4. create symlink to the 'OmniSharp' executable or add 'neovim/.lsp_vendors/omnisharp' to the PATH.
+5. ensure 'OmniSharp' is executable
+    - cmd: chmod ugo+x /path/to/OmniSharp
+6. ensure "$DOTNET_ROOT" is set in the PATH. if not, the root should be set to the .NET (dotnet) binary located.
+7. enforce https: https://learn.microsoft.com/en-us/aspnet/core/security/enforcing-ssl?view=aspnetcore-8.0&tabs=visual-studio%2Clinux-rhel#trust-the-aspnet-core-https-development-certificate-on-windows-and-macos
 
 # Setup "jdtls" (Java Language Server)
 prerequisites: java 21+ (MANDATORY)
