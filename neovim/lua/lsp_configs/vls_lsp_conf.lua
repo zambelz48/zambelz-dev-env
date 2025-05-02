@@ -1,5 +1,3 @@
-local nvim_lsp = require 'lspconfig'
-
 return {
     name = 'vls',
     cmd = { 'vls' },
@@ -42,5 +40,4 @@ return {
             }
         }
     },
-    root_dir = nvim_lsp.util.root_pattern('package.json', 'vue.config.js')
 }

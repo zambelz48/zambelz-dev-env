@@ -6,7 +6,8 @@ vim.g.lspTimeoutConfig = {
         ignore = {
             -- filetypes to ignore; empty by default
             -- lsp-timeout is disabld completely for these filetypes
-            'java'
+            'java',
+            'kotlin'
         }
     }
 }

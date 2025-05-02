@@ -7,6 +7,5 @@ return {
             globPattern = '*@(.sh|.inc|.bash|.command|.zsh|.zshrc)'
         },
     },
-    single_file_support = true,
     root_markers = { '.git' },
 }

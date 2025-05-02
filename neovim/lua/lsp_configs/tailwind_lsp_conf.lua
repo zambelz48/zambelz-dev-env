@@ -1,5 +1,3 @@
-local nvim_lsp = require 'lspconfig'
-
 return {
     name = 'tailwindcss',
     cmd = { 'tailwindcss-language-server', '--stdio' },
@@ -34,10 +32,4 @@ return {
             validate = true
         }
     },
-    root_dir = nvim_lsp.util.root_pattern(
-        'tailwind.config.js', 'tailwind.config.cjs', 'tailwind.config.mjs',
-        'tailwind.config.ts', 'postcss.config.js', 'postcss.config.cjs',
-        'postcss.config.mjs', 'postcss.config.ts', 'package.json',
-        'node_modules', '.git'
-    )
 }

@@ -1,15 +1,15 @@
-local nvim_lsp = require 'lspconfig'
-local utils = require 'utils'
-
-local z_dev_env_path = os.getenv('ZAMBELZ_DEV_ENV_PATH')
-local omnisharp_dll_path = z_dev_env_path ..
-    '/neovim/.lsp_vendors/omnisharp/OmniSharp.dll'
-
-nvim_lsp.omnisharp.setup({
-    cmd = { "dotnet", omnisharp_dll_path },
+return {
+    name = "omnisharp",
+    cmd = { "OmniSharp", "-z", "--hostPID", "12345", "DotNet:enablePackageRestore=false", "--encoding", "utf-8", "--languageserver" },
     filetypes = { "cs" },
-    root_dir = nvim_lsp.util.root_pattern('*.sln', '*.csproj', 'omnisharp.json',
-        "function.json"),
+    capabilities = {
+        workspace = {
+            workspaceFolders = false
+        },
+    },
+    init_options = {
+    },
+    root_markers = { ".sln", ".csproj", "omnisharp.json", "function.json" },
     settings = {
         FormattingOptions = {
             -- Enables support for reading code style, naming convention and analyzer
@@ -48,7 +48,4 @@ nvim_lsp.omnisharp.setup({
             IncludePrereleases = true,
         },
     },
-    on_attach = function(_, bufnr)
-        utils.lsp_shared_keymaps(bufnr)
-    end
-})
+}

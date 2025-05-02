@@ -2,7 +2,6 @@ return {
     name = 'vimls',
     cmd = { 'vim-language-server', '--stdio' },
     filetypes = { 'vim' },
-    single_file_support = true,
     init_options = {
         diagnostic = {
             enable = true

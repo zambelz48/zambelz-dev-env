@@ -22,6 +22,5 @@ return {
             }
         }
     },
-    single_file_support = true,
     root_markers = { 'ansible.cfg', '.ansible-lint' },
 }

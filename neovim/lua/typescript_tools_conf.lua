@@ -1,6 +1,11 @@
 local tstools = require 'typescript-tools'
+local utils = require 'utils'
 
 tstools.setup({
+    on_attach = function(_, bufnr)
+        utils.lsp_shared_keymaps(bufnr)
+    end,
+
     settings = {
         -- spawn additional tsserver instance to calculate diagnostics on it
         separate_diagnostic_server = true,

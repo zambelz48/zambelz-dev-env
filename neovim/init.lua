@@ -22,7 +22,7 @@ require('packer').startup(function()
     use 'nvim-lua/plenary.nvim'
     use {
         'nvim-treesitter/nvim-treesitter',
-        commit = '684eeac',
+        commit = '94ea4f4',
         requires = {
             'nvim-treesitter/nvim-treesitter-textobjects'
         }
@@ -33,7 +33,7 @@ require('packer').startup(function()
     }
     use {
         'neovim/nvim-lspconfig',
-        tag = 'v2.0.0'
+        tag = 'v2.1.0'
     }
     use {
         'hrsh7th/cmp-nvim-lsp',
@@ -233,6 +233,5 @@ require('todo_comments_conf')
 require('markdown_preview_conf')
 require('copilot_conf')
 require('copilot_chat_conf')
-require('omnisharp_conf')
 require('typescript_tools_conf')
 require('codeium_conf')
