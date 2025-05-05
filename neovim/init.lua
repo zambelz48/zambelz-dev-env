@@ -157,7 +157,7 @@ require('packer').startup(function()
             'nvim-lua/plenary.nvim',
             'hrsh7th/nvim-cmp',
         },
-        commit = '6e4a661'
+        commit = '821b570'
     }
     use {
         'Mofiqul/dracula.nvim',
