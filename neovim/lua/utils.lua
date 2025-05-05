@@ -82,4 +82,13 @@ function Mod.lsp_shared_keymaps(bufnr)
         opts)
 end
 
+function Mod.coding_assistant()
+    local assistant = os.getenv('CODING_ASSISTANT')
+    if assistant == nil then
+        return 'copilot'
+    end
+
+    return assistant
+end
+
 return Mod

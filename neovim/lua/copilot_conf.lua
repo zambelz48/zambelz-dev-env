@@ -1,8 +1,8 @@
 local copilot_lua = require 'copilot'
+local utils = require 'utils'
 
 local is_copilot_enabled = function()
-    local coding_assistant = os.getenv('CODING_ASSISTANT')
-    return coding_assistant == 'copilot'
+    return utils.coding_assistant() == 'copilot'
 end
 
 copilot_lua.setup({

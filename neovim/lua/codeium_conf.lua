@@ -1,9 +1,5 @@
 local codeium_lua = require 'codeium'
-
-local is_codeium_enabled = function()
-    local coding_assistant = os.getenv('CODING_ASSISTANT')
-    return coding_assistant == 'codeium'
-end
+local utils = require 'utils'
 
 codeium_lua.setup({
     -- suppress completion errors (https://github.com/Exafunction/codeium.nvim/pull/283)
@@ -13,7 +9,7 @@ codeium_lua.setup({
     enable_cmp_source = false,
 
     virtual_text = {
-        enabled = is_codeium_enabled(),
+        enabled = utils.coding_assistant() == 'codeium',
 
         -- Set to true if you never want completions to be shown automatically.
         manual = false,
