@@ -190,10 +190,6 @@ require('packer').startup(function()
         tag = 'v2.13.1'
     }
     use {
-        'hinell/lsp-timeout.nvim',
-        commit = '6325906'
-    }
-    use {
         'nvim-tree/nvim-web-devicons',
         commit = '50b5b06'
     }
@@ -216,7 +212,6 @@ require('mappings')
 require('treesitter_conf')
 require('cmp_conf')
 require('lsp_conf')
-require('lsp_timeout_conf')
 require('nvim_tree_conf')
 require('telescope_conf')
 require('lualine_conf')
