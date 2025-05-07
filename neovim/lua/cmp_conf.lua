@@ -1,3 +1,4 @@
+local vim = vim
 local luasnip = require 'luasnip'
 local cmp = require 'cmp'
 

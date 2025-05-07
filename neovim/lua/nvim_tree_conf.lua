@@ -1,3 +1,4 @@
+local vim = vim
 local nvim_tree = require 'nvim-tree'
 -- keymap
 vim.api.nvim_set_keymap('n', '<leader>e', '<cmd>:NvimTreeToggle<CR>',

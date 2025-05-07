@@ -1,3 +1,4 @@
+local vim = vim
 local utils = require 'utils'
 
 require('toggleterm').setup({

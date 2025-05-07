@@ -1,3 +1,4 @@
+local vim = vim
 local fidget = require 'fidget'
 
 fidget.setup({

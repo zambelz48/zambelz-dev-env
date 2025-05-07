@@ -1,3 +1,4 @@
+local vim = vim
 local utils = require 'utils'
 
 local function switch_source_header(bufnr)

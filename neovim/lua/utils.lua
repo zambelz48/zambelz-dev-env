@@ -1,3 +1,4 @@
+local vim = vim
 local Mod = {}
 
 function Mod.nnoremap(lhs, rhs, opts)

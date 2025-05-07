@@ -1,3 +1,4 @@
+local vim = vim
 local gitsigns = require 'gitsigns'
 
 local on_attach = function(_, bufnr)

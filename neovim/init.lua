@@ -84,6 +84,10 @@ require('packer').startup(function()
         }
     }
     use {
+        'nvim-telescope/telescope-ui-select.nvim',
+        commit = '6e51d7d'
+    }
+    use {
         'nvim-telescope/telescope-fzf-native.nvim',
         commit = '1f08ed6',
         run = 'cmake -S. -Bbuild -DCMAKE_BUILD_TYPE=Release && cmake --build build --config Release'

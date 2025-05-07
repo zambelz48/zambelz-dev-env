@@ -1,3 +1,4 @@
+local vim = vim
 local utils = require 'utils'
 
 local python3_path = utils.shell_cmd('which python3')

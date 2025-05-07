@@ -12,12 +12,14 @@ telescope.setup({
         },
     },
     extensions = {
-        fzf = {}
+        fzf = {},
+        ['ui-select'] = {},
     },
 })
 
 -- Enable telescope fzf native, if installed
 telescope.load_extension('fzf')
+telescope.load_extension('ui-select')
 
 -- Get current working directory
 local cwd = vim.uv.cwd()

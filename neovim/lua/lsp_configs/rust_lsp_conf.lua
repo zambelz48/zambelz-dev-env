@@ -1,3 +1,4 @@
+local vim = vim
 local utils = require 'utils'
 
 local function reload_workspace(bufnr)

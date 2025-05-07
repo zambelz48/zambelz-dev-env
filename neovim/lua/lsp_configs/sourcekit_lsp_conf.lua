@@ -1,5 +1,3 @@
-local nvim_lsp = require 'lspconfig'
-
 return {
     name = 'sourcekit',
     cmd = { 'sourcekit-lsp' },

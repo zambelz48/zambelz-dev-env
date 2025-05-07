@@ -1,3 +1,4 @@
+local vim = vim
 local dap = require 'dap'
 local z_dev_env_path = os.getenv('ZAMBELZ_DEV_ENV_PATH')
 
