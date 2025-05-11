@@ -156,7 +156,7 @@ require('packer').startup(function()
         tag = 'v3.11.1',
     }
     use {
-        'Exafunction/codeium.nvim',
+        'Exafunction/windsurf.nvim',
         requires = {
             'nvim-lua/plenary.nvim',
             'hrsh7th/nvim-cmp',
@@ -233,4 +233,4 @@ require('markdown_preview_conf')
 require('copilot_conf')
 require('copilot_chat_conf')
 require('typescript_tools_conf')
-require('codeium_conf')
+require('windsurf_conf')

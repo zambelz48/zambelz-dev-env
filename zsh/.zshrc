@@ -52,7 +52,7 @@ export LESS_TERMCAP_se=$'\e[0m'         # reset reverse video
 export LESS_TERMCAP_ue=$'\e[0m'         # reset underline
 export GROFF_NO_SGR=1                   # for konsole
 
-# Coding assistant options ("copilot" or "codeium")
+# Coding assistant options ("copilot" or "windsurf")
 export CODING_ASSISTANT="copilot"
 
 case "$KERNEL_NAME" in

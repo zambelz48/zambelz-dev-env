@@ -1,15 +1,15 @@
-local codeium_lua = require 'codeium'
+local windsurf = require 'codeium'
 local utils = require 'utils'
 
-codeium_lua.setup({
-    -- suppress completion errors (https://github.com/Exafunction/codeium.nvim/pull/283)
+windsurf.setup({
+    -- suppress completion errors (https://github.com/Exafunction/windsurf.nvim/pull/283)
     quiet = true,
 
     -- Optionally disable cmp source if using virtual text only
     enable_cmp_source = false,
 
     virtual_text = {
-        enabled = utils.coding_assistant() == 'codeium',
+        enabled = utils.coding_assistant() == 'windsurf',
 
         -- Set to true if you never want completions to be shown automatically.
         manual = false,

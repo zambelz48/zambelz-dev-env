@@ -30,7 +30,7 @@ function use_copilot {
     export CODING_ASSISTANT="copilot"
 }
 
-# Use codeium in neovim
-function use_codeium {
-    export CODING_ASSISTANT="codeium"
+# Use windsurf in neovim
+function use_windsurf {
+    export CODING_ASSISTANT="windsurf"
 }
