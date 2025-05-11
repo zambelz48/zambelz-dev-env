@@ -43,6 +43,7 @@ neovim/.lsp_vendors/omnisharp
 
 # vscode-codelldb debugger
 neovim/.dap/vscode-codelldb
+neovim/.dap/vscode-js-debug
 
 # End of https://www.toptal.com/developers/gitignore/api/macos
 

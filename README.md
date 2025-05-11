@@ -190,15 +190,20 @@ source: https://github.com/mfussenegger/nvim-jdtls
 # Setup "terraform-ls" (terraform language server)
 1. go to: https://github.com/hashicorp/terraform-ls
 ```
-##### Install Debug Adapter Protocol
-##### vscode-codelldb (c, cpp & rust)
-```sh
-1. download latest release of vscode-codelldb (.vsix) here: https://github.com/vadimcn/codelldb/releases
-2. unzip to: `neovim/.dap/vscode-codelldb`
-
-# To add debug config
-- Create launch.json file inside `.vscode` in your root project
-```
+##### Neovim Debugger
+- **Install Debug Adapter Protocol**
+    - C/C++/Rust (https://github.com/mfussenegger/nvim-dap/wiki/C-C---Rust-(via--codelldb))
+        - download latest release of vscode-codelldb (.vsix) here: https://github.com/vadimcn/codelldb/releases
+        - unzip to: `neovim/.dap/vscode-codelldb`
+    - Go (https://github.com/mfussenegger/nvim-dap/wiki/Debug-Adapter-installation#go-using-delve-directly)
+        - Install delve: `go install github.com/go-delve/delve/cmd/dlv@latest`
+    - Javascript/Typescript
+        - Download `js-debug-dap-${version}.tar.gz` from their [releases](https://github.com/microsoft/vscode-js-debug/releases) page.
+        - Extract to: `neovim/.dap/vscode-js-debug`
+    - dart/flutter
+        - just install flutter sdk
+- **Add debug config**
+    - Create `launch.json` file inside `.vscode` in your root project
 
 #### Installation
 ```sh
