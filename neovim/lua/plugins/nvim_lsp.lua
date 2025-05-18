@@ -1,8 +1,9 @@
+local vim = vim
+
 return {
     'neovim/nvim-lspconfig',
     tag = 'v2.1.0',
     config = function()
-        local vim = vim
         local utils = require 'utils'
 
         local signs = {

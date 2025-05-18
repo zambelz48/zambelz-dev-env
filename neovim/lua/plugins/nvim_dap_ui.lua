@@ -1,3 +1,5 @@
+local vim = vim
+
 return {
     'rcarriga/nvim-dap-ui',
     commit = '73a26ab',

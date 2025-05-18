@@ -3,30 +3,31 @@ local vim = vim
 return {
     'akinsho/toggleterm.nvim',
     tag = 'v2.13.1',
-    opts = {
-        size = 20,
-        open_mapping = [[<c-\>]],
-        hide_numbers = true,
-        shade_filetypes = {},
-        shade_terminals = false,
-        shading_factor = 2,
-        start_in_insert = true,
-        insert_mappings = true,
-        persist_size = true,
-        direction = "float",
-        close_on_exit = true,
-        shell = vim.o.shell,
-        float_opts = {
-            border = "curved",
-            winblend = 0,
-            highlights = {
-                border = "Normal",
-                background = "Normal",
-            },
-        },
-    },
     config = function()
         local utils = require 'utils'
+
+        require('toggleterm').setup({
+            size = 20,
+            open_mapping = [[<c-\>]],
+            hide_numbers = true,
+            shade_filetypes = {},
+            shade_terminals = false,
+            shading_factor = 2,
+            start_in_insert = true,
+            insert_mappings = true,
+            persist_size = true,
+            direction = "float",
+            close_on_exit = true,
+            shell = vim.o.shell,
+            float_opts = {
+                border = "curved",
+                winblend = 0,
+                highlights = {
+                    border = "Normal",
+                    background = "Normal",
+                },
+            },
+        })
 
         function _G.set_terminal_keymaps()
             utils.tnoremap_buf('<esc>', [[<C-\><C-n>]])
