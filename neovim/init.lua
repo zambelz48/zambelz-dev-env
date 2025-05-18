@@ -1,3 +1,5 @@
+local vim = vim
+
 local install_path = vim.fn.stdpath 'data' ..
     '/site/pack/packer/start/packer.nvim'
 
@@ -74,11 +76,11 @@ require('packer').startup(function()
         -- the plugins, particularly in combining with 'telescope' and
         -- 'telescope-fzf-native'
         'ibhagwan/fzf-lua',
-        commit = '18ac8df'
+        commit = '66e620a'
     }
     use {
         'nvim-telescope/telescope.nvim',
-        commit = 'a4ed825',
+        commit = 'b4da76b',
         requires = {
             'nvim-lua/plenary.nvim'
         }
@@ -137,7 +139,7 @@ require('packer').startup(function()
     }
     use {
         'tpope/vim-dadbod',
-        commit = '9f0ca8b'
+        commit = 'e95afed'
     }
     use {
         'kristijanhusak/vim-dadbod-ui',
@@ -149,11 +151,11 @@ require('packer').startup(function()
     }
     use {
         'zbirenbaum/copilot.lua',
-        commit = '2f50ec4'
+        commit = '0929c92'
     }
     use {
         'CopilotC-Nvim/CopilotChat.nvim',
-        tag = 'v3.11.1',
+        tag = 'v3.12.0',
     }
     use {
         'Exafunction/windsurf.nvim',
@@ -195,7 +197,7 @@ require('packer').startup(function()
     }
     use {
         'nvim-tree/nvim-web-devicons',
-        commit = '50b5b06'
+        commit = '1fb58cc'
     }
     use {
         'norcalli/nvim-colorizer.lua',
