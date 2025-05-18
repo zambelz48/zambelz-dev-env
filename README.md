@@ -211,8 +211,22 @@ $  zconf neovim
 ```
 
 #### Activate neovim plugins
-1. open neovim
-1. execute this command: `:PackerInstall`
+1. open neovim. lazy nvim should run automatically
+
+#### Setup LuaRocks
+1. Install `hererocks`
+```sh
+pip install --user hererocks
+```
+2. Manually setup Lua 5.1 + LuaRocks
+```sh
+cd ~/.local/share/nvim
+mkdir -p lazy-rocks
+cd lazy-rocks
+
+hererocks . --lua=5.1 -r latest
+source ./bin/activate
+```
 
 ## tmux configs
 

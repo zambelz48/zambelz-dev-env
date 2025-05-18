@@ -1,238 +1,74 @@
 local vim = vim
 
-local install_path = vim.fn.stdpath 'data' ..
-    '/site/pack/packer/start/packer.nvim'
-
-if vim.fn.empty(vim.fn.glob(install_path)) > 0 then
-    vim.fn.execute('!git clone https://github.com/wbthomason/packer.nvim ' ..
-        install_path)
+-- Bootstrap lazy.nvim
+local lazypath = vim.fn.stdpath('data') .. '/lazy/lazy.nvim'
+if not (vim.uv or vim.loop).fs_stat(lazypath) then
+    local lazyrepo = 'https://github.com/folke/lazy.nvim.git'
+    local out = vim.fn.system({ 'git', 'clone', '--filter=blob:none',
+        '--branch=stable', lazyrepo, lazypath })
+    if vim.v.shell_error ~= 0 then
+        vim.api.nvim_echo({
+            { 'Failed to clone lazy.nvim:\n', 'ErrorMsg' },
+            { out,                            'WarningMsg' },
+            { '\nPress any key to exit...' },
+        }, true, {})
+        vim.fn.getchar()
+        os.exit(1)
+    end
 end
+vim.opt.rtp:prepend(lazypath)
 
-vim.api.nvim_exec(
-    [[
-        augroup Packer
-            autocmd!
-            autocmd BufWritePost init.lua PackerCompile
-        augroup end
-    ]],
-    false
-)
-
-local use = require('packer').use
-require('packer').startup(function()
-    use 'wbthomason/packer.nvim'
-    use 'nvim-lua/plenary.nvim'
-    use {
-        'nvim-treesitter/nvim-treesitter',
-        commit = '94ea4f4',
-        requires = {
-            'nvim-treesitter/nvim-treesitter-textobjects'
-        }
-    }
-    use {
-        'nvim-treesitter/playground',
-        commit = 'ba48c6a'
-    }
-    use {
-        'neovim/nvim-lspconfig',
-        tag = 'v2.1.0'
-    }
-    use {
-        'hrsh7th/cmp-nvim-lsp',
-        commit = 'a8912b8'
-    }
-    use {
-        'hrsh7th/cmp-buffer',
-        commit = 'b74fab3'
-    }
-    use {
-        'hrsh7th/nvim-cmp',
-        commit = 'b5311ab'
-    }
-    use {
-        'L3MON4D3/LuaSnip',
-        tag = 'v2.4.0',
-        run = "make install_jsregexp"
-    }
-    use {
-        'saadparwaiz1/cmp_luasnip',
-        commit = '98d9cb5'
-    }
-    use {
-        'mfussenegger/nvim-dap',
-        tag = '0.10.0'
-    }
-    use {
-        'rcarriga/nvim-dap-ui',
-        commit = '73a26ab'
-    }
-    use {
-        'theHamsta/nvim-dap-virtual-text',
-        commit = 'df66808'
-    }
-    use {
-        -- NOTE: required for 'CopilotC-Nvim/CopilotChat.nvim'
-        -- TODO: Find out customization options to maximize potential usage of
-        -- the plugins, particularly in combining with 'telescope' and
-        -- 'telescope-fzf-native'
-        'ibhagwan/fzf-lua',
-        commit = '66e620a'
-    }
-    use {
-        'nvim-telescope/telescope.nvim',
-        commit = 'b4da76b',
-        requires = {
-            'nvim-lua/plenary.nvim'
-        }
-    }
-    use {
-        'nvim-telescope/telescope-ui-select.nvim',
-        commit = '6e51d7d'
-    }
-    use {
-        'nvim-telescope/telescope-fzf-native.nvim',
-        commit = '1f08ed6',
-        run = 'cmake -S. -Bbuild -DCMAKE_BUILD_TYPE=Release && cmake --build build --config Release'
-    }
-    use {
-        'tpope/vim-fugitive',
-        commit = '4a745ea'
-    }
-    use {
-        'lewis6991/gitsigns.nvim',
-        tag = 'v1.0.2'
-    }
-    use {
-        'folke/trouble.nvim',
-        tag = 'v3.7.1',
-        requires = {
-            'nvim-tree/nvim-web-devicons'
-        }
-    }
-    use {
-        'j-hui/fidget.nvim',
-        commit = 'v1.6.1'
-    }
-    use {
-        'numToStr/Comment.nvim',
-        commit = 'e30b7f2'
-    }
-    use {
-        'JoosepAlviste/nvim-ts-context-commentstring',
-        commit = '1b212c2'
-    }
-    use {
-        'folke/todo-comments.nvim',
-        tag = 'v1.4.0'
-    }
-    use {
-        'mfussenegger/nvim-jdtls',
-        commit = 'c23f200'
-    }
-    use {
-        'pmizio/typescript-tools.nvim',
-        commit = '3c501d7'
-    }
-    use {
-        'nvim-neotest/nvim-nio',
-        tag = 'v1.10.1'
-    }
-    use {
-        'tpope/vim-dadbod',
-        commit = 'e95afed'
-    }
-    use {
-        'kristijanhusak/vim-dadbod-ui',
-        commit = '4604323'
-    }
-    use {
-        'kristijanhusak/vim-dadbod-completion',
-        commit = 'a8dac0b'
-    }
-    use {
-        'zbirenbaum/copilot.lua',
-        commit = '0929c92'
-    }
-    use {
-        'CopilotC-Nvim/CopilotChat.nvim',
-        tag = 'v3.12.0',
-    }
-    use {
-        'Exafunction/windsurf.nvim',
-        requires = {
-            'nvim-lua/plenary.nvim',
-            'hrsh7th/nvim-cmp',
-        },
-        commit = '821b570'
-    }
-    use {
-        'Mofiqul/dracula.nvim',
-        commit = '96c9d19'
-    }
-    use {
-        'nvim-lualine/lualine.nvim',
-        -- stick to '640260d' for now, since the newest one is noticeable slow
-        commit = '640260d',
-        requires = {
-            'nvim-tree/nvim-web-devicons',
-            opt = true
-        }
-    }
-    use {
-        'edkolev/tmuxline.vim',
-        commit = '4119c55'
-    }
-    use {
-        'AndreM222/copilot-lualine',
-        commit = '6bc29ba'
-    }
-    use {
-        'nvim-tree/nvim-tree.lua',
-        tag = 'nvim-tree-v1.12.0',
-        requires = 'nvim-tree/nvim-web-devicons'
-    }
-    use {
-        'akinsho/toggleterm.nvim',
-        tag = 'v2.13.1'
-    }
-    use {
-        'nvim-tree/nvim-web-devicons',
-        commit = '1fb58cc'
-    }
-    use {
-        'norcalli/nvim-colorizer.lua',
-        commit = 'a065833'
-    }
-    use {
-        'iamcco/markdown-preview.nvim',
-        commit = 'a923f5f',
-        run = function()
-            vim.fn["mkdp#util#install"]()
-        end
-    }
-end)
+-- Make sure to setup `mapleader` and `maplocalleader` before
+-- loading lazy.nvim so that mappings are correct.
+-- This is also a good place to setup other settings (vim.opt)
+vim.g.mapleader = ' '
+vim.g.maplocalleader = '\\'
 
 require('options')
-require('dracula_theme_conf')
-require('mappings')
-require('treesitter_conf')
-require('cmp_conf')
-require('lsp_conf')
-require('nvim_tree_conf')
-require('telescope_conf')
-require('lualine_conf')
-require('nvim_colorizer_conf')
-require('toggleterm_conf')
-require('gitsigns_conf')
-require('trouble_conf')
-require('nvim_web_devicons_conf')
-require('fidget_conf')
-require('comment_conf')
-require('nvim_dap_conf')
 require('keymaps')
-require('todo_comments_conf')
-require('markdown_preview_conf')
-require('copilot_conf')
-require('copilot_chat_conf')
-require('typescript_tools_conf')
-require('windsurf_conf')
+
+-- Setup lazy.nvim
+require('lazy').setup({
+    spec = {
+        require('plugins.dracula_theme'),
+        require('plugins.treesitter'),
+        require('plugins.nvim_web_devicons'),
+        require('plugins.nvim_lsp'),
+        require('plugins.nvim_cmp'),
+        require('plugins.nvim_cmp_luasnip'),
+        require('plugins.luasnip'),
+        require('plugins.fzf'),
+        require('plugins.telescope'),
+        require('plugins.telescope_fzf_native'),
+        require('plugins.telescope_ui_select'),
+        require('plugins.nvim_dap'),
+        require('plugins.nvim_dap_ui'),
+        require('plugins.nvim_dap_virtual_text'),
+        require('plugins.vim_fugitive'),
+        require('plugins.gitsigns'),
+        require('plugins.nvim_tree'),
+        require('plugins.fidget'),
+        require('plugins.trouble'),
+        require('plugins.comment_ts_context'),
+        require('plugins.comment'),
+        require('plugins.todo_comments'),
+        require('plugins.lualine'),
+        require('plugins.tmuxline'),
+        require('plugins.toggleterm'),
+        require('plugins.copilot'),
+        require('plugins.copilot_lualine'),
+        require('plugins.copilot_chat'),
+        require('plugins.windsurf'),
+        require('plugins.typescript_tools'),
+        require('plugins.neotest'),
+        require('plugins.nvim_jdtls'),
+        require('plugins.nvim_colorizer'),
+        require('plugins.markdown_preview'),
+    },
+
+    -- colorscheme that will be used when installing plugins.
+    install = { colorscheme = { 'dracula' } },
+
+    -- automatically check for plugin updates
+    checker = { enabled = true },
+})
