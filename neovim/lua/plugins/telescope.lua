@@ -21,9 +21,9 @@ return {
         },
     },
     config = function()
-        local telescope = require 'telescope'
-        local telescope_builtin = require 'telescope.builtin'
-        local telescope_themes = require 'telescope.themes'
+        local telescope = require('telescope')
+        local telescope_builtin = require('telescope.builtin')
+        local telescope_themes = require('telescope.themes')
 
         -- Enable telescope fzf native, if installed
         telescope.load_extension('fzf')

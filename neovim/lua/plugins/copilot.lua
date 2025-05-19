@@ -1,4 +1,4 @@
-local utils = require 'utils'
+local utils = require('utils')
 
 local is_copilot_enabled = function()
     return utils.coding_assistant() == 'copilot'

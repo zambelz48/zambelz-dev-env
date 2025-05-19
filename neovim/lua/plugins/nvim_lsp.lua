@@ -4,7 +4,7 @@ return {
     'neovim/nvim-lspconfig',
     tag = 'v2.1.0',
     config = function()
-        local utils = require 'utils'
+        local utils = require('utils')
 
         local signs = {
             Error = '',
@@ -35,7 +35,16 @@ return {
 
         -- nvim-cmp supports additional completion capabilities
         local capabilities = vim.lsp.protocol.make_client_capabilities()
-        capabilities = require('cmp_nvim_lsp').default_capabilities(capabilities)
+        local has_cmp, cmp_nvim_lsp = pcall(require, 'cmp_nvim_lsp')
+        if has_cmp then
+            capabilities = require('cmp_nvim_lsp').default_capabilities(capabilities)
+        end
+
+        -- Add folding capabilities
+        capabilities.textDocument.foldingRange = {
+            dynamicRegistration = false,
+            lineFoldingOnly = true
+        }
 
         vim.lsp.config('*', {
             capabilities = capabilities,

@@ -4,10 +4,11 @@ return {
     'mfussenegger/nvim-jdtls',
     commit = 'c23f200',
     ft = { 'java' },
+    lazy = true,
     config = function()
-        local jdtls = require 'jdtls'
-        local cmp_nvim_lsp = require 'cmp_nvim_lsp'
-        local utils = require 'utils'
+        local jdtls = require('jdtls')
+        local cmp_nvim_lsp = require('cmp_nvim_lsp')
+        local utils = require('utils')
 
         local function get_config_path()
             local kernel_name = utils.shell_cmd('uname -s')

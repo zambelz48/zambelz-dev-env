@@ -8,8 +8,8 @@ return {
         'hrsh7th/cmp-buffer',
     },
     config = function()
-        local luasnip = require 'luasnip'
-        local cmp = require 'cmp'
+        local luasnip = require('luasnip')
+        local cmp = require('cmp')
 
         local kind_icons = {
             Text = "",

@@ -8,6 +8,7 @@ return {
         require('nvim-treesitter.configs').setup({
             -- Add languages to be installed here that you want installed for treesitter
             ensure_installed = {
+                'asm',
                 'bash',
                 'c',
                 'c_sharp',
@@ -26,8 +27,11 @@ return {
                 'gowork',
                 'graphql',
                 'groovy',
+                'hcl',
                 'html',
+                'http',
                 'java',
+                'javadoc',
                 'javascript',
                 'jsdoc',
                 'json',
@@ -40,6 +44,9 @@ return {
                 'markdown',
                 'markdown_inline',
                 'mermaid',
+                'ninja',
+                'passwd',
+                'php',
                 'prisma',
                 'properties',
                 'proto',
@@ -49,18 +56,19 @@ return {
                 'robots',
                 'ruby',
                 'rust',
+                'smali',
                 'scss',
                 'sql',
                 'ssh_config',
                 'swift',
+                'terraform',
                 'tmux',
                 'toml',
-                'terraform',
                 'tsx',
                 'typescript',
-                'vue',
                 'vim',
                 'vimdoc',
+                'vue',
                 'xml',
                 'yaml'
             },
@@ -71,7 +79,6 @@ return {
             },
             indent = {
                 enable = true,
-                disable = { 'ruby' },
             },
         })
     end

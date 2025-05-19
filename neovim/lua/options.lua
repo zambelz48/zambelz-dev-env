@@ -1,5 +1,5 @@
 local vim = vim
-local utils = require 'utils'
+local utils = require('utils')
 
 local python3_path = utils.shell_cmd('which python3')
 vim.g.python3_host_prog = python3_path

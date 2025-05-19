@@ -1,4 +1,4 @@
-local utils = require 'utils'
+local utils = require('utils')
 
 return {
     'pmizio/typescript-tools.nvim',

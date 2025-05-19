@@ -15,8 +15,8 @@ return {
         },
     },
     config = function()
-        local nvim_tree = require 'nvim-tree'
-        local nvim_tree_api = require 'nvim-tree.api'
+        local nvim_tree = require('nvim-tree')
+        local nvim_tree_api = require('nvim-tree.api')
 
         vim.api.nvim_set_keymap('n', '<leader>e', '<cmd>:NvimTreeToggle<CR>',
             { noremap = true, silent = true })

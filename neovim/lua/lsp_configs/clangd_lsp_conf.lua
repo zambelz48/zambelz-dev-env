@@ -1,11 +1,17 @@
 local vim = vim
-local utils = require 'utils'
+local utils = require('utils')
+
+-- Memoize the expensive function to avoid repeated computation
+local get_clangd_clients = utils.memoize(function(bufnr)
+    return vim.lsp.get_clients({ bufnr = bufnr, name = 'clangd' })
+end)
 
 local function switch_source_header(bufnr)
     local method_name = 'textDocument/switchSourceHeader'
-    local client = vim.lsp.get_clients({ bufnr = bufnr, name = 'clangd' })[1]
+    local client = get_clangd_clients(bufnr)[1]
     if not client then
-        return vim.notify(('method %s is not supported by any servers active on the current buffer'):format(method_name))
+        return vim.notify(('method %s is not supported by any servers active on the current buffer')
+            :format(method_name))
     end
     local params = vim.lsp.util.make_text_document_params(bufnr)
     client.request(method_name, params, function(err, result)
@@ -22,12 +28,14 @@ end
 
 local function symbol_info()
     local bufnr = vim.api.nvim_get_current_buf()
-    local clangd_client = vim.lsp.get_clients({ bufnr = bufnr, name = 'clangd' })[1]
+    local clangd_client = vim.lsp.get_clients({ bufnr = bufnr, name = 'clangd' })
+        [1]
     if not clangd_client or not clangd_client.supports_method 'textDocument/symbolInfo' then
         return vim.notify('Clangd client not found', vim.log.levels.ERROR)
     end
     local win = vim.api.nvim_get_current_win()
-    local params = vim.lsp.util.make_position_params(win, clangd_client.offset_encoding)
+    local params = vim.lsp.util.make_position_params(win,
+        clangd_client.offset_encoding)
     clangd_client.request('textDocument/symbolInfo', params, function(err, res)
         if err or #res == 0 then
             -- Clangd always returns an error, there is not reason to parse it
@@ -65,13 +73,15 @@ return {
     },
     root_markers = { '.clangd', '.clang-tidy', '.clang-format', 'compile_commands.json', 'compile_flags.txt', 'configure.ac', '.git' },
     on_attach = function(_, bufnr)
-        vim.api.nvim_buf_create_user_command(0, 'LspClangdSwitchSourceHeader', function()
-            switch_source_header(0)
-        end, { desc = 'Switch between source/header' })
+        vim.api.nvim_buf_create_user_command(0, 'LspClangdSwitchSourceHeader',
+            function()
+                switch_source_header(0)
+            end, { desc = 'Switch between source/header' })
 
-        vim.api.nvim_buf_create_user_command(0, 'LspClangdShowSymbolInfo', function()
-            symbol_info()
-        end, { desc = 'Show symbol info' })
+        vim.api.nvim_buf_create_user_command(0, 'LspClangdShowSymbolInfo',
+            function()
+                symbol_info()
+            end, { desc = 'Show symbol info' })
 
         utils.lsp_shared_keymaps(bufnr)
     end,

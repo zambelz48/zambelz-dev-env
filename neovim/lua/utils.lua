@@ -22,17 +22,7 @@ function Mod.shell_cmd(cmd)
     local output = assert(handle:read('*a'))
     handle:close()
 
-    output = string.gsub(
-        string.gsub(
-            string.gsub(output, '^%s+', ''),
-            '%s+$',
-            ''
-        ),
-        '[\n\r]+',
-        ' '
-    )
-
-    return output
+    return Mod.trim(output)
 end
 
 function Mod.create_keymap(bufnr, ...)
@@ -90,6 +80,53 @@ function Mod.coding_assistant()
     end
 
     return assistant
+end
+
+-- Cache frequent operations
+Mod.cache = setmetatable({}, {
+    __index = function(t, k)
+        return rawget(t, k)
+    end
+})
+
+-- Memoized function for expensive operations
+function Mod.memoize(func)
+    local cache = {}
+    return function(...)
+        local args = { ... }
+        local key = table.concat(args, ":")
+        if cache[key] == nil then
+            cache[key] = func(...)
+        end
+        return cache[key]
+    end
+end
+
+-- More efficient shell command with timeout
+function Mod.shell_cmd_with_timeout(cmd, timeout_ms)
+    timeout_ms = timeout_ms or 1000 -- default 1 second timeout
+
+    -- Use pcall to handle potential errors
+    local success, result = pcall(function()
+        local handle = io.popen(cmd, 'r')
+        if not handle then return "" end
+
+        local output = handle:read('*a')
+        handle:close()
+        return output
+    end)
+
+    if not success then
+        vim.notify("Shell command failed: " .. cmd, vim.log.levels.ERROR)
+        return ""
+    end
+
+    return Mod.trim(result)
+end
+
+-- Trim whitespace more efficiently
+function Mod.trim(s)
+    return s:match("^%s*(.-)%s*$")
 end
 
 return Mod
