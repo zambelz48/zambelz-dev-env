@@ -26,6 +26,7 @@
     - **OPTIONAL**
         - mcfly: [source](https://github.com/cantino/mcfly)
         - tldr: [source](https://tldr.sh)
+        - gvm (*manage multiple go versions*): [source](https://github.com/moovweb/gvm)
         - jenv (*manage multiple java versions*): [source](https://github.com/jenv/jenv)
         - rbenv (*manage multiple ruby versions*): [source](https://github.com/rbenv/rbenv)
         - pyenv (*manage multiple python versions*): [source](https://github.com/pyenv/pyenv)
