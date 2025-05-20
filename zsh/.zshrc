@@ -177,3 +177,6 @@ source "$ZAMBELZ_DEV_ENV_PATH/zsh/.themes/dracula-syntax-highlighting/zsh-syntax
 # source: https://github.com/zsh-users/zsh-syntax-highlighting
 source "$ZAMBELZ_DEV_ENV_PATH/zsh/.themes/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh"
 
+# Cleanup PATH (de-duplicate)
+typeset -U path PATH
+
