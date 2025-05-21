@@ -118,56 +118,29 @@ export FZF_DEFAULT_OPTS="--color=fg:#f8f8f2,bg:#282a36,hl:#bd93f9
 --color=info:#ffb86c,prompt:#50fa7b,pointer:#ff79c6
 --color=marker:#ff79c6,spinner:#ffb86c,header:#6272a4"
 
-# GVM (Golang Version Manager)
-[[ -s "$HOME/.gvm/scripts/gvm" ]] && source "$HOME/.gvm/scripts/gvm"
-
 # FNM (Fast Node Manager)
 FNM_DIR="$HOME/.local/share/fnm"
 if [ -d "$FNM_DIR" ]; then
   export PATH="$FNM_DIR:$PATH"
 fi
-
 if command -v fnm &> /dev/null; then
   eval "$(fnm env --use-on-cd --shell zsh)"
-fi
-
-# TODO: jenv is slow, need to find alternative
-# JENV (Java Version Manager)
-JENV_HOME=$HOME/.jenv
-if [ -d "$JENV_HOME" ] || command -v jenv &> /dev/null; then
-  export PATH="$JENV_HOME/bin:$PATH"
-  _evalcache jenv init - --no-rehash
-
-    # perform background rehash
-    (jenv rehash &) 2> /dev/null
-fi
-
-# PYENV (Python Version Manager)
-PYENV_HOME="$HOME/.pyenv"
-if [ -d "$PYENV_HOME" ] || command -v pyenv &> /dev/null; then
-  [[ -d $PYENV_HOME/bin ]] && export PATH="$PYENV_HOME/bin:$PATH"
-  _evalcache pyenv init - zsh
-fi
-
-# RBENV (Ruby Version Manager)
-if command -v rbenv &> /dev/null; then
-  _evalcache rbenv init --no-rehash - zsh
-
-    # perform background rehash
-    (rbenv rehash &) 2> /dev/null
 fi
 
 if command -v mcfly &> /dev/null; then
   _evalcache mcfly init zsh
 fi
 
+# Version managers
+source "$ZAMBELZ_HELPER_PATH/version-managers.zsh"
+
 # Aliases
 alias zconf="$ZAMBELZ_DEV_ENV_PATH/main.sh"
 
 # Helper functions
-source "$ZAMBELZ_HELPER_PATH/utils.sh"
-source "$ZAMBELZ_HELPER_PATH/git.sh"
-source "$ZAMBELZ_HELPER_PATH/tmux.sh"
+source "$ZAMBELZ_HELPER_PATH/utils.zsh"
+source "$ZAMBELZ_HELPER_PATH/git.zsh"
+source "$ZAMBELZ_HELPER_PATH/tmux.zsh"
 
 # Dracula themes syntax highlighting
 # source: https://github.com/dracula/zsh-syntax-highlighting

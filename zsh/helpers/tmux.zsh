@@ -1,8 +1,6 @@
-#!/usr/bin/env bash
-
 TMUX_TMP_DIR="$HOME/.tmux/.tmp"
 
-function tmux_nvim_process {
+tmux_nvim_process() {
   local target_session="$1"
   local pane_pid=$(tmux list-panes -t "$target_session" -F "#{pane_pid}" | head -1)
   local nvim_process=$(ps -ef | grep "$pane_pid" | grep nvim)
@@ -10,7 +8,7 @@ function tmux_nvim_process {
   echo "$nvim_process"
 }
 
-function tmux_generate_sessions_file_path {
+tmux_generate_sessions_file_path() {
   if [ ! -d "$TMUX_TMP_DIR" ]; then
     mkdir -p "$TMUX_TMP_DIR"
   fi
@@ -30,7 +28,7 @@ function tmux_generate_sessions_file_path {
   echo "$tmux_sessions_file_path"
 }
 
-function tmux_clear_sessions {
+tmux_clear_sessions() {
   local tmux_sessions_file_path=$(tmux_generate_sessions_file_path)
   local sessions=()
   while IFS= read -r line; do
@@ -48,7 +46,7 @@ function tmux_clear_sessions {
   done
 }
 
-function tmux_update_shell {
+tmux_update_shell() {
   local tmux_sessions_file_path=$(tmux_generate_sessions_file_path)
   local sessions=()
   while IFS= read -r line; do
@@ -66,7 +64,7 @@ function tmux_update_shell {
   done
 }
 
-function tmux_quit_nvim {
+tmux_quit_nvim() {
   local tmux_sessions_file_path=$(tmux_generate_sessions_file_path)
   local sessions=()
   while IFS= read -r line; do
@@ -84,7 +82,7 @@ function tmux_quit_nvim {
   done
 }
 
-function tmux_backup_sessions {
+tmux_backup_sessions() {
   tmux_quit_nvim
 
   local tmux_sessions_file_path=$(tmux_generate_sessions_file_path)
@@ -108,7 +106,7 @@ function tmux_backup_sessions {
   done
 }
 
-function tmux_restore_sessions {
+tmux_restore_sessions() {
   local tmux_backup_sessions_file_path="$TMUX_TMP_DIR/backup_tmux_sessions"
   if [ ! -f "$tmux_backup_sessions_file_path" ]; then
     echo "tmux backup sessions file not found"

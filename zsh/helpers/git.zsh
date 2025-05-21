@@ -1,6 +1,4 @@
-#!/usr/bin/env bash
-
-function git_clean_pull {
+git_clean_pull() {
   local branch=$1
 
   git checkout -b temp && \
@@ -9,4 +7,4 @@ function git_clean_pull {
     git checkout $branch && \
     git branch -D temp && \
     git gc
-  }
+}
