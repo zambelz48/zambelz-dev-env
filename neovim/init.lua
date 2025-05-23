@@ -30,8 +30,10 @@ require('keymaps')
 -- Setup lazy.nvim
 require('lazy').setup({
     spec = {
+        require('plugins.plenary'),
         require('plugins.dracula_theme'),
         require('plugins.treesitter'),
+        require('plugins.treesitter_textobjects'),
         require('plugins.nvim_web_devicons'),
         require('plugins.nvim_lsp'),
         require('plugins.nvim_cmp'),
