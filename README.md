@@ -88,15 +88,6 @@ $ cargo install neocmakelsp
 
 ###### NPM Modules
 ```sh
-- DOCKERCOMPOSE => @microsoft/compose-language-service  
-- BASH => bash-language-server  
-- DOCKERFILE => dockerfile-language-server-nodejs  
-- VIM => vim-language-server  
-- HTML, CSS, etc => vscode-langservers-extracted  
-- YAML => yaml-language-server  
-- TAILWINDCSS => @tailwindcss/language-server
-
-## Command:
 $ npm install -g @microsoft/compose-language-service \
     bash-language-server \
     dockerfile-language-server-nodejs \
@@ -106,7 +97,8 @@ $ npm install -g @microsoft/compose-language-service \
     @tailwindcss/language-server \
     graphql-language-service-cli \
     @prisma/language-server \
-    @ansible/ansible-language-server
+    @ansible/ansible-language-server \
+    typescript-language-server
 
 ### Notes:
 - install ansible-lint for ansible lsp: https://ansible.readthedocs.io/projects/lint/installing/#installing-the-latest-version

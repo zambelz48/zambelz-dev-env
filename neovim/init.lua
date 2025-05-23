@@ -61,7 +61,6 @@ require('lazy').setup({
         require('plugins.copilot_lualine'),
         require('plugins.copilot_chat'),
         require('plugins.windsurf'),
-        require('plugins.typescript_tools'),
         require('plugins.neotest'),
         require('plugins.nvim_jdtls'),
         require('plugins.nvim_colorizer'),

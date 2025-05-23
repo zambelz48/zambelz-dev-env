@@ -81,6 +81,7 @@ return {
             require('lsp_configs.sourcekit_lsp_conf'),
             require('lsp_configs.tailwind_lsp_conf'),
             require('lsp_configs.terraformls_lsp_conf'),
+            require('lsp_configs.typescript_lsp_conf'),
             require('lsp_configs.vimls_lsp_conf'),
             require('lsp_configs.vls_lsp_conf'),
             require('lsp_configs.yamlls_lsp_conf'),
