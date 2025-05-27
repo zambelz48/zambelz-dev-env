@@ -2,7 +2,7 @@ local vim = vim
 
 return {
     'neovim/nvim-lspconfig',
-    tag = 'v2.1.0',
+    tag = 'v2.2.0',
     config = function()
         local utils = require('utils')
 
