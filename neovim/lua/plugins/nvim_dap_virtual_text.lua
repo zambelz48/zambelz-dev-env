@@ -2,7 +2,7 @@ local vim = vim
 
 return {
     'theHamsta/nvim-dap-virtual-text',
-    commit = 'df66808',
+    commit = 'fbdb48c',
     config = function()
         local dap_virtual_text = require('nvim-dap-virtual-text')
         dap_virtual_text.setup({

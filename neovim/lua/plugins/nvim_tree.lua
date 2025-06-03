@@ -16,7 +16,6 @@ return {
     },
     config = function()
         local nvim_tree = require('nvim-tree')
-        local nvim_tree_api = require('nvim-tree.api')
 
         vim.api.nvim_set_keymap('n', '<leader>e', '<cmd>:NvimTreeToggle<CR>',
             { noremap = true, silent = true })
@@ -130,12 +129,5 @@ return {
                 root_folder_label = false
             }
         })
-
-        local Event = nvim_tree_api.events.Event
-        nvim_tree_api.events.subscribe(Event.TreeClose, function()
-            if require('dap').session() then
-                require('dapui').open({ reset = true })
-            end
-        end)
     end,
 }

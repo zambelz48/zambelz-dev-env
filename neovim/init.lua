@@ -31,6 +31,7 @@ require('keymaps')
 require('lazy').setup({
     spec = {
         require('plugins.plenary'),
+        require('plugins.nvim_nio'),
         require('plugins.dracula_theme'),
         require('plugins.treesitter'),
         require('plugins.treesitter_textobjects'),
