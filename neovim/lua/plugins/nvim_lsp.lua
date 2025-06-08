@@ -1,5 +1,14 @@
 local vim = vim
 
+-- list of available lsp: https://github.com/neovim/nvim-lspconfig/blob/master/CONFIG.md
+-- Load all lsp config from $HOME/.config/nvim/lua/lsp_configs/*.lua
+local loaded_lsp_configs = {}
+local lsp_configs_dir = os.getenv('HOME') .. '/.config/nvim/lua/lsp_configs'
+for _, lsp_config_path in pairs(vim.fn.glob(lsp_configs_dir .. '/*.lua', true, true)) do
+    local lsp_spec = dofile(lsp_config_path)
+    table.insert(loaded_lsp_configs, lsp_spec)
+end
+
 return {
     'neovim/nvim-lspconfig',
     tag = 'v2.2.0',
@@ -37,7 +46,7 @@ return {
         local capabilities = vim.lsp.protocol.make_client_capabilities()
         local has_cmp, cmp_nvim_lsp = pcall(require, 'cmp_nvim_lsp')
         if has_cmp then
-            capabilities = require('cmp_nvim_lsp').default_capabilities(capabilities)
+            capabilities = cmp_nvim_lsp.default_capabilities(capabilities)
         end
 
         -- Add folding capabilities
@@ -53,41 +62,7 @@ return {
             end
         })
 
-        -- list of available lsp: https://github.com/neovim/nvim-lspconfig/blob/master/CONFIG.md
-        local lsp_configs = {
-            require('lsp_configs.ansiblels_lsp_conf'),
-            require('lsp_configs.bashls_lsp_conf'),
-            require('lsp_configs.clangd_lsp_conf'),
-            require('lsp_configs.cssls_lsp_conf'),
-            require('lsp_configs.dartls_lsp_conf'),
-            require('lsp_configs.docker_compose_lsp_conf'),
-            require('lsp_configs.dockerls_lsp_conf'),
-            require('lsp_configs.eslint_lsp_conf'),
-            require('lsp_configs.gopls_lsp_conf'),
-            require('lsp_configs.gradlels_lsp_conf'),
-            require('lsp_configs.graphql_lsp_conf'),
-            require('lsp_configs.html_lsp_conf'),
-            require('lsp_configs.jsonls_lsp_conf'),
-            require('lsp_configs.kotlin_lsp_conf'),
-            require('lsp_configs.lemminx_lsp_conf'),
-            require('lsp_configs.lua_lsp_conf'),
-            require('lsp_configs.marksman_lsp_conf'),
-            require('lsp_configs.neocmake_lsp_conf'),
-            require('lsp_configs.omnisharp_lsp_conf'),
-            require('lsp_configs.prismals_lsp_conf'),
-            require('lsp_configs.pyright_lsp_conf'),
-            require('lsp_configs.rust_lsp_conf'),
-            require('lsp_configs.solargraph_lsp_conf'),
-            require('lsp_configs.sourcekit_lsp_conf'),
-            require('lsp_configs.tailwind_lsp_conf'),
-            require('lsp_configs.terraformls_lsp_conf'),
-            require('lsp_configs.typescript_lsp_conf'),
-            require('lsp_configs.vimls_lsp_conf'),
-            require('lsp_configs.vls_lsp_conf'),
-            require('lsp_configs.yamlls_lsp_conf'),
-        }
-
-        for _, config in ipairs(lsp_configs) do
+        for _, config in ipairs(loaded_lsp_configs) do
             vim.lsp.config(config.name, config)
             vim.lsp.enable(config.name)
         end
