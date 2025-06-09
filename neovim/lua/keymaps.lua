@@ -16,9 +16,6 @@ utils.nnoremap('gds', ':Gdiffsplit<CR>', { silent = true })
 utils.nnoremap('<leader>gp', ':G push<CR>', { silent = true })
 utils.nnoremap('<leader>gpo', ':G push origin ')
 
--- eslint keymaps
-utils.nnoremap('<leader>EF', ':EslintFixAll<CR>', { silent = true })
-
 -- markdown previewer keymaps
 utils.nnoremap('<leader>mp', ':MarkdownPreview<CR>', { silent = true })
 utils.nnoremap('<leader>mps', ':MarkdownPreviewStop<CR>', { silent = true })
