@@ -55,14 +55,13 @@ return {
             lineFoldingOnly = true
         }
 
-        vim.lsp.config('*', {
-            capabilities = capabilities,
-            on_attach = function(_, bufnr)
-                utils.lsp_shared_keymaps(bufnr)
-            end
-        })
-
         for _, config in ipairs(loaded_lsp_configs) do
+            vim.lsp.config(config.name, {
+                capabilities = capabilities,
+                on_attach = function(_, bufnr)
+                    utils.lsp_shared_keymaps(bufnr)
+                end
+            })
             vim.lsp.config(config.name, config)
             vim.lsp.enable(config.name)
         end
