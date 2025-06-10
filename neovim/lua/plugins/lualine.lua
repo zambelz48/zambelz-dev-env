@@ -41,8 +41,7 @@ end
 
 return {
     'nvim-lualine/lualine.nvim',
-    -- stick to '640260d' for now, since the newest one is noticeable slow
-    commit = '640260d',
+    commit = 'a94fc68',
     dependencies = {
         'nvim-tree/nvim-web-devicons',
     },

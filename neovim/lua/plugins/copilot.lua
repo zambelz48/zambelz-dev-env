@@ -6,7 +6,7 @@ end
 
 return {
     'zbirenbaum/copilot.lua',
-    commit = '5f726c8',
+    commit = 'c1bb86a',
     opts = {
         panel = {
             enabled = is_copilot_enabled(),
