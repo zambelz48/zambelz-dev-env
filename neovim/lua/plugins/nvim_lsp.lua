@@ -9,38 +9,64 @@ for _, lsp_config_path in pairs(vim.fn.glob(lsp_configs_dir .. '/*.lua', true, t
     table.insert(loaded_lsp_configs, lsp_spec)
 end
 
+local configure_lsp_styling = function()
+    local lsp_border_style = 'rounded'
+    local lsp_float_size = {
+        max_width = 120,
+        max_height = 80
+    }
+    local lsp_hover_style = {
+        border = lsp_border_style,
+        max_width = lsp_float_size.max_width,
+        max_height = lsp_float_size.max_height,
+    }
+
+    vim.lsp.handlers['textDocument/hover'] = vim.lsp.with(
+        vim.lsp.handlers.hover, lsp_hover_style
+    )
+
+    vim.lsp.handlers['textDocument/signatureHelp'] = vim.lsp.with(
+        vim.lsp.handlers.signature_help, lsp_hover_style
+    )
+
+    local signs = {
+        Error = '',
+        Warn = '',
+        Hint = '',
+        Info = '󰋽'
+    }
+    for type, icon in pairs(signs) do
+        local hl = 'DiagnosticSign' .. type
+        vim.fn.sign_define(hl,
+            {
+                text = icon,
+                texthl = hl,
+                numhl = hl
+            }
+        )
+    end
+
+    vim.diagnostic.config({
+        virtual_text = {
+            prefix = '●',
+        },
+        severity_sort = true,
+        float = {
+            source = 'always',
+            border = lsp_border_style,
+            max_width = lsp_float_size.max_width,
+            max_height = lsp_float_size.max_height,
+        },
+    })
+end
+
 return {
     'neovim/nvim-lspconfig',
     tag = 'v2.3.0',
     config = function()
         local utils = require('utils')
 
-        local signs = {
-            Error = '',
-            Warn = '',
-            Hint = '',
-            Info = '󰋽'
-        }
-        for type, icon in pairs(signs) do
-            local hl = 'DiagnosticSign' .. type
-            vim.fn.sign_define(hl,
-                {
-                    text = icon,
-                    texthl = hl,
-                    numhl = hl
-                }
-            )
-        end
-
-        vim.diagnostic.config({
-            virtual_text = {
-                prefix = '●',
-            },
-            severity_sort = true,
-            float = {
-                source = 'always',
-            },
-        })
+        configure_lsp_styling()
 
         local capabilities = vim.lsp.protocol.make_client_capabilities()
         local has_cmp, cmp_nvim_lsp = pcall(require, 'cmp_nvim_lsp')
@@ -58,28 +84,5 @@ return {
             vim.lsp.config(config.name, config)
             vim.lsp.enable(config.name)
         end
-
-        local lsp_border_style = 'rounded'
-        local lsp_hover_style = {
-            border = lsp_border_style,
-            max_width = 120,
-            max_height = 80
-        }
-
-        vim.lsp.handlers['textDocument/hover'] = vim.lsp.with(
-            vim.lsp.handlers.hover, lsp_hover_style
-        )
-
-        vim.lsp.handlers['textDocument/signatureHelp'] = vim.lsp.with(
-            vim.lsp.handlers.signature_help, lsp_hover_style
-        )
-
-        vim.diagnostic.config {
-            float = lsp_hover_style
-        }
-
-        require('lspconfig.ui.windows').default_options = {
-            border = lsp_border_style
-        }
     end,
 }
