@@ -63,9 +63,18 @@ verman() {
 
   # pyenv
   _pyenv_status() {
-    echo "pyenv status: ${Z_VERMAN_PYENV_STATUS:-disabled}"
+    if [[ ! -d "$HOME/.pyenv" ]]; then
+      echo "pyenv is not installed"
+    else
+      echo "pyenv status: ${Z_VERMAN_PYENV_STATUS:-disabled}"
+    fi
   }
   _pyenv_enable() {
+    if [[ ! -d "$HOME/.pyenv" ]]; then
+      echo "pyenv is not installed"
+      return
+    fi
+
     if [[ ! -v Z_VERMAN_PYENV_STATUS || "$Z_VERMAN_PYENV_STATUS" == "disabled" ]]; then
       export Z_VERMAN_PYENV_STATUS="enabled"
       _source_version_manager
@@ -75,6 +84,11 @@ verman() {
     fi
   }
   _pyenv_disable() {
+    if [[ ! -d "$HOME/.pyenv" ]]; then
+      echo "pyenv is not installed"
+      return
+    fi
+
     if [[ -v Z_VERMAN_PYENV_STATUS && "$Z_VERMAN_PYENV_STATUS" == "enabled" ]]; then
       chpwd_functions=(${chpwd_functions:#*pyenv*})
       unset -f prompt_pyenv 2>/dev/null
@@ -88,9 +102,18 @@ verman() {
 
   # rbenv
   _rbenv_status() {
-    echo "rbenv status: ${Z_VERMAN_RBENV_STATUS:-disabled}"
+    if [[ ! -d "$HOME/.rbenv" ]]; then
+      echo "rbenv is not installed"
+    else
+      echo "rbenv status: ${Z_VERMAN_RBENV_STATUS:-disabled}"
+    fi
   }
   _rbenv_enable() {
+    if [[ ! -d "$HOME/.rbenv" ]]; then
+      echo "rbenv is not installed"
+      return
+    fi
+
     if [[ ! -v Z_VERMAN_RBENV_STATUS || "$Z_VERMAN_RBENV_STATUS" == "disabled" ]]; then
       export Z_VERMAN_RBENV_STATUS="enabled"
       _source_version_manager
@@ -100,6 +123,11 @@ verman() {
     fi
   }
   _rbenv_disable() {
+    if [[ ! -d "$HOME/.rbenv" ]]; then
+      echo "rbenv is not installed"
+      return
+    fi
+
     if [[ -v Z_VERMAN_RBENV_STATUS && "$Z_VERMAN_RBENV_STATUS" == "enabled" ]]; then
       precmd_functions=(${precmd_functions:#*rbenv*})
       unset -f prompt_rbenv 2>/dev/null
@@ -113,9 +141,18 @@ verman() {
 
   # jenv
   _jenv_status() {
-    echo "jenv status: ${Z_VERMAN_JENV_STATUS:-disabled}"
+    if [[ ! -d "$HOME/.jenv" ]]; then
+      echo "jenv is not installed"
+    else
+      echo "jenv status: ${Z_VERMAN_JENV_STATUS:-disabled}"
+    fi
   }
   _jenv_enable() {
+    if [[ ! -d "$HOME/.jenv" ]]; then
+      echo "jenv is not installed"
+      return
+    fi
+
     if [[ ! -v Z_VERMAN_JENV_STATUS || "$Z_VERMAN_JENV_STATUS" == "disabled" ]]; then
       export Z_VERMAN_JENV_STATUS="enabled"
       _source_version_manager
@@ -125,6 +162,11 @@ verman() {
     fi
   }
   _jenv_disable() {
+    if [[ ! -d "$HOME/.jenv" ]]; then
+      echo "jenv is not installed"
+      return
+    fi
+
     if [[ -v Z_VERMAN_JENV_STATUS && "$Z_VERMAN_JENV_STATUS" == "enabled" ]]; then
       preexec_functions=(${preexec_functions:#*jenv*})
       unset -f prompt_jenv 2>/dev/null
@@ -138,9 +180,18 @@ verman() {
 
   # gvm
   _gvm_status() {
-    echo "gvm status: ${Z_VERMAN_GVM_STATUS:-disabled}"
+    if [[ ! -d "$HOME/.gvm" ]]; then
+      echo "gvm is not installed"
+    else
+      echo "gvm status: ${Z_VERMAN_GVM_STATUS:-disabled}"
+    fi
   }
   _gvm_enable() {
+    if [[ ! -d "$HOME/.gvm" ]]; then
+      echo "gvm is not installed"
+      return
+    fi
+
     if [[ ! -v Z_VERMAN_GVM_STATUS || "$Z_VERMAN_GVM_STATUS" == "disabled" ]]; then
       export Z_VERMAN_GVM_STATUS="enabled"
       _source_version_manager
@@ -150,6 +201,11 @@ verman() {
     fi
   }
   _gvm_disable() {
+    if [[ ! -d "$HOME/.gvm" ]]; then
+      echo "gvm is not installed"
+      return
+    fi
+
     if [[ -v Z_VERMAN_GVM_STATUS && "$Z_VERMAN_GVM_STATUS" == "enabled" ]]; then
       unset -f cd 2>/dev/null
       export Z_VERMAN_GVM_STATUS="disabled"
@@ -175,14 +231,46 @@ verman() {
 # pyenv
 _lazy_load_pyenv() {
   PYENV_HOME="$HOME/.pyenv"
-  if [ -d "$PYENV_HOME" ]; then
-    unset -f pyenv
-    [[ -d $PYENV_HOME/bin ]] && export PATH="$PYENV_HOME/bin:$PATH"
-    eval "$(pyenv init - zsh)"
-    pyenv "$@"
+  unset -f pyenv
+  [[ -d $PYENV_HOME/bin ]] && export PATH="$PYENV_HOME/bin:$PATH"
+  eval "$(pyenv init - zsh)"
+  pyenv "$@"
+}
+_fallback_disabled_pyenv() {
+  if [[ ! -d "$HOME/.pyenv" ]]; then
+    return
+  fi
+
+  if [[ ! -v Z_VERMAN_PYENV_STATUS || "$Z_VERMAN_PYENV_STATUS" == "disabled" ]]; then
+    export PYENV_ROOT="${PYENV_ROOT:-$HOME/.pyenv}"
+    _prepend_path_if_missing "$PYENV_ROOT/shims"
+
+    local pyenv_ver_file
+    local selected_version
+
+    pyenv_ver_file=$(_walk_up_to_find_file ".python-version")
+    if [[ -n "$pyenv_ver_file" ]]; then
+      local version
+      selected_version=$(<"$pyenv_ver_file")
+    else
+      if [[ -z "$PYENV_VERSION" && -f "$PYENV_ROOT/version" ]]; then
+        selected_version="$(cat "$PYENV_ROOT/version")"
+      fi
+    fi
+
+    # remove any pyenv versions from PATH
+    PATH=$(echo "$PATH" | tr ':' '\n' | grep -v -E "^$HOME/.pyenv/versions/[^/]+/bin$" | paste -sd ':' -)
+
+    # set active pyenv version to PATH
+    _prepend_path_if_missing "$HOME/.pyenv/versions/$version/bin"
   fi
 }
 pyenv() {
+  if [[ ! -d "$HOME/.pyenv" ]]; then
+    echo "pyenv is not installed"
+    return
+  fi
+
   if [[ -v Z_VERMAN_PYENV_STATUS && "$Z_VERMAN_PYENV_STATUS" == "enabled" ]]; then
     _lazy_load_pyenv "$@"
   else
@@ -200,7 +288,40 @@ _lazy_load_rbenv() {
 
   rbenv "$@"
 }
+_fallback_disabled_rbenv() {
+  if [[ ! -d "$HOME/.rbenv" ]]; then
+    return
+  fi
+
+  if [[ ! -v Z_VERMAN_RBENV_STATUS || "$Z_VERMAN_RBENV_STATUS" == "disabled" ]]; then
+    export RBENV_ROOT="${RBENV_ROOT:-$HOME/.rbenv}"
+    _prepend_path_if_missing "$RBENV_ROOT/shims"
+
+    local rbenv_ver_file
+    local selected_version
+
+    rbenv_ver_file=$(_walk_up_to_find_file ".ruby-version")
+    if [[ -n "$rbenv_ver_file" ]]; then
+      selected_version=$(<"$rbenv_ver_file")
+    else
+      if [[ -z "$RBENV_VERSION" && -f "$RBENV_ROOT/version" ]]; then
+        selected_version="$(cat "$RBENV_ROOT/version")"
+      fi
+    fi
+
+    # remove any rbenv versions from PATH
+    PATH=$(echo "$PATH" | tr ':' '\n' | grep -v -E "^$HOME/.rbenv/versions/[^/]+/bin$" | paste -sd ':' -)
+
+    # add active rbenv version to PATH
+    _prepend_path_if_missing "$HOME/.rbenv/versions/$selected_version/bin"
+  fi
+}
 rbenv() {
+  if [[ ! -d "$HOME/.rbenv" ]]; then
+    echo "rbenv is not installed"
+    return
+  fi
+
   if [[ -v Z_VERMAN_RBENV_STATUS && "$Z_VERMAN_RBENV_STATUS" == "enabled" ]]; then
     _lazy_load_rbenv "$@"
   else
@@ -218,7 +339,50 @@ _lazy_load_jenv() {
 
   jenv "$@"
 }
+_fallback_disabled_jenv() {
+  if [[ ! -d "$HOME/.jenv" ]]; then
+    return
+  fi
+
+  if [[ ! -v Z_VERMAN_JENV_STATUS || "$Z_VERMAN_JENV_STATUS" == "disabled" ]]; then
+    unset JAVA_HOME
+    _prepend_path_if_missing "$HOME/.jenv/shims"
+
+    local jenv_ver_file
+    jenv_ver_file=$(_walk_up_to_find_file ".java-version")
+    if [[ -n "$jenv_ver_file" ]]; then
+      local version
+      version=$(<"$jenv_ver_file")
+      export JAVA_HOME="$HOME/.jenv/versions/$version"
+    else
+      if [[ -z "$JAVA_HOME" ]]; then
+        local JENV_VERSION_FILE="$HOME/.jenv/version"
+        if [[ -f "$JENV_VERSION_FILE" ]]; then
+          local JENV_VERSION="$(cat "$JENV_VERSION_FILE")"
+          local JAVA_CANDIDATE="$HOME/.jenv/versions/$JENV_VERSION"
+          if [[ -d "$JAVA_CANDIDATE" ]]; then
+            export JAVA_HOME="$JAVA_CANDIDATE"
+          fi
+        else
+          local JAVA_CANDIDATE=$(ls -d "$HOME/.jenv/versions/"* 2>/dev/null | sort -Vr | head -n 1)
+          [[ -d "$JAVA_CANDIDATE" ]] && export JAVA_HOME="$JAVA_CANDIDATE"
+        fi
+      fi
+    fi
+
+    # remove any jenv versions from PATH
+    PATH=$(echo "$PATH" | tr ':' '\n' | grep -v -E "^$HOME/.jenv/versions/[^/]+/bin$" | paste -sd ':' -)
+
+    # add active jenv versions to PATH
+    _prepend_path_if_missing "$JAVA_HOME/bin"
+  fi
+}
 jenv() {
+  if [[ ! -d "$HOME/.jenv" ]]; then
+    echo "jenv is not installed"
+    return
+  fi
+
   if [[ -v Z_VERMAN_JENV_STATUS && "$Z_VERMAN_JENV_STATUS" == "enabled" ]]; then
     _lazy_load_jenv "$@"
   else
@@ -235,7 +399,60 @@ _lazy_load_gvm() {
     gvm "$@"
   fi
 }
+_fallback_disabled_gvm() {
+  if [[ ! -d "$HOME/.gvm" ]]; then
+    return
+  fi
+
+  if [[ ! -v Z_VERMAN_GVM_STATUS || "$Z_VERMAN_GVM_STATUS" == "disabled" ]]; then
+    local go_ver_file
+    go_ver_file=$(_walk_up_to_find_file ".go-version")
+
+    if [[ -n "$go_ver_file" ]]; then
+      local version
+      version=$(<"$go_ver_file")
+      export GOROOT="$HOME/.gvm/gos/go$version"
+      export GOPATH="$HOME/.gvm/pkgsets/go$version/global"
+
+      # remove any gvm versions from PATH
+      PATH=$(echo "$PATH" | tr ':' '\n' | grep -v -E "^$HOME/.gvm/(pkgsets/[^/]+/global/bin|gos/[^/]+/bin)$" | paste -sd ':' -)
+
+      _prepend_path_if_missing "$GOROOT/bin"
+      _prepend_path_if_missing "$GOPATH/bin"
+    else
+      local GVM_HOME="$HOME/.gvm"
+      local GVM_CURRENT_SYMLINK="$GVM_HOME/environments/current"
+
+      local GVM_GOROOT GVM_PKGSET
+
+      if [[ -L "$GVM_CURRENT_SYMLINK" ]]; then
+        GVM_GOROOT=$(grep '^export GOROOT=' "$GVM_CURRENT_SYMLINK" | cut -d'=' -f2- | tr -d '"')
+        GOPATH_LINE=$(grep '^export GOPATH=' "$GVM_CURRENT_SYMLINK" | cut -d'=' -f2- | tr -d '"')
+      else
+        GVM_GOROOT=$(ls -d "$GVM_HOME/gos/go"* 2>/dev/null | sort -Vr | head -n 1)
+        GOPATH_LINE="$GVM_HOME/pkgsets/$(basename "$GVM_GOROOT")/global"
+      fi
+
+      if [[ -n "$GVM_GOROOT" && -d "$GVM_GOROOT" ]]; then
+        export GOROOT="$GVM_GOROOT"
+        export GOPATH="$GOPATH_LINE"
+        mkdir -p "$GOPATH"
+
+        # remove any gvm versions from PATH
+        PATH=$(echo "$PATH" | tr ':' '\n' | grep -v -E "^$HOME/.gvm/(pkgsets/[^/]+/global/bin|gos/[^/]+/bin)$" | paste -sd ':' -)
+
+        _prepend_path_if_missing "$GOROOT/bin"
+        _prepend_path_if_missing "$GOPATH/bin"
+      fi
+    fi
+  fi
+}
 gvm() {
+  if [[ ! -d "$HOME/.gvm" ]]; then
+    echo "gvm is not installed"
+    return
+  fi
+
   if [[ -v Z_VERMAN_GVM_STATUS && "$Z_VERMAN_GVM_STATUS" == "enabled" ]]; then
     _lazy_load_gvm "$@"
   else
@@ -243,115 +460,18 @@ gvm() {
   fi
 }
 
-# Fallback for disabled version managers
-# pyenv
-if [[ ! -v Z_VERMAN_PYENV_STATUS || "$Z_VERMAN_PYENV_STATUS" == "disabled" ]]; then
-  export PYENV_ROOT="${PYENV_ROOT:-$HOME/.pyenv}"
-  _prepend_path_if_missing "$PYENV_ROOT/shims"
+# fallback for all version managers
+_configure_fallback() {
+  _fallback_disabled_pyenv
+  _fallback_disabled_rbenv
+  _fallback_disabled_jenv
+  _fallback_disabled_gvm
+}
 
-  if [[ -z "$PYENV_VERSION" && -f "$PYENV_ROOT/version" ]]; then
-    export PYENV_VERSION="$(cat "$PYENV_ROOT/version")"
-  fi
-fi
+# fallback when cd'ing
+chpwd() {
+  _configure_fallback
+}
 
-# rbenv
-if [[ ! -v Z_VERMAN_RBENV_STATUS || "$Z_VERMAN_RBENV_STATUS" == "disabled" ]]; then
-  export RBENV_ROOT="${RBENV_ROOT:-$HOME/.rbenv}"
-  _prepend_path_if_missing "$RBENV_ROOT/shims"
-
-  if [[ -z "$RBENV_VERSION" && -f "$RBENV_ROOT/version" ]]; then
-    export RBENV_VERSION="$(cat "$RBENV_ROOT/version")"
-  fi
-fi
-
-# jenv
-if [[ ! -v Z_VERMAN_JENV_STATUS || "$Z_VERMAN_JENV_STATUS" == "disabled" ]]; then
-  _prepend_path_if_missing "$HOME/.jenv/shims"
-
-  if [[ -z "$JAVA_HOME" ]]; then
-    local JENV_VERSION_FILE="$HOME/.jenv/version"
-    if [[ -f "$JENV_VERSION_FILE" ]]; then
-      local JENV_VERSION="$(cat "$JENV_VERSION_FILE")"
-      local JAVA_CANDIDATE="$HOME/.jenv/versions/$JENV_VERSION"
-      if [[ -d "$JAVA_CANDIDATE" ]]; then
-        export JAVA_HOME="$JAVA_CANDIDATE"
-      fi
-    else
-      local JAVA_CANDIDATE=$(ls -d "$HOME/.jenv/versions/"* 2>/dev/null | sort -Vr | head -n 1)
-      [[ -d "$JAVA_CANDIDATE" ]] && export JAVA_HOME="$JAVA_CANDIDATE"
-    fi
-  fi
-fi
-
-# gvm
-if [[ ! -v Z_VERMAN_GVM_STATUS || "$Z_VERMAN_GVM_STATUS" == "disabled" ]]; then
-  local GVM_HOME="$HOME/.gvm"
-  local GVM_CURRENT_SYMLINK="$GVM_HOME/environments/current"
-
-  local GVM_GOROOT GVM_PKGSET
-
-  if [[ -L "$GVM_CURRENT_SYMLINK" ]]; then
-    GVM_GOROOT=$(grep '^export GOROOT=' "$GVM_CURRENT_SYMLINK" | cut -d'=' -f2- | tr -d '"')
-    GOPATH_LINE=$(grep '^export GOPATH=' "$GVM_CURRENT_SYMLINK" | cut -d'=' -f2- | tr -d '"')
-  else
-    GVM_GOROOT=$(ls -d "$GVM_HOME/gos/go"* 2>/dev/null | sort -Vr | head -n 1)
-    GOPATH_LINE="$GVM_HOME/pkgsets/$(basename "$GVM_GOROOT")/global"
-  fi
-
-  if [[ -n "$GVM_GOROOT" && -d "$GVM_GOROOT" ]]; then
-    export GOROOT="$GVM_GOROOT"
-    export GOPATH="$GOPATH_LINE"
-    mkdir -p "$GOPATH"
-    _prepend_path_if_missing "$GOROOT/bin"
-    _prepend_path_if_missing "$GOPATH/bin"
-  fi
-fi
-
-# Auto-detect intended version per project
-# pyenv
-if [[ ! -v Z_VERMAN_PYENV_STATUS || "$Z_VERMAN_PYENV_STATUS" == "disabled" ]]; then
-  local pyenv_ver_file
-  pyenv_ver_file=$(_walk_up_to_find_file ".python-version")
-  if [[ -n "$pyenv_ver_file" ]]; then
-    local version
-    version=$(<"$pyenv_ver_file")
-    _prepend_path_if_missing "$HOME/.pyenv/versions/$version/bin"
-  fi
-fi
-
-# rbenv
-if [[ ! -v Z_VERMAN_RBENV_STATUS || "$Z_VERMAN_RBENV_STATUS" == "disabled" ]]; then
-  local rbenv_ver_file
-  rbenv_ver_file=$(_walk_up_to_find_file ".ruby-version")
-  if [[ -n "$rbenv_ver_file" ]]; then
-    local version
-    version=$(<"$rbenv_ver_file")
-    _prepend_path_if_missing "$HOME/.rbenv/versions/$version/bin"
-  fi
-fi
-
-# jenv
-if [[ ! -v Z_VERMAN_JENV_STATUS || "$Z_VERMAN_JENV_STATUS" == "disabled" ]]; then
-  local jenv_ver_file
-  jenv_ver_file=$(_walk_up_to_find_file ".java-version")
-  if [[ -n "$jenv_ver_file" ]]; then
-    local version
-    version=$(<"$jenv_ver_file")
-    export JAVA_HOME="$HOME/.jenv/versions/$version"
-    _prepend_path_if_missing "$JAVA_HOME/bin"
-  fi
-fi
-
-# gvm
-if [[ ! -v Z_VERMAN_GVM_STATUS || "$Z_VERMAN_GVM_STATUS" == "disabled" ]]; then
-  local go_ver_file
-  go_ver_file=$(_walk_up_to_find_file ".go-version")
-  if [[ -n "$go_ver_file" ]]; then
-    local version
-    version=$(<"$go_ver_file")
-    export GOROOT="$HOME/.gvm/gos/go$version"
-    export GOPATH="$HOME/.gvm/pkgsets/go$version/global"
-    _prepend_path_if_missing "$GOROOT/bin"
-    _prepend_path_if_missing "$GOPATH/bin"
-  fi
-fi
+# fallback on startup
+_configure_fallback
