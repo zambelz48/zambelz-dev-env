@@ -2,7 +2,7 @@ local vim = vim
 
 return {
     'nvim-tree/nvim-tree.lua',
-    tag = 'nvim-tree-v1.13.0',
+    tag = 'nvim-tree-v1.14.0',
     lazy = false,
     dependencies = {
         'nvim-tree/nvim-web-devicons'

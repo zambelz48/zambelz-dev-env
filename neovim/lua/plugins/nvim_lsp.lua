@@ -62,7 +62,7 @@ end
 
 return {
     'neovim/nvim-lspconfig',
-    tag = 'v2.3.0',
+    tag = 'v2.4.0',
     config = function()
         local utils = require('utils')
 

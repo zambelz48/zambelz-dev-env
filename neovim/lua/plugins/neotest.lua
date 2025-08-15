@@ -1,6 +1,6 @@
 return {
     'nvim-neotest/neotest',
-    tag = 'v5.8.0',
+    tag = 'v5.9.1',
     dependencies = {
         'nvim-neotest/nvim-nio',
         'nvim-lua/plenary.nvim',

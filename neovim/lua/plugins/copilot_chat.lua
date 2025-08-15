@@ -2,7 +2,7 @@ local vim = vim
 
 return {
     'CopilotC-Nvim/CopilotChat.nvim',
-    tag = 'v3.12.2',
+    tag = 'v4.4.1',
     config = function()
         local chat = require('CopilotChat')
         local select = require('CopilotChat.select')
