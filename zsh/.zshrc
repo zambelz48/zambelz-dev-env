@@ -134,6 +134,9 @@ fi
 # Version managers
 source "$ZAMBELZ_HELPER_PATH/version-managers.zsh"
 
+# Postgres Tools
+source "$ZAMBELZ_HELPER_PATH/pg_tools.zsh"
+
 # Aliases
 alias zconf="$ZAMBELZ_DEV_ENV_PATH/main.sh"
 
