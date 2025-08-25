@@ -125,10 +125,10 @@ function pg_restore() {
 # Usage: pg_force_drop_db [database_name] [postgres_password]
 function pg_force_drop_db() {
     local DB_NAME_TO_DROP="${1:-zcrup_company_site_dev}"
-    local POSTGRES_SUPERUSER="postgres"
-    local POSTGRES_HOST="${2:-192.168.0.4}"
-    local POSTGRES_PORT="${3:-5432}"
-    local POSTGRES_PASSWORD="${4:-your_postgres_password}" # Password for the 'postgres' user
+    local POSTGRES_SUPERUSER="${2:-postgres}"
+    local POSTGRES_HOST="${3:-192.168.0.4}"
+    local POSTGRES_PORT="${4:-5432}"
+    local POSTGRES_PASSWORD="${5:-your_postgres_password}" # Password for the 'postgres' user
 
     printf "WARNING: This will forcefully disconnect all users from '%s' and permanently delete it. Are you sure? (yes/no): " "${DB_NAME_TO_DROP}"
     builtin read CONFIRMATION
