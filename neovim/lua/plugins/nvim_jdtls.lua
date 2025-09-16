@@ -2,7 +2,7 @@ local vim = vim
 
 return {
     'mfussenegger/nvim-jdtls',
-    commit = '4d77ff0',
+    commit = 'b69924c',
     ft = { 'java' },
     lazy = true,
     config = function()

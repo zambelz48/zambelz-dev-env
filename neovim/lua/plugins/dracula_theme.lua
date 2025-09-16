@@ -2,7 +2,7 @@ local vim = vim
 
 return {
     'Mofiqul/dracula.nvim',
-    commit = 'df528c8',
+    commit = '041d923',
     lazy = false,
     priority = 1000,
     config = function()
