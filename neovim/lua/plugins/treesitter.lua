@@ -3,7 +3,7 @@ local vim = vim
 return {
     'nvim-treesitter/nvim-treesitter',
     branch = 'main',
-    commit = '7aa24ac',
+    commit = '6ac9f2e',
     lazy = false,
     build = ':TSUpdate',
     config = function()
