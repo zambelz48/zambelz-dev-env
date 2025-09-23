@@ -20,10 +20,7 @@ return {
     filetypes = { 'rust' },
     settings = {
         ['rust-analyzer'] = {
-            checkOnSave = {
-                command = "clippy",
-                extraArgs = { "--", "-W", "clippy::all" }
-            },
+            checkOnSave = true,
             cargo = {
                 allFeatures = true,
             },
