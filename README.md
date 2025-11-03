@@ -106,9 +106,9 @@ $ npm install -g @microsoft/compose-language-service \
 
 ###### Python Packages
 ```sh
-- PYTHON Language Server => pyright (https://microsoft.github.io/pyright)
+- PYTHON Language Server => pyrefly (https://pyrefly.org)
 ## Command:
-$ pip install pyright
+$ pip install pyrefly
 ```
 
 ###### GO Packages
