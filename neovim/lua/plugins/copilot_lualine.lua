@@ -1,4 +1,4 @@
 return {
     'AndreM222/copilot-lualine',
-    commit = '6bc29ba',
+    commit = 'b2a926e',
 }
