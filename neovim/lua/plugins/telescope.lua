@@ -2,7 +2,7 @@ local vim = vim
 
 return {
     'nvim-telescope/telescope.nvim',
-    commit = 'b4da76b',
+    commit = 'e69b434',
     dependencies = {
         'nvim-lua/plenary.nvim',
     },

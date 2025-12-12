@@ -3,7 +3,7 @@ local vim = vim
 return {
     'nvim-treesitter/nvim-treesitter',
     branch = 'main',
-    commit = '5582083',
+    commit = '2979e04',
     lazy = false,
     build = ':TSUpdate',
     config = function()
@@ -36,7 +36,7 @@ return {
             'jsdoc',
             'json',
             'json5',
-            'jsonc',
+            'jsx',
             'kotlin',
             'lua',
             'luadoc',

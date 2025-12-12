@@ -1,5 +1,5 @@
 return {
 	'L3MON4D3/LuaSnip',
-	commit = 'ccf25a5',
+	tag = 'v2.4.1',
 	build = 'make install_jsregexp'
 }

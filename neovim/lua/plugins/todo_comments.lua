@@ -1,6 +1,6 @@
 return {
     'folke/todo-comments.nvim',
-    tag = 'v1.4.0',
+    tag = 'v1.5.0',
     opts = {
         signs = true,      -- show icons in the signs column
         sign_priority = 8, -- sign priority
