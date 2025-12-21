@@ -1,7 +1,7 @@
 return {
     'nvim-treesitter/nvim-treesitter-textobjects',
     branch = 'main',
-    commit = '76deedf',
+    commit = 'e91c585',
     dependencies = {
         'nvim-treesitter/nvim-treesitter',
     },
