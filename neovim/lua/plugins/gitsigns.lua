@@ -2,7 +2,7 @@ local vim = vim
 
 return {
     'lewis6991/gitsigns.nvim',
-    commit = '5813e48',
+    tag = 'v2.0.0',
     event = { "BufReadPre", "BufNewFile" },
     config = function()
         local gitsigns = require('gitsigns')

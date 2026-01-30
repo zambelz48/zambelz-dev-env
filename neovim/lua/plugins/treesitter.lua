@@ -2,7 +2,7 @@ local vim = vim
 
 return {
     'nvim-treesitter/nvim-treesitter',
-    commit = '6e42d82',
+    commit = '19c729d',
     lazy = false,
     build = ':TSUpdate',
     config = function()
@@ -32,6 +32,7 @@ return {
             'java',
             'javadoc',
             'javascript',
+            'jinja',
             'jsdoc',
             'json',
             'json5',
@@ -52,7 +53,6 @@ return {
             'python',
             'query',
             'regex',
-            'robots',
             'ruby',
             'rust',
             'smali',
