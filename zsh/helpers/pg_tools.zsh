@@ -1,7 +1,14 @@
 # --- PostgreSQL Backup Function (Corrected and Robust) ---
 # This function takes a destination DIRECTORY and creates a timestamped backup file inside it.
 #
-# Usage: pg_backup [database_name] [destination_directory] [username] [host] [port] [password]
+# Usage: pg_backup [database_name] [destination_directory] [username] [host] [port] [password] [exclude_tables] [exclude_data_only]
+#
+# Parameters:
+#   exclude_tables    - Comma-separated list of tables to exclude entirely (schema + data)
+#   exclude_data_only - Comma-separated list of tables to exclude data only (keeps schema)
+#
+# Example:
+#   pg_backup mydb /backups admin 192.168.0.4 5432 secret "large_logs,temp_data" "audit_history"
 function pg_backup() {
     local DB_NAME="${1}"
     local DEST_DIR="${2}"
@@ -9,11 +16,15 @@ function pg_backup() {
     local DB_HOST="${4:-192.168.0.4}"
     local DB_PORT="${5:-5432}"
     local DB_PASSWORD="${6}"
+    local EXCLUDE_TABLES="${7}"      # Comma-separated tables to exclude entirely
+    local EXCLUDE_DATA_ONLY="${8}"   # Comma-separated tables to exclude data only
 
     # --- Mitigation: Argument Validation ---
     if [[ -z "$DB_NAME" || -z "$DEST_DIR" || -z "$DB_PASSWORD" ]]; then
         echo "Error: Missing required arguments." >&2
-        echo "Usage: pg_backup [database_name] [destination_directory] [username] [host] [port] [password]" >&2
+        echo "Usage: pg_backup [database_name] [destination_directory] [username] [host] [port] [password] [exclude_tables] [exclude_data_only]" >&2
+        echo "  exclude_tables    - Comma-separated list of tables to exclude entirely" >&2
+        echo "  exclude_data_only - Comma-separated list of tables to exclude data only (keeps schema)" >&2
         return 1
     fi
 
@@ -38,7 +49,29 @@ function pg_backup() {
     fi
 
     echo "Starting PostgreSQL backup for database: ${DB_NAME}..."
-    PGPASSWORD="${DB_PASSWORD}" pg_dump -h "${DB_HOST}" -p "${DB_PORT}" -U "${DB_USER}" -F p -b -v -f "${FULL_BACKUP_PATH}" "${DB_NAME}"
+
+    # --- Build exclude options ---
+    local EXCLUDE_OPTS=()
+    if [[ -n "$EXCLUDE_TABLES" ]]; then
+        IFS=',' read -rA tables <<< "$EXCLUDE_TABLES"
+        for table in "${tables[@]}"; do
+            table="${table## }"  # Trim leading spaces
+            table="${table%% }"  # Trim trailing spaces
+            EXCLUDE_OPTS+=("--exclude-table=${table}")
+        done
+        echo "Excluding tables (schema + data): ${EXCLUDE_TABLES}"
+    fi
+    if [[ -n "$EXCLUDE_DATA_ONLY" ]]; then
+        IFS=',' read -rA tables <<< "$EXCLUDE_DATA_ONLY"
+        for table in "${tables[@]}"; do
+            table="${table## }"  # Trim leading spaces
+            table="${table%% }"  # Trim trailing spaces
+            EXCLUDE_OPTS+=("--exclude-table-data=${table}")
+        done
+        echo "Excluding table data only (keeping schema): ${EXCLUDE_DATA_ONLY}"
+    fi
+
+    PGPASSWORD="${DB_PASSWORD}" pg_dump -h "${DB_HOST}" -p "${DB_PORT}" -U "${DB_USER}" -F p -b -v "${EXCLUDE_OPTS[@]}" -f "${FULL_BACKUP_PATH}" "${DB_NAME}"
 
     if [ $? -eq 0 ]; then
         echo "Backup successful! File saved to: ${FULL_BACKUP_PATH}"
