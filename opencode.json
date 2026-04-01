@@ -1,17 +1,13 @@
 {
   "$schema": "https://opencode.ai/config.json",
+  "default_agent": "Build (MiniMax-M2.7)",
   "instructions": [
     "README.md"
   ],
   "agent": {
-    "build": {
-      "disable": true
-    },
-    "plan": {
-      "disable": true
-    },
-    "Build (z-ai-glm-4.6)": {
-      "model": "zai-coding-plan/glm-4.6",
+    "Build (MiniMax-M2.7)": {
+      "mode": "primary",
+      "model": "minimax-coding-plan/MiniMax-M2.7",
       "temperature": 0.2
     },
     "Build (gemini-2.5-pro)": {
