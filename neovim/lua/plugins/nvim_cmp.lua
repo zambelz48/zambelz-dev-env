@@ -2,7 +2,7 @@ local vim = vim
 
 return {
     'hrsh7th/nvim-cmp',
-    commit = 'da88697',
+    commit = 'a1d5048',
     dependencies = {
         'hrsh7th/cmp-nvim-lsp',
         'hrsh7th/cmp-buffer',

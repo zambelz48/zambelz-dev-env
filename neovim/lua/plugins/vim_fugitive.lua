@@ -1,4 +1,4 @@
 return {
     'tpope/vim-fugitive',
-    commit = '61b51c0'
+    commit = '3b753cf'
 }
