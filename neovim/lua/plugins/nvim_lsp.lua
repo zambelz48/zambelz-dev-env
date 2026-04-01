@@ -15,19 +15,23 @@ local configure_lsp_styling = function()
         max_width = 120,
         max_height = 80
     }
-    local lsp_hover_style = {
+    local default_float_opts = {
         border = lsp_border_style,
         max_width = lsp_float_size.max_width,
         max_height = lsp_float_size.max_height,
     }
 
-    vim.lsp.handlers['textDocument/hover'] = vim.lsp.with(
-        vim.lsp.handlers.hover, lsp_hover_style
-    )
+    local _hover = vim.lsp.buf.hover
+    vim.lsp.buf.hover = function(opts)
+        opts = vim.tbl_deep_extend('force', default_float_opts, opts or {})
+        return _hover(opts)
+    end
 
-    vim.lsp.handlers['textDocument/signatureHelp'] = vim.lsp.with(
-        vim.lsp.handlers.signature_help, lsp_hover_style
-    )
+    local _signature_help = vim.lsp.buf.signature_help
+    vim.lsp.buf.signature_help = function(opts)
+        opts = vim.tbl_deep_extend('force', default_float_opts, opts or {})
+        return _signature_help(opts)
+    end
 
     local signs = {
         Error = '',
