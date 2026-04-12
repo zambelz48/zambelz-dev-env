@@ -2,7 +2,7 @@ local vim = vim
 
 return {
     'rcarriga/nvim-dap-ui',
-    commit = 'cf91d5e',
+    commit = '1a66cab',
     dependencies = {
         'mfussenegger/nvim-dap',
         'nvim-neotest/nvim-nio',

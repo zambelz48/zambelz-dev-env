@@ -1,6 +1,6 @@
 return {
     'JoosepAlviste/nvim-ts-context-commentstring',
-    commit = '1b212c2',
+    commit = '6141a40',
     lazy = true,
     dependencies = {
         'nvim-treesitter/nvim-treesitter'

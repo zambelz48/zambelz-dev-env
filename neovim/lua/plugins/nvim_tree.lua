@@ -2,7 +2,7 @@ local vim = vim
 
 return {
     'nvim-tree/nvim-tree.lua',
-    tag = 'nvim-tree-v1.16.0',
+    tag = 'nvim-tree-v1.17.0',
     lazy = false,
     dependencies = {
         'nvim-tree/nvim-web-devicons'
@@ -51,13 +51,6 @@ return {
                 -- list of buffer names / filetypes that will not update the cwd if the file isn't found under the current root directory
                 -- only relevant when `update_focused_file.update_cwd` is true and `update_focused_file.enable` is true
                 ignore_list = {}
-            },
-            -- configuration options for the system open command (`s` in the tree by default)
-            system_open         = {
-                -- the command to run this, leaving nil should work in most cases
-                cmd  = nil,
-                -- the command arguments as a list
-                args = {}
             },
 
             view                = {
