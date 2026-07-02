@@ -45,5 +45,8 @@ neovim/.lsp_vendors/omnisharp
 neovim/.dap/vscode-codelldb
 neovim/.dap/vscode-js-debug
 
+# per-machine kitty overrides (includes kitty.base.conf)
+kitty/kitty.conf
+
 # End of https://www.toptal.com/developers/gitignore/api/macos
 
