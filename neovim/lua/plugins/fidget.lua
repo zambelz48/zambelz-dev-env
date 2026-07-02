@@ -2,7 +2,7 @@ local vim = vim
 
 return {
     'j-hui/fidget.nvim',
-    tag = 'v1.6.1',
+    tag = 'v2.0.0',
     config = function()
         local fidget = require('fidget')
         fidget.setup({

@@ -13,7 +13,14 @@ case $option in
         bash "$SCRIPT_DIR/kitty/setup.sh"
     ;;
     neovim)
-        bash "$SCRIPT_DIR/neovim/setup.sh"
+        case $2 in
+            check-updates)
+                bash "$SCRIPT_DIR/neovim/scripts/apply_plugin_updates.sh" "${@:3}"
+            ;;
+            *)
+                bash "$SCRIPT_DIR/neovim/setup.sh"
+            ;;
+        esac
     ;;
     tmux)
         bash "$SCRIPT_DIR/tmux/setup.sh"

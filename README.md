@@ -261,6 +261,19 @@ $ zconf neovim
 
 Open Neovim — [lazy.nvim](https://github.com/folke/lazy.nvim) bootstraps and installs every plugin automatically on first launch.
 
+#### Checking for plugin updates
+
+Every plugin in `neovim/lua/plugins/` is pinned to a `tag` or `commit`. To see which pins have a newer release available upstream:
+
+```sh
+$ zconf neovim check-updates            # check every plugin
+$ zconf neovim check-updates telescope  # filter by repo-slug substring
+```
+
+This runs `neovim/scripts/check_plugin_updates.lua` via `nvim -l`, comparing each pin against its upstream repo through `git ls-remote` (no GitHub API, no token needed). `commit`/`branch` pins are expected to show as behind — that's the point of pinning — only `tag` pins get an "update available" marker, and only when the tags actually resolve to different commits (so repos that alias one release under two tag names don't produce false positives).
+
+After the table, if anything is actually updatable (any `tag` pin with a real newer release, or any `commit` pin that's drifted from its tracked ref), it drops you into an interactive [fzf](https://github.com/junegunn/fzf) multi-select: `SPACE` to toggle a plugin, `ENTER` to apply your selection, `ESC`/`Ctrl-C` to cancel without changing anything. Applying rewrites just the pinned `tag`/`commit` value in-place in the corresponding `neovim/lua/plugins/*.lua` file — nothing else in the file is touched. If nothing is updatable, it skips straight past the prompt.
+
 #### Setup LuaRocks
 
 Some plugins (e.g. `LuaSnip`) need LuaRocks for their build step.
