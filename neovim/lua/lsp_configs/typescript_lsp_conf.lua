@@ -1,21 +1,35 @@
 return {
-    name = 'ts_ls',
-    cmd = { 'typescript-language-server', '--stdio' },
+    name = 'tsgo',
+    cmd = { 'tsc', '--lsp', '--stdio' },
     filetypes = {
         'javascript',
         'javascriptreact',
-        'javascript.jsx',
         'typescript',
         'typescriptreact',
-        'typescript.tsx'
     },
-    init_options = {
-        hostInfo = 'neovim'
-    },
-    root_markers = {
-        'tsconfig.json',
-        'jsconfig.json',
-        'package.json',
-        '.git'
-    },
+    {
+        typescript = {
+            inlayHints = {
+                enumMemberValues = {
+                    enabled = true
+                },
+                functionLikeReturnTypes = {
+                    enabled = true
+                },
+                parameterNames = {
+                    enabled = "literals",
+                    suppressWhenArgumentMatchesName = true
+                },
+                parameterTypes = {
+                    enabled = true
+                },
+                propertyDeclarationTypes = {
+                    enabled = true
+                },
+                variableTypes = {
+                    enabled = true
+                }
+            }
+        }
+    }
 }

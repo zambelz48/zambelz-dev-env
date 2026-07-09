@@ -152,7 +152,7 @@ The table below covers every language server currently wired up in `neovim/lua/l
 | --- | --- | --- |
 | Rust | rust-analyzer | `rustup component add rust-src rust-analyzer` (or `cargo install rust-analyzer`) — [docs](https://rust-analyzer.github.io/manual.html#installation) |
 | CMake | neocmakelsp | `cargo install neocmakelsp` — [source](https://github.com/Decodetalkers/neocmakelsp) |
-| Bash/Zsh, Docker, Docker Compose, Vim, HTML/CSS/JSON/ESLint, YAML, Tailwind CSS, GraphQL, Prisma, Ansible, TypeScript/JavaScript | bash-language-server, dockerfile-language-server-nodejs, `@microsoft/compose-language-service`, vim-language-server, vscode-langservers-extracted, yaml-language-server, `@tailwindcss/language-server`, graphql-language-service-cli, `@prisma/language-server`, `@ansible/ansible-language-server`, typescript-language-server | Single npm command — see [below](#install-common-npm-based-language-servers) |
+| Bash/Zsh, Docker, Docker Compose, Vim, HTML/CSS/JSON/ESLint, YAML, Tailwind CSS, GraphQL, Prisma, Ansible, TypeScript/JavaScript | bash-language-server, dockerfile-language-server-nodejs, `@microsoft/compose-language-service`, vim-language-server, vscode-langservers-extracted, yaml-language-server, `@tailwindcss/language-server`, graphql-language-service-cli, `@prisma/language-server`, `@ansible/ansible-language-server` | Single npm command — see [below](#install-common-npm-based-language-servers) |
 | Python | pyrefly | `pip install pyrefly` — [pyrefly.org](https://pyrefly.org) |
 | Go | gopls | `go install golang.org/x/tools/gopls@latest` — make sure `$GOPATH/bin` is on your `PATH` |
 | Ruby | solargraph | `gem install solargraph` — requires Ruby >= 2.7.0 |
@@ -181,8 +181,7 @@ npm install -g @microsoft/compose-language-service \
   @tailwindcss/language-server \
   graphql-language-service-cli \
   @prisma/language-server \
-  @ansible/ansible-language-server \
-  typescript-language-server
+  @ansible/ansible-language-server
 ```
 
 Also install [ansible-lint](https://ansible.readthedocs.io/projects/lint/installing/#installing-the-latest-version) for the Ansible LSP.
