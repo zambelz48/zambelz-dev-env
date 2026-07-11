@@ -2,7 +2,7 @@ local vim = vim
 
 return {
   'mfussenegger/nvim-jdtls',
-  commit = 'b69924c',
+  commit = '6e9d953',
   ft = { 'java' },
   lazy = true,
   config = function()
@@ -53,7 +53,7 @@ return {
       cmd = {
 
         -- 💀
-        'java',         -- or '/path/to/java17_or_newer/bin/java'
+        'java', -- or '/path/to/java17_or_newer/bin/java'
         -- depends on if `java` is in your $PATH env variable and if it points to the right version.
 
         '-Declipse.application=org.eclipse.jdt.ls.core.id1',
