@@ -86,7 +86,8 @@ end
 -- release (e.g. nvim-tree.lua's `v1.18.0` and `nvim-tree-v1.18.0`) compare
 -- as equal, instead of looking like an update just because the name differs.
 local function resolve_tag_commit(slug, tag)
-  local out = shell({ 'git', 'ls-remote', '--tags', repo_url(slug), 'refs/tags/' .. tag, 'refs/tags/' .. tag .. '^{}' })
+  local out = shell({ 'git', 'ls-remote', '--tags', repo_url(slug), 'refs/tags/' ..
+  tag, 'refs/tags/' .. tag .. '^{}' })
   if not out or out == '' then
     return nil
   end
@@ -100,7 +101,8 @@ end
 -- Highest semver-looking tag (by git's version-aware sort) and the commit it
 -- resolves to.
 local function latest_tag(slug)
-  local out = shell({ 'git', 'ls-remote', '--tags', '--refs', '--sort=-v:refname', repo_url(slug) })
+  local out = shell({ 'git', 'ls-remote', '--tags', '--refs', '--sort=-v:refname',
+    repo_url(slug) })
   if not out or out == '' then
     return nil, nil
   end
@@ -181,7 +183,8 @@ local function collect()
       latest = latest_tag_name or '?'
       if latest_tag_name and latest_tag_name ~= current then
         local current_commit_sha = resolve_tag_commit(slug, current)
-        changed = not current_commit_sha or not latest_commit_sha or current_commit_sha ~= latest_commit_sha
+        changed = not current_commit_sha or not latest_commit_sha or
+        current_commit_sha ~= latest_commit_sha
       end
     elseif spec.commit then
       kind, current = 'commit', spec.commit
@@ -226,7 +229,8 @@ local function apply_update(file, kind, current, new_value)
   local new_content, n = content:gsub(pattern, replacement, 1)
 
   if n == 0 then
-    io.stderr:write(("could not find `%s = '%s'` in %s\n"):format(kind, current, file))
+    io.stderr:write(("could not find `%s = '%s'` in %s\n"):format(kind, current,
+      file))
     return false
   end
 
@@ -244,7 +248,8 @@ local function run_apply()
   local applied = 0
   for line in io.lines() do
     if line ~= '' then
-      local file, slug, kind, current, latest = line:match('^([^\t]*)\t([^\t]*)\t([^\t]*)\t([^\t]*)\t([^\t]*)$')
+      local file, slug, kind, current, latest = line:match(
+      '^([^\t]*)\t([^\t]*)\t([^\t]*)\t([^\t]*)\t([^\t]*)$')
       if file and kind and current and latest then
         if apply_update(file, kind, current, latest) then
           println(('updated %s: %s %s -> %s'):format(slug, kind, current, latest))
@@ -266,14 +271,17 @@ local function run_pretty(rows)
   println(string.rep('-', 100))
 
   for _, row in ipairs(rows) do
-    local note = (row.kind == 'tag' and row.changed) and '<- update available' or ''
+    local note = (row.kind == 'tag' and row.changed) and '<- update available' or
+    ''
     println(string.format(fmt, row.slug, row.kind, row.current, row.latest, note))
   end
 
   println(string.rep('-', 100))
   println(('checked %d plugin(s)'):format(#rows))
-  println('note: "commit"/"branch" pins are expected to sit behind their latest —')
-  println('      that is what pinning means. Only "tag" pins get an update marker.')
+  println(
+  'note: "commit"/"branch" pins are expected to sit behind their latest —')
+  println(
+  '      that is what pinning means. Only "tag" pins get an update marker.')
 end
 
 local function write_candidates(rows, path)
@@ -286,7 +294,8 @@ local function write_candidates(rows, path)
     -- Only tag/commit pins have something concrete to rewrite; branch pins
     -- float already, and unpinned entries have nothing to apply.
     if row.changed and (row.kind == 'tag' or row.kind == 'commit') then
-      out:write(table.concat({ row.file, row.slug, row.kind, row.current, row.latest }, '\t') .. '\n')
+      out:write(table.concat(
+      { row.file, row.slug, row.kind, row.current, row.latest }, '\t') .. '\n')
     end
   end
   out:close()

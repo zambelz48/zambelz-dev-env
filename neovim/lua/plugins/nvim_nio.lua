@@ -1,4 +1,4 @@
 return {
-    'nvim-neotest/nvim-nio',
-    tag = 'v1.10.1',
+  'nvim-neotest/nvim-nio',
+  tag = 'v1.10.1',
 }

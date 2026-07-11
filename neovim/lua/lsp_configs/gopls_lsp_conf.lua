@@ -1,15 +1,15 @@
 return {
-    name = 'gopls',
-    cmd = { 'gopls' },
-    filetypes = { 'go', 'gomod', 'gowork', 'gotmpl' },
-    settings = {
-        gopls = {
-            analyses = {
-                unusedparams = true,
-                ST1000 = false,
-            },
-            staticcheck = true,
-            gofumpt = true
-        }
+  name = 'gopls',
+  cmd = { 'gopls' },
+  filetypes = { 'go', 'gomod', 'gowork', 'gotmpl' },
+  settings = {
+    gopls = {
+      analyses = {
+        unusedparams = true,
+        ST1000 = false,
+      },
+      staticcheck = true,
+      gofumpt = true
     }
+  }
 }

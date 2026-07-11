@@ -1,4 +1,4 @@
 return {
-    'nvim-tree/nvim-web-devicons',
-    commit = 'dad7138',
+  'nvim-tree/nvim-web-devicons',
+  commit = 'dad7138',
 }

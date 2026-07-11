@@ -1,5 +1,5 @@
 return {
-	'L3MON4D3/LuaSnip',
-	tag = 'v2.5.0',
-	build = 'make install_jsregexp'
+  'L3MON4D3/LuaSnip',
+  tag = 'v2.5.0',
+  build = 'make install_jsregexp'
 }

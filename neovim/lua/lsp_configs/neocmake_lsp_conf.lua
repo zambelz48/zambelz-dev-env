@@ -1,5 +1,5 @@
 return {
-    name = 'neocmake',
-    cmd = { 'neocmakelsp', '--stdio' },
-    filetypes = { 'cmake' },
+  name = 'neocmake',
+  cmd = { 'neocmakelsp', '--stdio' },
+  filetypes = { 'cmake' },
 }

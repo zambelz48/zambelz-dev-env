@@ -1,10 +1,10 @@
 return {
-    name = 'prismals',
-    cmd = { 'prisma-language-server', '--stdio' },
-    filetypes = { 'prisma' },
-    settings = {
-        prisma = {
-            prismaFmtBinPath = ''
-        }
+  name = 'prismals',
+  cmd = { 'prisma-language-server', '--stdio' },
+  filetypes = { 'prisma' },
+  settings = {
+    prisma = {
+      prismaFmtBinPath = ''
     }
+  }
 }

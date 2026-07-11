@@ -1,5 +1,5 @@
 return {
-    name = 'lemminx',
-    cmd = { 'lemminx' },
-    filetypes = { 'xml', 'xsd', 'xsl', 'xslt', 'svg' },
+  name = 'lemminx',
+  cmd = { 'lemminx' },
+  filetypes = { 'xml', 'xsd', 'xsl', 'xslt', 'svg' },
 }
