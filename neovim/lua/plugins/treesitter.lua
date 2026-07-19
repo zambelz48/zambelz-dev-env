@@ -2,7 +2,7 @@ local vim = vim
 
 return {
   'nvim-treesitter/nvim-treesitter',
-  commit = '4916d65',
+  commit = '2497714',
   lazy = false,
   build = ':TSUpdate',
   config = function()
@@ -61,7 +61,6 @@ return {
       'ssh_config',
       'swift',
       'terraform',
-      'tmux',
       'toml',
       'tsx',
       'typescript',
@@ -70,6 +69,7 @@ return {
       'vue',
       'xml',
       'yaml',
+      'zsh',
     })
 
     -- To make new nvim-treesitter (from 'main' branch) works
