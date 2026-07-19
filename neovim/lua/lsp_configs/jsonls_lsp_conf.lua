@@ -5,12 +5,12 @@ local function get_json_schemas()
     -- Only compute this once and cache the result
     utils.cache.json_schemas = {
       {
-        fileMatch = { "package.json" },
-        url = "https://json.schemastore.org/package.json"
+        fileMatch = { 'package.json' },
+        url = 'https://json.schemastore.org/package.json'
       },
       {
-        fileMatch = { "tsconfig.json", "tsconfig.*.json" },
-        url = "https://json.schemastore.org/tsconfig.json"
+        fileMatch = { 'tsconfig.json', 'tsconfig.*.json' },
+        url = 'https://json.schemastore.org/tsconfig.json'
       },
       -- Add more schemas as needed
     }

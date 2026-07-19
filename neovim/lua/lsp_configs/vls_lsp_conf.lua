@@ -19,13 +19,13 @@ return {
       vetur = {
         completion = {
           autoImport = false,
-          tagCasing = "kebab",
+          tagCasing = 'kebab',
           useScaffoldSnippets = false
         },
         format = {
           defaultFormatter = {
-            js = "none",
-            ts = "none"
+            js = 'none',
+            ts = 'none'
           },
           defaultFormatterOptions = {},
           scriptInitialIndent = false,

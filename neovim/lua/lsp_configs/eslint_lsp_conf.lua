@@ -16,7 +16,7 @@ return {
     codeAction = {
       disableRuleComment = {
         enable = true,
-        location = "separateLine"
+        location = 'separateLine'
       },
       showDocumentation = {
         enable = true
@@ -24,24 +24,24 @@ return {
     },
     codeActionOnSave = {
       enable = false,
-      mode = "all"
+      mode = 'all'
     },
     experimental = {
       useFlatConfig = false
     },
     format = true,
-    nodePath = "",
-    onIgnoredFiles = "off",
+    nodePath = '',
+    onIgnoredFiles = 'off',
     problems = {
       shortenToSingleLine = false
     },
     quiet = false,
     rulesCustomizations = {},
-    run = "onType",
+    run = 'onType',
     useESLintClass = false,
-    validate = "on",
+    validate = 'on',
     workingDirectory = {
-      mode = "location"
+      mode = 'location'
     }
   },
 }

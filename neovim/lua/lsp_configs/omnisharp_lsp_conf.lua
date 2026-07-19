@@ -1,7 +1,7 @@
 return {
-  name = "omnisharp",
-  cmd = { "OmniSharp", "-z", "--hostPID", "12345", "DotNet:enablePackageRestore=false", "--encoding", "utf-8", "--languageserver" },
-  filetypes = { "cs" },
+  name = 'omnisharp',
+  cmd = { 'OmniSharp', '-z', '--hostPID', '12345', 'DotNet:enablePackageRestore=false', '--encoding', 'utf-8', '--languageserver' },
+  filetypes = { 'cs' },
   capabilities = {
     workspace = {
       workspaceFolders = false
@@ -9,7 +9,7 @@ return {
   },
   init_options = {
   },
-  root_markers = { ".sln", ".csproj", "omnisharp.json", "function.json" },
+  root_markers = { '.sln', '.csproj', 'omnisharp.json', 'function.json' },
   settings = {
     FormattingOptions = {
       -- Enables support for reading code style, naming convention and analyzer

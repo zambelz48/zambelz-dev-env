@@ -17,7 +17,7 @@ return {
           enabled = true
         },
         parameterNames = {
-          enabled = "literals",
+          enabled = 'literals',
           suppressWhenArgumentMatchesName = true
         },
         parameterTypes = {
