@@ -67,9 +67,10 @@ return {
   },
   filetypes = {
     'c',
+    'c.doxygen',
     'cpp',
-    'cuda',
-    'proto'
+    'cpp.doxygen',
+    'cuda'
   },
   root_markers = { '.clangd', '.clang-tidy', '.clang-format', 'compile_commands.json', 'compile_flags.txt', 'configure.ac', '.git' },
   on_attach = function(_, bufnr)
