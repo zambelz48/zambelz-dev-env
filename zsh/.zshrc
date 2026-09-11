@@ -144,6 +144,7 @@ alias zconf="$ZAMBELZ_DEV_ENV_PATH/main.sh"
 source "$ZAMBELZ_HELPER_PATH/utils.zsh"
 source "$ZAMBELZ_HELPER_PATH/git.zsh"
 source "$ZAMBELZ_HELPER_PATH/tmux.zsh"
+source "$ZAMBELZ_HELPER_PATH/reclaim-disk.zsh"
 
 # Dracula themes syntax highlighting
 # source: https://github.com/dracula/zsh-syntax-highlighting
