@@ -6,7 +6,7 @@ end
 
 return {
   'zbirenbaum/copilot.lua',
-  tag = 'v3.0.4',
+  tag = 'v3.1.6',
   opts = {
     panel = {
       enabled = is_copilot_enabled(),
