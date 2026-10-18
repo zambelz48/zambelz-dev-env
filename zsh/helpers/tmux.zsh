@@ -124,7 +124,20 @@ tmux_restore_sessions() {
     local session_pane=$(echo "$session_info" | cut -f 2 -d ':')
     local session_path=$(echo "$session" | cut -f 2 -d '=')
 
-    local target_session="$session_name:$session_pane"
+    local target_session="=$session_name:$session_pane"
+
+    if ! tmux has-session -t "=$session_name" 2>/dev/null; then
+      local created_pane=$(tmux new-session -d -P -F "#{window_index}" -s "$session_name" -c "$session_path")
+      if [ "$created_pane" != "$session_pane" ]; then
+        tmux move-window -s "=$session_name:$created_pane" -t "$target_session"
+      fi
+      continue
+    fi
+
+    if ! tmux list-windows -t "=$session_name" -F "#{window_index}" | grep -qx "$session_pane"; then
+      tmux new-window -d -t "$target_session" -c "$session_path"
+      continue
+    fi
 
     local nvim_process=$(tmux_nvim_process "$target_session")
     if [ -z "$nvim_process" ]; then
