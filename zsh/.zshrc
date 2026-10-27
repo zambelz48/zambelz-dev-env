@@ -145,6 +145,7 @@ source "$ZAMBELZ_HELPER_PATH/utils.zsh"
 source "$ZAMBELZ_HELPER_PATH/git.zsh"
 source "$ZAMBELZ_HELPER_PATH/tmux.zsh"
 source "$ZAMBELZ_HELPER_PATH/reclaim-disk.zsh"
+source "$ZAMBELZ_HELPER_PATH/claude-at.zsh"
 
 # Dracula themes syntax highlighting
 # source: https://github.com/dracula/zsh-syntax-highlighting
