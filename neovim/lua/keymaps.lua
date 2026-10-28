@@ -16,5 +16,5 @@ utils.nnoremap('<leader>gp', ':G push<CR>', { silent = true })
 utils.nnoremap('<leader>gP', ':G push origin ')
 
 -- markdown previewer keymaps
-utils.nnoremap('<leader>mp', ':MarkdownPreview<CR>', { silent = true })
+utils.nnoremap('<leader>mp', ':MarkdownPreviewToggle<CR>', { silent = true })
 utils.nnoremap('<leader>ms', ':MarkdownPreviewStop<CR>', { silent = true })
