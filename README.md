@@ -46,8 +46,7 @@ Every tool's config lives in this repository and is **symlinked** into place by 
 │   ├── .dap/               # manually-installed debug adapters (git-ignored per-adapter)
 │   └── setup.sh
 ├── tmux/
-│   ├── .tmux.conf
-│   ├── tmux_dracula.theme
+│   ├── .tmux.conf         # includes the dracula/tmux theme options
 │   └── setup.sh
 └── .editorconfig
 ```
@@ -90,7 +89,7 @@ Dropping a new file into `neovim/lua/plugins/` or `neovim/after/lsp/` is enough 
    ```sh
    cd "$HOME/zambelz-dev-env" && git submodule update --init --recursive
    ```
-1. Create `$HOME/.profile.zsh` and export `ZAMBELZ_DEV_ENV_PATH` — this is **required**, the tool configs (tmux's theme, the zsh helpers, the `zconf` alias itself) resolve paths relative to it. Neovim does not need it; it finds the repo through its `~/.config/nvim` symlinks:
+1. Create `$HOME/.profile.zsh` and export `ZAMBELZ_DEV_ENV_PATH` — this is **required**, the tool configs (the zsh helpers, the `zconf` alias itself) resolve paths relative to it. Neovim does not need it; it finds the repo through its `~/.config/nvim` symlinks:
    ```sh
    echo 'export ZAMBELZ_DEV_ENV_PATH="$HOME/zambelz-dev-env"' >> "$HOME/.profile.zsh"
    ```
@@ -289,6 +288,8 @@ $ zconf tmux
 
 1. Open tmux.
 1. Press `Ctrl+B` then `Shift+I` to install plugins via [TPM](https://github.com/tmux-plugins/tpm).
+
+The status bar theme is the official [dracula/tmux](https://github.com/dracula/tmux) plugin, configured with the `@dracula-*` options in `tmux/.tmux.conf` (see its [CONFIG.md](https://github.com/dracula/tmux/blob/master/docs/CONFIG.md)). Keep `tmux-continuum` as the last `@plugin`: dracula rewrites `status-right`, and continuum's autosave hook must be added after it.
 
 ## Resetting a tool's config
 
