@@ -43,6 +43,17 @@ local lualine_x_content = function()
   return content
 end
 
+local function theme()
+  local dracula_theme = vim.deepcopy(require('lualine.themes.dracula-nvim'))
+  local colors = require('dracula').colors()
+  local modes = { 'normal', 'insert', 'visual', 'replace', 'command' }
+  for _, mode in ipairs(modes) do
+    dracula_theme[mode].b.bg = colors.comment
+    dracula_theme[mode].b.fg = colors.fg
+  end
+  return dracula_theme
+end
+
 return {
   'nvim-lualine/lualine.nvim',
   commit = '221ce6b',
@@ -54,7 +65,7 @@ return {
     lualine.setup({
       options = {
         icons_enabled = true,
-        theme = 'dracula-nvim',
+        theme = theme(),
 
         -- Flat blocks, matching the dracula/tmux status bar.
         component_separators = { left = '', right = '' },
@@ -76,7 +87,7 @@ return {
       sections = {
         lualine_a = { 'mode' },
         lualine_b = { 'branch', 'diff', 'diagnostics' },
-        lualine_c = { 'filename' },
+        lualine_c = { { 'filename', path = 1 } },
         lualine_x = lualine_x_content(),
         lualine_y = { 'progress' },
         lualine_z = { 'location' }
@@ -84,7 +95,7 @@ return {
       inactive_sections = {
         lualine_a = {},
         lualine_b = {},
-        lualine_c = { 'filename' },
+        lualine_c = { { 'filename', path = 1 } },
         lualine_x = { 'location' },
         lualine_y = {},
         lualine_z = {}
