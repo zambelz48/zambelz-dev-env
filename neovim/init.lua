@@ -1,20 +1,5 @@
-local vim = vim
-
--- Load all plugins from $HOME/.config/nvim/lua/plugins/*.lua
-local loaded_plugins = {}
-local plugins_dir = os.getenv('HOME') .. '/.config/nvim/lua/plugins'
-for _, plugin_path in pairs(vim.fn.glob(plugins_dir .. '/*.lua', true, true)) do
-  local plugin_spec = dofile(plugin_path)
-  if type(plugin_spec[1]) == 'table' then
-    vim.list_extend(loaded_plugins, plugin_spec)
-  else
-    table.insert(loaded_plugins, plugin_spec)
-  end
-end
-
--- Bootstrap lazy.nvim
 local lazypath = vim.fn.stdpath('data') .. '/lazy/lazy.nvim'
-if not (vim.uv or vim.loop).fs_stat(lazypath) then
+if not vim.uv.fs_stat(lazypath) then
   local lazyrepo = 'https://github.com/folke/lazy.nvim.git'
   local out = vim.fn.system({ 'git', 'clone', '--filter=blob:none',
     '--branch=stable', lazyrepo, lazypath })
@@ -30,22 +15,31 @@ if not (vim.uv or vim.loop).fs_stat(lazypath) then
 end
 vim.opt.rtp:prepend(lazypath)
 
--- Make sure to setup `mapleader` and `maplocalleader` before
--- loading lazy.nvim so that mappings are correct.
--- This is also a good place to setup other settings (vim.opt)
+-- Leaders must be set before lazy.nvim loads so plugin mappings use them.
 vim.g.mapleader = ' '
 vim.g.maplocalleader = '\\'
 
 require('options')
+require('filetypes')
 require('keymaps')
 
--- Setup lazy.nvim
 require('lazy').setup({
-  spec = loaded_plugins,
-
-  -- colorscheme that will be used when installing plugins.
+  spec = {
+    { import = 'plugins' },
+  },
+  lockfile = require('utils').neovim_dir() .. '/lazy-lock.json',
   install = { colorscheme = { 'dracula' } },
-
-  -- automatically check for plugin updates
-  checker = { enabled = true },
+  checker = { enabled = false },
+  rocks = { enabled = false },
+  performance = {
+    rtp = {
+      disabled_plugins = {
+        'gzip',
+        'netrwPlugin',
+        'tarPlugin',
+        'tutor',
+        'zipPlugin',
+      },
+    },
+  },
 })

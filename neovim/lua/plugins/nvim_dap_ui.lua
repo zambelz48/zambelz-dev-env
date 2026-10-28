@@ -1,11 +1,11 @@
-local vim = vim
-
 return {
   'rcarriga/nvim-dap-ui',
   commit = '1a66cab',
   dependencies = {
-    'mfussenegger/nvim-dap',
     'nvim-neotest/nvim-nio',
+  },
+  keys = {
+    { '<leader>dt', function() require('dapui').toggle() end },
   },
   config = function()
     local dap = require('dap')
@@ -94,18 +94,5 @@ return {
     dap.listeners.before.event_exited.dapui_config = function()
       nvim_dap_ui.close()
     end
-
-    -- dapui mappings
-    vim.api.nvim_set_keymap('n', '<leader>dt',
-      [[<cmd>lua require('dapui').toggle()<CR>]], { noremap = true })
-
-    -- reset dapui sizes on nvim-tree close
-    local nvim_tree_api = require("nvim-tree.api")
-    local Event = nvim_tree_api.events.Event
-    nvim_tree_api.events.subscribe(Event.TreeClose, function()
-      if require("dap").session() then
-        require("dapui").open({ reset = true })
-      end
-    end)
   end
 }

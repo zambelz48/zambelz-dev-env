@@ -1,11 +1,12 @@
-local vim = vim
-
 return {
   'hrsh7th/nvim-cmp',
   commit = '2ffe79f',
+  event = 'InsertEnter',
   dependencies = {
     'hrsh7th/cmp-nvim-lsp',
     'hrsh7th/cmp-buffer',
+    'L3MON4D3/LuaSnip',
+    'saadparwaiz1/cmp_luasnip',
   },
   config = function()
     local luasnip = require('luasnip')
@@ -91,7 +92,7 @@ return {
           if cmp.visible() then
             cmp.select_prev_item()
           elseif luasnip.jumpable(-1) then
-            vim.vn.feedkeys(
+            vim.fn.feedkeys(
               vim.api.nvim_replace_termcodes(
                 '<Plug>luasnip-jump-prev',
                 true,

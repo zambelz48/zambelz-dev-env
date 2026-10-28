@@ -2,6 +2,7 @@ return {
   'lukas-reineke/indent-blankline.nvim',
   main = 'ibl',
   tag = 'v3.10.1',
+  event = { 'BufReadPost', 'BufNewFile' },
   opts = {
     indent = {
       char = '┊',
@@ -15,13 +16,8 @@ return {
     },
     exclude = {
       filetypes = {
-        'help',
-        'dashboard',
         'NvimTree',
-        'Trouble',
         'lazy',
-        'mason',
-        'notify',
       },
     },
   },

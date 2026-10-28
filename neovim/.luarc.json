@@ -1,0 +1,15 @@
+{
+  "runtime": {
+    "version": "LuaJIT"
+  },
+  "workspace": {
+    "library": [
+      "$VIMRUNTIME"
+    ],
+    "ignoreDir": [
+      ".lsp_vendors",
+      ".dap"
+    ],
+    "checkThirdParty": false
+  }
+}

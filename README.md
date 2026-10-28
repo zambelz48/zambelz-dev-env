@@ -31,13 +31,17 @@ Every tool's config lives in this repository and is **symlinked** into place by 
 │   ├── .themes/          # git submodules (Dracula theme, syntax highlighting)
 │   └── setup.sh
 ├── neovim/
-│   ├── init.lua           # bootstraps lazy.nvim, auto-loads lua/plugins and lua/lsp_configs
+│   ├── init.lua           # bootstraps lazy.nvim, imports lua/plugins
+│   ├── lazy-lock.json     # exact plugin commits, maintained by lazy.nvim
+│   ├── .luarc.json        # lua-language-server settings for this config
 │   ├── lua/
 │   │   ├── options.lua     # vim.opt settings
+│   │   ├── filetypes.lua   # extra filetype detection (docker compose, ansible)
 │   │   ├── keymaps.lua     # global keymaps (quickfix, fugitive, markdown preview)
-│   │   ├── utils.lua       # shared helpers, incl. LSP on_attach keymaps
-│   │   ├── plugins/*.lua   # one lazy.nvim plugin spec per file — auto-discovered
-│   │   └── lsp_configs/*.lua # one language server config per file — auto-discovered
+│   │   ├── utils.lua       # shared helpers
+│   │   └── plugins/*.lua   # one lazy.nvim plugin spec per file — auto-discovered
+│   ├── after/lsp/*.lua     # one file per enabled language server — auto-discovered
+│   ├── ftplugin/java.lua   # starts jdtls for every Java buffer
 │   ├── .lsp_vendors/       # manually-installed language servers (git-ignored per-server)
 │   ├── .dap/               # manually-installed debug adapters (git-ignored per-adapter)
 │   └── setup.sh
@@ -48,7 +52,7 @@ Every tool's config lives in this repository and is **symlinked** into place by 
 └── .editorconfig
 ```
 
-Dropping a new file into `neovim/lua/plugins/` or `neovim/lua/lsp_configs/` is enough to register it — `init.lua` globs both directories automatically, no central list to edit.
+Dropping a new file into `neovim/lua/plugins/` or `neovim/after/lsp/` is enough to register it, with no central list to edit. A plugin file is picked up by lazy.nvim's `import`. A file named `after/lsp/<server>.lua` enables that server; its content only holds overrides on top of [nvim-lspconfig](https://github.com/neovim/nvim-lspconfig)'s `lsp/<server>.lua` defaults, so it is often just `return {}`.
 
 ## Pre-requisites
 
@@ -86,7 +90,7 @@ Dropping a new file into `neovim/lua/plugins/` or `neovim/lua/lsp_configs/` is e
    ```sh
    cd "$HOME/zambelz-dev-env" && git submodule update --init --recursive
    ```
-1. Create `$HOME/.profile.zsh` and export `ZAMBELZ_DEV_ENV_PATH` — this is **required**, every tool's config (Neovim's LSP/DAP vendor paths, tmux's theme, the zsh helpers, the `zconf` alias itself) resolves paths relative to it:
+1. Create `$HOME/.profile.zsh` and export `ZAMBELZ_DEV_ENV_PATH` — this is **required**, the tool configs (tmux's theme, the zsh helpers, the `zconf` alias itself) resolve paths relative to it. Neovim does not need it; it finds the repo through its `~/.config/nvim` symlinks:
    ```sh
    echo 'export ZAMBELZ_DEV_ENV_PATH="$HOME/zambelz-dev-env"' >> "$HOME/.profile.zsh"
    ```
@@ -133,26 +137,22 @@ $ zconf zsh
 
 ##### Install Neovim providers
 
+The Python, Ruby and Perl providers are disabled in `lua/options.lua`; no plugin in this config uses them. The Node.js provider is optional:
+
 ```sh
-# Node.js provider
 $ npm install -g neovim
-
-# Python provider
-$ pip install neovim
-
-# Ruby provider
-$ gem install neovim
 ```
 
 ##### Install language servers
 
-The table below covers every language server currently wired up in `neovim/lua/lsp_configs/`. See the [full list of supported servers](https://github.com/neovim/nvim-lspconfig/blob/master/CONFIG.md) for reference on any not listed here.
+The table below covers every language server currently enabled in `neovim/after/lsp/` (plus jdtls, started from `neovim/ftplugin/java.lua`). See the [full list of supported servers](https://github.com/neovim/nvim-lspconfig/blob/master/CONFIG.md) for reference on any not listed here.
 
 | Language(s) | Server | Install |
 | --- | --- | --- |
 | Rust | rust-analyzer | `rustup component add rust-src rust-analyzer` (or `cargo install rust-analyzer`) — [docs](https://rust-analyzer.github.io/manual.html#installation) |
 | CMake | neocmakelsp | `cargo install neocmakelsp` — [source](https://github.com/Decodetalkers/neocmakelsp) |
-| Bash/Zsh, Docker, Docker Compose, Vim, HTML/CSS/JSON/ESLint, YAML, Tailwind CSS, GraphQL, Prisma, Ansible, TypeScript/JavaScript | bash-language-server, dockerfile-language-server-nodejs, `@microsoft/compose-language-service`, vim-language-server, vscode-langservers-extracted, yaml-language-server, `@tailwindcss/language-server`, graphql-language-service-cli, `@prisma/language-server`, `@ansible/ansible-language-server` | Single npm command — see [below](#install-common-npm-based-language-servers) |
+| Bash/Zsh, Docker, Docker Compose, Vim, HTML/CSS/JSON/ESLint, YAML, Tailwind CSS, GraphQL, Prisma, Ansible | bash-language-server, dockerfile-language-server-nodejs, `@microsoft/compose-language-service`, vim-language-server, vscode-langservers-extracted, yaml-language-server, `@tailwindcss/language-server`, graphql-language-service-cli, `@prisma/language-server`, `@ansible/ansible-language-server` | Single npm command — see [below](#install-common-npm-based-language-servers) |
+| TypeScript/JavaScript | tsc (`tsc --lsp`, TypeScript 7+ only) | `npm install -g typescript` (must resolve to 7.0 or newer) |
 | Python | pyrefly | `pip install pyrefly` — [pyrefly.org](https://pyrefly.org) |
 | Go | gopls | `go install golang.org/x/tools/gopls@latest` — make sure `$GOPATH/bin` is on your `PATH` |
 | Ruby | solargraph | `gem install solargraph` — requires Ruby >= 2.7.0 |
@@ -167,7 +167,6 @@ The table below covers every language server currently wired up in `neovim/lua/l
 | Swift, Objective-C++ | sourcekit-lsp | Ships with the Swift toolchain / Xcode |
 | Dart | dartls (`dart language-server`) | Ships with the [Dart SDK](https://dart.dev/get-dart) / Flutter SDK |
 | CSS/JS/TS/JSON/HTML/GraphQL/Vue (formatter+linter) | biome | See [biomejs.dev](https://biomejs.dev/guides/getting-started/) — not yet fully documented here |
-| Vue | vls | Not yet documented here |
 
 ###### Install common npm-based language servers
 
@@ -184,7 +183,7 @@ npm install -g @microsoft/compose-language-service \
   @ansible/ansible-language-server
 ```
 
-Also install [ansible-lint](https://ansible.readthedocs.io/projects/lint/installing/#installing-the-latest-version) for the Ansible LSP.
+Also install [ansible-lint](https://ansible.readthedocs.io/projects/lint/installing/#installing-the-latest-version) for the Ansible LSP. The Ansible and Docker Compose servers attach to the `yaml.ansible` / `yaml.docker-compose` filetypes, which `neovim/lua/filetypes.lua` assigns from the file path (`roles/*/tasks|handlers/`, `playbooks/`, `docker-compose*.y(a)ml`, `compose*.y(a)ml`).
 
 ###### Setup "omnisharp" (C# language server)
 
@@ -208,10 +207,9 @@ curl -o neovim/.lsp_vendors/jdt-language-server-1.46.0-202503271314.tar.gz \
 mkdir neovim/.lsp_vendors/jdtls
 tar xf neovim/.lsp_vendors/jdt-language-server-1.46.0-202503271314.tar.gz \
   --directory=neovim/.lsp_vendors/jdtls
-mkdir neovim/.lsp_vendors/jdtls/project_data
 ```
 
-Then create `neovim/.lsp_vendors/jdtls/config/intellij-java-google-style.xml`, copying its content from [google/styleguide](https://github.com/google/styleguide/blob/gh-pages/intellij-java-google-style.xml).
+Per-project jdtls workspaces are stored under `~/.cache/nvim/jdtls/`. Then create `neovim/.lsp_vendors/jdtls/config/intellij-java-google-style.xml`, copying its content from [google/styleguide](https://github.com/google/styleguide/blob/gh-pages/intellij-java-google-style.xml).
 
 ###### Setup "vscode-gradle"
 
@@ -273,23 +271,11 @@ This runs `neovim/scripts/check_plugin_updates.lua` via `nvim -l`, comparing eac
 
 After the table, if anything is actually updatable (any `tag` pin with a real newer release, or any `commit` pin that's drifted from its tracked ref), it drops you into an interactive [fzf](https://github.com/junegunn/fzf) multi-select: `SPACE` to toggle a plugin, `ENTER` to apply your selection, `ESC`/`Ctrl-C` to cancel without changing anything. Applying rewrites just the pinned `tag`/`commit` value in-place in the corresponding `neovim/lua/plugins/*.lua` file — nothing else in the file is touched. If nothing is updatable, it skips straight past the prompt.
 
-#### Setup LuaRocks
+#### Plugin lockfile
 
-Some plugins (e.g. `LuaSnip`) need LuaRocks for their build step.
+`neovim/lazy-lock.json` records the exact commit of every plugin, including dependencies that have no pin in their spec. lazy.nvim updates it on install/update; commit it alongside spec changes.
 
-1. Install [hererocks](https://github.com/mpeterv/hererocks):
-   ```sh
-   pip install --user hererocks
-   ```
-1. Manually set up Lua 5.1 + LuaRocks:
-   ```sh
-   cd ~/.local/share/nvim
-   mkdir -p lazy-rocks
-   cd lazy-rocks
-
-   hererocks . --lua=5.1 -r latest
-   source ./bin/activate
-   ```
+LuaRocks support in lazy.nvim is disabled (`rocks = { enabled = false }` in `init.lua`); no plugin here needs it.
 
 ## Tmux configs
 
@@ -306,4 +292,4 @@ $ zconf tmux
 
 ## Resetting a tool's config
 
-Every `<tool>/setup.sh` script **removes and recreates** the tool's config directory/symlinks before installing (e.g. `rm -rf "$HOME/.config/nvim"`, `rm -rf "$HOME/.tmux"`). This is safe for anything managed by this repo, but if you've added unmanaged files directly inside a tool's live config directory (e.g. `~/.config/nvim`), running `zconf <tool>` again will delete them. Keep machine-local additions in the tool's git-ignored override file where one exists (e.g. `kitty/kitty.conf`) instead.
+Every `<tool>/setup.sh` script **removes and recreates** the tool's config directory/symlinks before installing (e.g. `rm -rf "$HOME/.tmux"`). `neovim/setup.sh` only replaces its own entries in `~/.config/nvim` (`init.lua`, `lua`, `after`, `ftplugin`, `.luarc.json`) and leaves anything else there alone. This is safe for anything managed by this repo, but if you've added unmanaged files directly inside a tool's live config directory (e.g. `~/.config/nvim`), running `zconf <tool>` again will delete them. Keep machine-local additions in the tool's git-ignored override file where one exists (e.g. `kitty/kitty.conf`) instead.

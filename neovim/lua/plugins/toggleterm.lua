@@ -1,8 +1,10 @@
-local vim = vim
-
 return {
   'akinsho/toggleterm.nvim',
   tag = 'v2.13.1',
+  cmd = { 'ToggleTerm', 'TermExec' },
+  keys = {
+    { [[<c-\>]], mode = { 'n', 'i' } },
+  },
   config = function()
     local utils = require('utils')
 

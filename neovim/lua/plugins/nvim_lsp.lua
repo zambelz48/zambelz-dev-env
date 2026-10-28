@@ -1,92 +1,99 @@
-local vim = vim
+local float_size = {
+  max_width = 120,
+  max_height = 80,
+}
 
--- list of available lsp: https://github.com/neovim/nvim-lspconfig/blob/master/CONFIG.md
--- Load all lsp config from $HOME/.config/nvim/lua/lsp_configs/*.lua
-local loaded_lsp_configs = {}
-local lsp_configs_dir = os.getenv('HOME') .. '/.config/nvim/lua/lsp_configs'
-for _, lsp_config_path in pairs(vim.fn.glob(lsp_configs_dir .. '/*.lua', true, true)) do
-  local lsp_spec = dofile(lsp_config_path)
-  table.insert(loaded_lsp_configs, lsp_spec)
-end
-
-local configure_lsp_styling = function()
-  local lsp_border_style = 'rounded'
-  local lsp_float_size = {
-    max_width = 120,
-    max_height = 80
-  }
-  local default_float_opts = {
-    border = lsp_border_style,
-    max_width = lsp_float_size.max_width,
-    max_height = lsp_float_size.max_height,
-  }
-
-  local _hover = vim.lsp.buf.hover
-  vim.lsp.buf.hover = function(opts)
-    opts = vim.tbl_deep_extend('force', default_float_opts, opts or {})
-    return _hover(opts)
-  end
-
-  local _signature_help = vim.lsp.buf.signature_help
-  vim.lsp.buf.signature_help = function(opts)
-    opts = vim.tbl_deep_extend('force', default_float_opts, opts or {})
-    return _signature_help(opts)
-  end
-
-  local signs = {
-    Error = '',
-    Warn = '',
-    Hint = '',
-    Info = '󰋽'
-  }
-  for type, icon in pairs(signs) do
-    local hl = 'DiagnosticSign' .. type
-    vim.fn.sign_define(hl,
-      {
-        text = icon,
-        texthl = hl,
-        numhl = hl
-      }
-    )
-  end
-
+local function configure_diagnostics()
+  local severity = vim.diagnostic.severity
   vim.diagnostic.config({
     virtual_text = {
       prefix = '●',
     },
     severity_sort = true,
+    signs = {
+      text = {
+        [severity.ERROR] = '\u{ea87}',
+        [severity.WARN] = '\u{ea6c}',
+        [severity.HINT] = '\u{f0eb}',
+        [severity.INFO] = '\u{f02fd}',
+      },
+      numhl = {
+        [severity.ERROR] = 'DiagnosticSignError',
+        [severity.WARN] = 'DiagnosticSignWarn',
+        [severity.HINT] = 'DiagnosticSignHint',
+        [severity.INFO] = 'DiagnosticSignInfo',
+      },
+    },
     float = {
-      source = 'always',
-      border = lsp_border_style,
-      max_width = lsp_float_size.max_width,
-      max_height = lsp_float_size.max_height,
+      source = 'if_many',
+      max_width = float_size.max_width,
+      max_height = float_size.max_height,
     },
   })
+end
+
+local function set_keymaps(bufnr)
+  local function map(mode, lhs, rhs)
+    vim.keymap.set(mode, lhs, rhs, { buf = bufnr, silent = true })
+  end
+
+  map('n', 'gD', vim.lsp.buf.declaration)
+  map('n', 'gd', vim.lsp.buf.definition)
+  map('n', 'H', function()
+    vim.lsp.buf.hover(float_size)
+  end)
+  map('n', '<C-k>', function()
+    vim.lsp.buf.signature_help(float_size)
+  end)
+  map('n', '<leader>wa', vim.lsp.buf.add_workspace_folder)
+  map('n', '<leader>wr', vim.lsp.buf.remove_workspace_folder)
+  map('n', '<leader>wl', function()
+    vim.print(vim.lsp.buf.list_workspace_folders())
+  end)
+  map('n', '<leader>f', function()
+    vim.lsp.buf.format({ async = true })
+  end)
+  map('n', 'gl', vim.diagnostic.open_float)
+  map('n', '<leader>q', vim.diagnostic.setloclist)
+  map('n', '<leader>so', function()
+    require('telescope.builtin').lsp_document_symbols()
+  end)
+end
+
+-- Every file in after/lsp/ is an enabled server; its contents (often empty)
+-- override nvim-lspconfig's lsp/<name>.lua.
+local function discover_servers()
+  local servers = {}
+  local dir = vim.fn.stdpath('config') .. '/after/lsp'
+  for name, kind in vim.fs.dir(dir) do
+    if kind == 'file' and name:sub(-4) == '.lua' then
+      table.insert(servers, name:sub(1, -5))
+    end
+  end
+  return servers
 end
 
 return {
   'neovim/nvim-lspconfig',
   tag = 'v2.12.0',
+  event = { 'BufReadPre', 'BufNewFile' },
+  dependencies = {
+    'hrsh7th/cmp-nvim-lsp',
+  },
   config = function()
-    local utils = require('utils')
+    configure_diagnostics()
 
-    configure_lsp_styling()
+    vim.lsp.config('*', {
+      capabilities = require('cmp_nvim_lsp').default_capabilities(),
+    })
 
-    local capabilities = vim.lsp.protocol.make_client_capabilities()
-    local has_cmp, cmp_nvim_lsp = pcall(require, 'cmp_nvim_lsp')
-    if has_cmp then
-      capabilities = cmp_nvim_lsp.default_capabilities(capabilities)
-    end
+    vim.api.nvim_create_autocmd('LspAttach', {
+      group = vim.api.nvim_create_augroup('UserLspKeymaps', { clear = true }),
+      callback = function(args)
+        set_keymaps(args.buf)
+      end,
+    })
 
-    for _, config in ipairs(loaded_lsp_configs) do
-      vim.lsp.config(config.name, {
-        capabilities = capabilities,
-        on_attach = function(_, bufnr)
-          utils.lsp_shared_keymaps(bufnr)
-        end
-      })
-      vim.lsp.config(config.name, config)
-      vim.lsp.enable(config.name)
-    end
+    vim.lsp.enable(discover_servers())
   end,
 }

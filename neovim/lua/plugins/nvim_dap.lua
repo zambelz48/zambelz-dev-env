@@ -1,56 +1,75 @@
-local vim = vim
+local function dap()
+  return require('dap')
+end
 
 return {
   'mfussenegger/nvim-dap',
   tag = '0.10.0',
+  dependencies = {
+    'rcarriga/nvim-dap-ui',
+    'theHamsta/nvim-dap-virtual-text',
+  },
+  keys = {
+    { '<F5>', function() dap().continue() end },
+    { '<F10>', function() dap().step_over() end },
+    { '<F11>', function() dap().step_into() end },
+    { '<F12>', function() dap().step_out() end },
+    { '<leader>b', function() dap().toggle_breakpoint() end },
+    { '<leader>B', function() dap().set_breakpoint() end },
+    {
+      '<leader>lp',
+      function()
+        dap().set_breakpoint(nil, nil, vim.fn.input('Log point message: '))
+      end,
+    },
+    { '<leader>dr', function() dap().repl.open() end },
+    { '<leader>dl', function() dap().run_last() end },
+    { '<leader><ESC>', function() dap().terminate() end },
+  },
   config = function()
-    local dap = require('dap')
-    local z_dev_env_path = os.getenv('ZAMBELZ_DEV_ENV_PATH')
+    local nvim_dir = require('utils').neovim_dir()
 
-    -- Signs (TODO: 'vim.fn.sign_define' won't changed the text in neovim 0.12)
-    vim.fn.sign_define('DapBreakpoint', { text = '󰻃' })
-    vim.fn.sign_define('DapStopped', { text = '󰜴' })
-
-    -- Adapter Configurations
+    vim.fn.sign_define('DapBreakpoint', { text = '\u{f0ec3}' })
+    vim.fn.sign_define('DapStopped', { text = '\u{f0734}' })
 
     -- C/C++/Rust
-    local codelldb_executable = z_dev_env_path ..
-        '/neovim/.dap/vscode-codelldb/extension/adapter/codelldb'
+    local codelldb_executable = nvim_dir ..
+        '/.dap/vscode-codelldb/extension/adapter/codelldb'
     if vim.fn.executable(codelldb_executable) == 1 then
-      dap.adapters.codelldb = {
+      dap().adapters.codelldb = {
         type = 'server',
-        port = "${port}",
+        port = '${port}',
         executable = {
           command = codelldb_executable,
-          args = { '--port', '${port}' }
-        }
+          args = { '--port', '${port}' },
+        },
       }
     end
 
     -- Javascript/Typescript
     -- TODO: Still doesn't work in 'Typescript'
-    local js_debug_server_file = z_dev_env_path ..
-        '/neovim/.dap/vscode-js-debug/src/dapDebugServer.js'
+    local js_debug_server_file = nvim_dir ..
+        '/.dap/vscode-js-debug/src/dapDebugServer.js'
     if vim.fn.filereadable(js_debug_server_file) == 1 then
-      dap.adapters['pwa-node'] = {
+      dap().adapters['pwa-node'] = {
         type = 'server',
         host = 'localhost',
-        port = "${port}",
+        port = '${port}',
         executable = {
           command = 'node',
-          args = { js_debug_server_file, '${port}' }
-        }
+          args = { js_debug_server_file, '${port}' },
+        },
       }
     end
 
     -- Go
     if vim.fn.executable('dlv') == 1 then
-      dap.adapters.delve = function(callback, config)
+      dap().adapters.delve = function(callback, config)
         if config.mode == 'remote' and config.request == 'attach' then
           callback({
             type = 'server',
             host = config.host or '127.0.0.1',
-            port = config.port or '38697'
+            port = config.port or '38697',
           })
         else
           callback({
@@ -58,8 +77,9 @@ return {
             port = '${port}',
             executable = {
               command = 'dlv',
-              args = { 'dap', '-l', '127.0.0.1:${port}', '--log', '--log-output=dap' },
-            }
+              args = { 'dap', '-l', '127.0.0.1:${port}', '--log',
+                '--log-output=dap' },
+            },
           })
         end
       end
@@ -67,7 +87,7 @@ return {
 
     -- Dart
     if vim.fn.executable('dart') == 1 then
-      dap.adapters.dart = {
+      dap().adapters.dart = {
         type = 'executable',
         command = 'dart',
         args = { 'debug_adapter' },
@@ -76,41 +96,11 @@ return {
 
     -- Flutter
     if vim.fn.executable('flutter') == 1 then
-      dap.adapters.flutter = {
+      dap().adapters.flutter = {
         type = 'executable',
         command = 'flutter',
         args = { 'debug_adapter' },
       }
     end
-
-    -- End of Adapter Configurations
-
-    -- dap mappings
-    vim.api.nvim_set_keymap('n', '<F5>',
-      [[<cmd>lua require('dap').continue()<CR>]],
-      { noremap = true })
-    vim.api.nvim_set_keymap('n', '<F10>',
-      [[<cmd>lua require('dap').step_over()<CR>]],
-      { noremap = true })
-    vim.api.nvim_set_keymap('n', '<F11>',
-      [[<cmd>lua require('dap').step_into()<CR>]],
-      { noremap = true })
-    vim.api.nvim_set_keymap('n', '<F12>',
-      [[<cmd>lua require('dap').step_out()<CR>]],
-      { noremap = true })
-    vim.api.nvim_set_keymap('n', '<Leader>b',
-      [[<cmd>lua require('dap').toggle_breakpoint()<CR>]],
-      { noremap = true })
-    vim.api.nvim_set_keymap('n', '<Leader>B',
-      [[<cmd>lua require('dap').set_breakpoint()<CR>]], { noremap = true })
-    vim.api.nvim_set_keymap('n', '<Leader>lp',
-      [[<cmd>lua require('dap').set_breakpoint(nil, nil, vim.fn.input('Log point message: '))<CR>]],
-      { noremap = true })
-    vim.api.nvim_set_keymap('n', '<Leader>dr',
-      [[<cmd>lua require('dap').repl.open()<CR>]], { noremap = true })
-    vim.api.nvim_set_keymap('n', '<Leader>dl',
-      [[<cmd>lua require('dap').run_last()<CR>]], { noremap = true })
-    vim.api.nvim_set_keymap('n', '<leader><ESC>',
-      [[<cmd>lua require('dap').terminate()<CR>]], { noremap = true })
   end,
 }

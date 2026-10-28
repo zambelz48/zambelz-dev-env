@@ -28,7 +28,11 @@ local lualine_x_content = function()
           spinner_color = "#bd93f9"
         },
         show_colors = true,
-        show_loading = true
+        show_loading = true,
+        -- Rendering requires copilot modules; don't force-load lazy copilot.
+        cond = function()
+          return package.loaded['copilot'] ~= nil
+        end,
       }
     end
     table.insert(content, copilot_status_line())

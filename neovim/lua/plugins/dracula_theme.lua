@@ -1,5 +1,3 @@
-local vim = vim
-
 return {
   'Mofiqul/dracula.nvim',
   commit = 'ae752c1',

@@ -15,7 +15,6 @@
 -- together into an interactive fzf multi-select flow — that's the one you
 -- actually want to run day-to-day (wired up as `zconf neovim check-updates`).
 
-local vim = vim
 local script_path = debug.getinfo(1, 'S').source:sub(2) -- strip leading '@'
 local script_dir = vim.fn.fnamemodify(script_path, ':p:h')
 local plugins_dir = vim.fn.fnamemodify(script_dir, ':h') .. '/lua/plugins'
