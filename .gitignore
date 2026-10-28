@@ -48,5 +48,7 @@ neovim/.dap/vscode-js-debug
 # per-machine kitty overrides (includes kitty.base.conf)
 kitty/kitty.conf
 
+tmp/
+
 # End of https://www.toptal.com/developers/gitignore/api/macos
 
