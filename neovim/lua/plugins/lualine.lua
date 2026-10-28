@@ -10,11 +10,11 @@ local lualine_x_content = function()
         symbols = {
           status = {
             icons = {
-              enabled = " ",
-              sleep = " ", -- auto-trigger disabled
-              disabled = " ",
-              warning = " ",
-              unknown = " "
+              enabled = '\u{f4b8} ',
+              sleep = '\u{f4b8} ', -- auto-trigger disabled
+              disabled = '\u{f4b9} ',
+              warning = '\u{f4ba} ',
+              unknown = '\u{f05e} '
             },
             hl = {
               enabled = "#50FA7B",
@@ -56,9 +56,9 @@ return {
         icons_enabled = true,
         theme = 'dracula-nvim',
 
-        -- This causing neovim intro message disappear
-        component_separators = { left = '', right = '' },
-        section_separators = { left = '', right = '' },
+        -- Flat blocks, matching the dracula/tmux status bar.
+        component_separators = { left = '', right = '' },
+        section_separators = { left = '', right = '' },
 
         disabled_filetypes = {
           statusline = {},
