@@ -40,6 +40,20 @@ override any default behaviour, skill, or workflow that conflicts with them.
   `ls-files`) are always allowed.
 - When the work is done, say it is ready to commit and stop.
 
+### Working documents go in `tmp/docs/`
+
+- Write every working document under `tmp/docs/`: brainstorming notes,
+  research reports, design documents and specs, development or
+  implementation plans, review notes, and similar. `tmp/` is git-ignored.
+- This overrides any skill or workflow default location, such as
+  `docs/superpowers/specs/` or `docs/superpowers/plans/`. Keep the skill's
+  subfolder layout under `tmp/docs/` (for example
+  `tmp/docs/superpowers/plans/`).
+- Paths written inside these documents must point at their `tmp/docs/`
+  location.
+- Only documentation that ships with the repository (`README.md`,
+  `AGENTS.md`, per-tool docs) lives outside `tmp/`.
+
 ### Thoroughness and accuracy
 
 - Be detailed and comprehensive. Finish the whole request; never stop
