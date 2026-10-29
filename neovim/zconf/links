@@ -1,0 +1,5 @@
+neovim/init.lua	.config/nvim/init.lua
+neovim/lua	.config/nvim/lua
+neovim/after	.config/nvim/after
+neovim/ftplugin	.config/nvim/ftplugin
+neovim/.luarc.json	.config/nvim/.luarc.json

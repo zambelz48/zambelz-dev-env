@@ -1,0 +1,24 @@
+zsh
+git
+curl
+tar
+xz
+unzip
+gcc
+make
+patch
+# mise builds ruby with ruby-build, which needs these.
+zlib-devel
+openssl-devel
+readline-devel
+libyaml-devel
+libffi-devel
+gmp-devel
+# Not available through mise.
+chafa
+kitty
+clang-tools-extra
+# fc-cache, run after zconf installs the mise-pinned fonts.
+fontconfig
+# mise's prebuilt tmux is older than the 3.8 that tmux/.tmux.conf needs.
+tmux

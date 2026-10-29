@@ -1,296 +1,244 @@
 # Zambelz Dev Environment
 
-Personal macOS/Linux development environment configuration: [Kitty](https://github.com/kovidgoyal/kitty) (terminal), [Zsh](https://github.com/ohmyzsh/ohmyzsh) (shell), [Neovim](https://neovim.io/) (editor), and [tmux](https://github.com/tmux/tmux) (multiplexer), unified under a single Dracula theme.
+Personal development environment: [Kitty](https://github.com/kovidgoyal/kitty)
+(terminal), [Zsh](https://github.com/ohmyzsh/ohmyzsh) (shell),
+[Neovim](https://neovim.io/) (editor) and [tmux](https://github.com/tmux/tmux)
+(multiplexer), unified under a single Dracula theme.
 
-Every tool's config lives in this repository and is **symlinked** into place by a small setup script — there's no copying, so editing a file here immediately affects your live config, and `git pull` is enough to update everything.
+Configs live in this repository and are **symlinked** into place, so editing a
+file here changes your live config. Language runtimes, language servers and
+CLI tools are installed by [mise](https://mise.jdx.dev) at exact versions from
+a committed, multi-platform lockfile. `zconf` installs what is missing, checks
+the machine, reports and applies updates, and scans for vulnerabilities.
 
 ## Table of contents
 
+1. [Platforms](#platforms)
+1. [Install](#install)
+1. [Commands](#commands)
+1. [How it works](#how-it-works)
+1. [Pins and updates](#pins-and-updates)
+1. [Security audit and pre-push hook](#security-audit-and-pre-push-hook)
+1. [Kitty](#kitty)
+1. [Zsh](#zsh)
+1. [Neovim](#neovim)
+1. [Tmux](#tmux)
 1. [Repository structure](#repository-structure)
-1. [Pre-requisites](#pre-requisites)
-1. [Kitty configs](#kitty-configs)
-1. [Zsh configs](#zsh-configs)
-1. [Neovim configs](#neovim-configs)
-1. [Tmux configs](#tmux-configs)
-1. [Resetting a tool's config](#resetting-a-tools-config)
+1. [Development](#development)
+
+## Platforms
+
+| Platform | Status |
+| --- | --- |
+| macOS arm64 | Supported and validated (the owner's machine) |
+| macOS x64, Fedora, Ubuntu | Supported, not validated: the lock covers these platforms and the package-manager code is unit-tested with stubs, but no real run has been done |
+
+## Install
+
+Clone the repository and run the bootstrap from the clone (the validated
+path):
+
+```sh
+git clone https://github.com/zambelz48/zambelz-dev-env.git ~/zambelz-dev-env
+~/zambelz-dev-env/bootstrap.sh
+```
+
+`bootstrap.sh [--dir <path>] [--repo-url <url>] [module...]` runs each step
+only when it is not already satisfied and prints `OK:`, `CHANGED:`, `WARN:` or
+`ERROR:` with a `fix:` line:
+
+1. Checks the OS (macOS, Fedora or Ubuntu).
+1. macOS: Xcode Command Line Tools (starts the installer and stops if they are
+   missing; rerun when it finishes), then Homebrew. Linux: `zsh`, `git` and
+   `curl` through `sudo dnf` or `sudo apt-get`.
+1. Login shell: `chsh` to zsh (may ask for your password).
+1. Git submodules that are not checked out yet, fetched over HTTPS. A
+   submodule at a different commit than recorded is left alone with a
+   warning.
+1. GitHub token: `GITHUB_TOKEN` or `gh auth token`. Without one, mise
+   downloads can hit GitHub's anonymous rate limit; the step warns and goes
+   on.
+1. mise at `min_version` from `mise/mise.toml`, through the official installer
+   (`https://mise.run`), which verifies the release checksum. A newer mise is
+   kept.
+1. Hands over to `zconf apply` (all modules, or only the ones you name).
+
+Run on its own (outside a clone), `bootstrap.sh` makes sure git exists,
+clones into `--dir` (default `~/zambelz-dev-env`) and runs the cloned copy.
+
+After bootstrap, open a new terminal. `zconf` is on `PATH` (from
+`~/.zshenv`), in every zsh, interactive or not.
+
+## Commands
+
+| Command | What it does |
+| --- | --- |
+| `zconf apply [--dry-run] [module...]` | Install and link whatever is missing; changes nothing that is already right |
+| `zconf doctor [--perf] [module...]` | Read-only health check; every problem prints a `fix:` command; exit 1 on errors |
+| `zconf update [module...]` | Read-only report of newer versions (mise tools, OS packages, oh-my-zsh, tmux plugins, Neovim plugins) |
+| `zconf upgrade [--yes] [--major] [--dry-run] [tool...]` | Pick newer mise versions (fzf, or all with `--yes`), re-lock, install, upgrade OS packages, run the audit |
+| `zconf use <tool> <version>` | Make a version the global default (first in its list), re-lock, install |
+| `zconf audit [--declared\|--installed]` | Vulnerability scan with osv-scanner |
+| `zconf check-pins` | Fail on floating or unlocked pins and on global mise settings that would leak into other projects |
+| `zconf lint` | ShellCheck, `zsh -n` and lua-language-server |
+| `zconf <module>` | Same as `zconf apply <module>` |
+| `zconf neovim check-updates` | Interactive Neovim plugin pin updates |
+
+Modules, applied in this order: `packages`, `mise`, `zsh`, `kitty`, `tmux`,
+`neovim`, `git` (listed in `zconf/modules`).
+
+## How it works
+
+- **Modules.** Each module is a `<tool>/zconf/` directory: a `links` file
+  (`repo/path<TAB>home/path` per line) and optional `apply.sh`, `doctor.sh`,
+  `update.sh` and `upgrade.sh`. Adding a module means adding that directory
+  and one line in `zconf/modules`.
+- **Links.** `apply` creates each symlink. A real file already at the target
+  is moved to `~/.local/state/zconf/backup/<timestamp>-<pid>.<random>/` first;
+  nothing is deleted.
+- **Fonts.** An optional `fonts` file lists mise tools (one per line) whose
+  `.ttf`/`.otf`/`.ttc` files `apply` copies into `~/Library/Fonts` (macOS)
+  or `${XDG_DATA_HOME:-~/.local/share}/fonts` plus `fc-cache` (Linux). Files
+  a previous version installed are removed; other fonts are never touched.
+- **mise.** `~/.config/mise/config.toml` and `~/.config/mise/mise.lock` are
+  symlinks to `mise/mise.toml` and `mise/mise.lock`. Tools are reached
+  through mise's shims, put first on `PATH` by `~/.zshenv`; there is no
+  `mise activate`, so no prompt or `cd` hooks. `.zshrc` puts the shims ahead
+  of Homebrew again, because `path_helper` and Homebrew's `PATH` line reorder
+  it.
+- **Global tools are locked; projects stay independent.** The global config
+  locks only its own tools with `[tool_config] locked = true`. A project with
+  its own `mise.toml` (or `.nvmrc`, `.python-version`, ...) resolves and
+  installs its own pins with mise's defaults; zconf never writes into it.
+  `zconf doctor` run inside such a project reports its missing tools as
+  warnings. The only global mise setting is reading those version files.
+- **OS packages** come from `packages/<manager>.txt` (one package per line,
+  optionally `<TAB>command` when an existing command already provides it),
+  through adapters in `zconf/adapters/pkg/`.
+
+## Pins and updates
+
+| What | Pinned by | Where |
+| --- | --- | --- |
+| Runtimes, language servers, CLI tools | exact version, URLs and checksums for 4 platforms | `mise/mise.toml`, `mise/mise.lock`, `mise/.mise/locks/` |
+| mise itself | minimum version | `min_version` in `mise/mise.toml` |
+| oh-my-zsh | commit | `zsh/zconf/pins` |
+| TPM and tmux plugins | commit | `tmux/zconf/pins` |
+| Neovim plugins | commit | `neovim/lazy-lock.json` |
+| Zsh themes and plugins, Gradle language server | git submodule | `.gitmodules` |
+| OS packages | not pinnable | `packages/*.txt` |
+
+`update` and `upgrade` keep each pin on its line: node 24 stays 24, Temurin 17
+stays Temurin 17. Two pins of one tool with the same major (python 3.14 and
+3.10) keep their own minor, and `0.x` versions keep their minor.
+`upgrade --major` crosses majors. Tools from the `http` backend (jdtls,
+kotlin-lsp) are reported, not checked: update their URL and checksum by hand.
+If a new version cannot be locked for all four platforms, `upgrade` and `use`
+restore `mise.toml` and the lock.
+
+Version files in other projects use any version they like. To make one of
+them your global default, use `zconf use <tool> <version>`.
+
+## Security audit and pre-push hook
+
+- `zconf audit --declared` (default) scans every pinned language package
+  (npm, PyPI, crates, Go, RubyGems) plus their full dependency graphs from
+  `mise/.mise/locks/`. Exit 0 clean, 1 findings, 3 scan could not run.
+- `zconf audit --installed` scans everything under mise's install directory
+  and the built Gradle language server, then lists OS security advisories
+  (Fedora) as information only.
+- Accept a finding with a dated entry in `osv-scanner.toml`:
+
+  ```toml
+  [[IgnoredVulns]]
+  id = "GHSA-xxxx-xxxx-xxxx"
+  ignoreUntil = 2026-12-31
+  reason = "Why it does not apply, and when to revisit"
+  ```
+
+- `zconf apply git` sets `core.hooksPath` to `.githooks`. The pre-push hook
+  then runs `check-pins`, `lint` and `audit --declared`, and blocks the push
+  if any fails (a scan that cannot run also blocks). `git push --no-verify`
+  skips it.
+
+## Kitty
+
+- `kitty/kitty.base.conf`: tracked, shared settings.
+- `kitty/kitty.conf`: git-ignored, per-machine overrides (`font_size`). It
+  `include`s the base file and is generated once by `zconf apply kitty`;
+  later runs never overwrite it.
+- Hack Nerd Font comes from the mise pin `github:ryanoasis/nerd-fonts`
+  (`Hack.tar.xz`), installed by `zconf apply kitty` on macOS and Linux.
+
+## Zsh
+
+- oh-my-zsh is cloned and kept at the commit in `zsh/zconf/pins`.
+- `~/.profile.zsh` holds machine-local settings; `apply` adds
+  `export ZAMBELZ_DEV_ENV_PATH="<repo>"` to it if missing.
+- Helper functions live in `zsh/helpers/*.zsh` (git, tmux sessions,
+  PostgreSQL backup/restore, disk cleanup) and are sourced by `.zshrc`.
+- `CODING_ASSISTANT` (used by Neovim's Copilot integration) defaults to
+  `copilot`; switch it with `use_copilot` / `use_windsurf` from
+  `zsh/helpers/utils.zsh`.
+
+## Neovim
+
+- `zconf apply neovim` links `init.lua`, `lua`, `after`, `ftplugin` and
+  `.luarc.json` into `~/.config/nvim`, restores plugins from
+  `neovim/lazy-lock.json` (`nvim --headless "+Lazy! restore" +qa`) and builds
+  the Gradle language server when its submodule commit changed.
+- Every file in `neovim/after/lsp/` enables that language server; its content
+  only overrides [nvim-lspconfig](https://github.com/neovim/nvim-lspconfig)'s
+  defaults. Every file in `neovim/lua/plugins/` is a lazy.nvim spec.
+- Language servers and debug adapters come from mise. The exceptions are
+  clangd (Xcode Command Line Tools on macOS, an OS package on Linux),
+  sourcekit-lsp (Xcode) and the Gradle language server (the
+  `neovim/.lsp_vendors/vscode-gradle` submodule, built with Java 17 from
+  mise).
+- jdtls is started from `neovim/ftplugin/java.lua` with the formatter profile
+  in `neovim/jdtls/eclipse-java-google-style.xml` (from google/styleguide
+  `eaa0a05`, the last revision before upstream removed it).
+- Kotlin uses JetBrains' Kotlin LSP (`intellij-server`). Its launcher accepts
+  the bundled EULA on first start; read it with `intellij-server --show-eula`
+  and withdraw with `intellij-server --reset-eula`.
+- The vscode-gradle submodule stays at `3.15.0`: 3.16 and later only accept a
+  named pipe, not stdio.
+- Plugin updates: `zconf neovim check-updates [filter]` compares every `tag`
+  or `commit` pin with its upstream through `git ls-remote`, then offers an
+  fzf multi-select that rewrites only the chosen pins.
+
+## Tmux
+
+- `zconf apply tmux` links `~/.tmux.conf`, keeps TPM and every plugin at the
+  commit in `tmux/zconf/pins` and installs missing plugins through TPM.
+- tmux itself is an OS package: the config needs tmux 3.8.
+- The status bar is [dracula/tmux](https://github.com/dracula/tmux),
+  configured with the `@dracula-*` options. Keep `tmux-continuum` as the last
+  `@plugin`: dracula rewrites `status-right` and continuum's autosave hook
+  must come after it.
 
 ## Repository structure
 
 ```
 .
-├── main.sh              # entry point for `zconf <tool>`, dispatches to <tool>/setup.sh
-├── AGENTS.md             # conventions for AI coding agents working in this repo
-├── kitty/
-│   ├── kitty.base.conf   # tracked, shared kitty settings
-│   ├── kitty.conf        # git-ignored, per-machine overrides (e.g. font_size)
-│   └── setup.sh
-├── zsh/
-│   ├── .zshrc
-│   ├── helpers/          # sourced shell functions (git, tmux, postgres, version managers)
-│   ├── .plugins/         # git submodules (oh-my-zsh custom plugins)
-│   ├── .themes/          # git submodules (Dracula theme, syntax highlighting)
-│   └── setup.sh
-├── neovim/
-│   ├── init.lua           # bootstraps lazy.nvim, imports lua/plugins
-│   ├── lazy-lock.json     # exact plugin commits, maintained by lazy.nvim
-│   ├── .luarc.json        # lua-language-server settings for this config
-│   ├── lua/
-│   │   ├── options.lua     # vim.opt settings
-│   │   ├── filetypes.lua   # extra filetype detection (docker compose, ansible)
-│   │   ├── keymaps.lua     # global keymaps (quickfix, fugitive, markdown preview)
-│   │   ├── utils.lua       # shared helpers
-│   │   └── plugins/*.lua   # one lazy.nvim plugin spec per file — auto-discovered
-│   ├── after/lsp/*.lua     # one file per enabled language server — auto-discovered
-│   ├── ftplugin/java.lua   # starts jdtls for every Java buffer
-│   ├── .lsp_vendors/       # manually-installed language servers (git-ignored per-server)
-│   ├── .dap/               # manually-installed debug adapters (git-ignored per-adapter)
-│   └── setup.sh
-├── tmux/
-│   ├── .tmux.conf         # includes the dracula/tmux theme options
-│   └── setup.sh
-└── .editorconfig
+├── bootstrap.sh          # fresh machine or clone: prerequisites, mise, zconf apply
+├── zconf/
+│   ├── bin/              # zconf, lint
+│   ├── lib/              # core shell library and Python helpers
+│   ├── adapters/pkg/     # brew, brew-cask, dnf, apt
+│   ├── modules           # module order
+│   └── tests/            # bats suites; run with zconf/tests/run
+├── packages/             # OS package lists per manager
+├── mise/                 # mise.toml, mise.lock, sidecar locks
+├── zsh/ kitty/ tmux/ neovim/ git/   # configs, each with a zconf/ module dir
+├── .githooks/pre-push
+├── osv-scanner.toml      # accepted vulnerabilities, with expiry
+└── AGENTS.md             # rules for AI coding agents
 ```
 
-Dropping a new file into `neovim/lua/plugins/` or `neovim/after/lsp/` is enough to register it, with no central list to edit. A plugin file is picked up by lazy.nvim's `import`. A file named `after/lsp/<server>.lua` enables that server; its content only holds overrides on top of [nvim-lspconfig](https://github.com/neovim/nvim-lspconfig)'s `lsp/<server>.lua` defaults, so it is often just `return {}`.
-
-## Pre-requisites
-
-1. Make sure your shell is `zsh` — [see this guide](https://github.com/ohmyzsh/ohmyzsh/wiki/Installing-ZSH).
-1. Install required tools.
-   - **Mandatory**
-     - General
-       - Terminal emulator: [kitty](https://github.com/kovidgoyal/kitty)
-       - oh-my-zsh: [source](https://github.com/ohmyzsh/ohmyzsh)
-       - tmux: [source](https://github.com/tmux/tmux/wiki)
-       - fzf: [source](https://github.com/junegunn/fzf)
-       - fd: [source](https://github.com/sharkdp/fd)
-       - ripgrep: [source](https://github.com/BurntSushi/ripgrep)
-       - marksman: [source](https://github.com/artempyanykh/marksman)
-     - Mac only
-       - Xcode: <https://developer.apple.com/xcode>
-       - Xcode command line utilities: `xcode-select --install`
-       - Rosetta (*for Apple Silicon*): `softwareupdate --install-rosetta`
-       - Homebrew: <https://docs.brew.sh/Installation>
-   - **Optional**
-     - mcfly: [source](https://github.com/cantino/mcfly)
-     - tldr: [source](https://tldr.sh)
-     - gvm (*manage multiple Go versions*): [source](https://github.com/moovweb/gvm)
-     - jenv (*manage multiple Java versions*): [source](https://github.com/jenv/jenv)
-     - rbenv (*manage multiple Ruby versions*): [source](https://github.com/rbenv/rbenv)
-     - pyenv (*manage multiple Python versions*): [source](https://github.com/pyenv/pyenv)
-     - fnm (*manage multiple Node.js versions*): [source](https://github.com/Schniz/fnm)
-     - glow (*render markdown in terminal*): [source](https://github.com/charmbracelet/glow)
-     - chafa (*render images in terminal*): [source](https://github.com/hpjansson/chafa)
-1. Clone this repository at `$HOME` (**important** — several scripts assume the repo lives directly under your home directory):
-   ```sh
-   git clone git@github.com:zambelz48/zambelz-dev-env.git "$HOME/zambelz-dev-env"
-   ```
-1. Initialize git submodules (Dracula theme, zsh-syntax-highlighting, evalcache):
-   ```sh
-   cd "$HOME/zambelz-dev-env" && git submodule update --init --recursive
-   ```
-1. Create `$HOME/.profile.zsh` and export `ZAMBELZ_DEV_ENV_PATH` — this is **required**, the tool configs (the zsh helpers, the `zconf` alias itself) resolve paths relative to it. Neovim does not need it; it finds the repo through its `~/.config/nvim` symlinks:
-   ```sh
-   echo 'export ZAMBELZ_DEV_ENV_PATH="$HOME/zambelz-dev-env"' >> "$HOME/.profile.zsh"
-   ```
-   If this is missing, `.zshrc` will print `ZAMBELZ_DEV_ENV_PATH not found in .profile.zsh` on every new shell. Use `.profile.zsh` for any other machine-local, non-tracked environment variables too.
-1. Symlink `$HOME/.zshrc` to this repo's zsh config:
-   ```sh
-   ln -s "$HOME/zambelz-dev-env/zsh/.zshrc" "$HOME/.zshrc"
-   ```
-1. Source your `.zshrc` or restart the terminal. From here on, the `zconf <tool>` alias (defined in `.zshrc`) is available to (re)install any tool's config — it's a thin wrapper around `main.sh`.
-
-## Kitty configs
-
-#### Installation
-
-```sh
-$ zconf kitty
-```
-
-Kitty's config is split in two:
-
-- **`kitty/kitty.base.conf`** — tracked, shared across every machine.
-- **`kitty/kitty.conf`** — git-ignored, per-machine overrides (currently just `font_size`). It `include`s `kitty.base.conf`.
-
-`kitty/setup.sh` generates `kitty.conf` from a small template **only the first time** (if it doesn't already exist), so re-running `zconf kitty` never overwrites your local font size. To tweak anything per-machine (font size, opacity, etc.), edit `kitty/kitty.conf` directly — it's not tracked by git.
-
-## Zsh configs
-
-#### Installation
-
-```sh
-$ zconf zsh
-```
-
-> You can source your `.zshrc` or restart the terminal after running the above command.
-
-#### Notes
-
-- Custom helper functions live in `zsh/helpers/*.zsh` (git, tmux session management, PostgreSQL backup/restore, version-manager toggling via `verman`) and are sourced automatically by `.zshrc`.
-- `CODING_ASSISTANT` (used by Neovim's Copilot integration) defaults to `copilot`. Switch it per-shell with the `use_copilot` / `use_windsurf` helper functions in `zsh/helpers/utils.zsh`.
-
-## Neovim configs
-
-#### Pre-requisites
-
-##### Install Neovim providers
-
-The Python, Ruby and Perl providers are disabled in `lua/options.lua`; no plugin in this config uses them. The Node.js provider is optional:
-
-```sh
-$ npm install -g neovim
-```
-
-##### Install language servers
-
-The table below covers every language server currently enabled in `neovim/after/lsp/` (plus jdtls, started from `neovim/ftplugin/java.lua`). See the [full list of supported servers](https://github.com/neovim/nvim-lspconfig/blob/master/CONFIG.md) for reference on any not listed here.
-
-| Language(s) | Server | Install |
-| --- | --- | --- |
-| Rust | rust-analyzer | `rustup component add rust-src rust-analyzer` (or `cargo install rust-analyzer`) — [docs](https://rust-analyzer.github.io/manual.html#installation) |
-| CMake | neocmakelsp | `cargo install neocmakelsp` — [source](https://github.com/Decodetalkers/neocmakelsp) |
-| Bash/Zsh, Docker, Docker Compose, Vim, HTML/CSS/JSON/ESLint, YAML, Tailwind CSS, GraphQL, Prisma, Ansible | bash-language-server, dockerfile-language-server-nodejs, `@microsoft/compose-language-service`, vim-language-server, vscode-langservers-extracted, yaml-language-server, `@tailwindcss/language-server`, graphql-language-service-cli, `@prisma/language-server`, `@ansible/ansible-language-server` | Single npm command — see [below](#install-common-npm-based-language-servers) |
-| TypeScript/JavaScript | tsc (`tsc --lsp`, TypeScript 7+ only) | `npm install -g typescript` (must resolve to 7.0 or newer) |
-| Python | pyrefly | `pip install pyrefly` — [pyrefly.org](https://pyrefly.org) |
-| Go | gopls | `go install golang.org/x/tools/gopls@latest` — make sure `$GOPATH/bin` is on your `PATH` |
-| Ruby | solargraph | `gem install solargraph` — requires Ruby >= 2.7.0 |
-| Lua | lua-language-server | Built from source, see [Setup "lua-language-server"](#setup-lua-language-server) below |
-| C# | omnisharp | Manually vendored, see [Setup "omnisharp"](#setup-omnisharp-c-language-server) below |
-| Java | jdtls | Manually vendored, see [Setup "jdtls"](#setup-jdtls-java-language-server) below |
-| Groovy (Gradle) | gradle-language-server | Manually vendored, see [Setup "vscode-gradle"](#setup-vscode-gradle) below |
-| Kotlin | kotlin-language-server | Manually vendored, see [Setup "kotlin-language-server"](#setup-kotlin-language-server) below |
-| XML | lemminx | Manually vendored, see [Setup "lemminx"](#setup-lemminx-xml-language-server) below |
-| Terraform | terraform-ls | See [hashicorp/terraform-ls](https://github.com/hashicorp/terraform-ls) |
-| C/C++, Objective-C | clangd | Ships with Xcode Command Line Tools on macOS, or install LLVM (`brew install llvm`) |
-| Swift, Objective-C++ | sourcekit-lsp | Ships with the Swift toolchain / Xcode |
-| Dart | dartls (`dart language-server`) | Ships with the [Dart SDK](https://dart.dev/get-dart) / Flutter SDK |
-| CSS/JS/TS/JSON/HTML/GraphQL/Vue (formatter+linter) | biome | See [biomejs.dev](https://biomejs.dev/guides/getting-started/) — not yet fully documented here |
-
-###### Install common npm-based language servers
-
-```sh
-npm install -g @microsoft/compose-language-service \
-  bash-language-server \
-  dockerfile-language-server-nodejs \
-  vim-language-server \
-  vscode-langservers-extracted \
-  yaml-language-server \
-  @tailwindcss/language-server \
-  graphql-language-service-cli \
-  @prisma/language-server \
-  @ansible/ansible-language-server
-```
-
-Also install [ansible-lint](https://ansible.readthedocs.io/projects/lint/installing/#installing-the-latest-version) for the Ansible LSP. The Ansible and Docker Compose servers attach to the `yaml.ansible` / `yaml.docker-compose` filetypes, which `neovim/lua/filetypes.lua` assigns from the file path (`roles/*/tasks|handlers/`, `playbooks/`, `docker-compose*.y(a)ml`, `compose*.y(a)ml`).
-
-###### Setup "omnisharp" (C# language server)
-
-Prerequisites: .NET SDK.
-
-1. `mkdir neovim/.lsp_vendors/omnisharp`
-1. Download `omnisharp-roslyn` from the [releases page](https://github.com/OmniSharp/omnisharp-roslyn/releases) (`omnisharp-osx-arm64-net6.0.zip` on Apple Silicon, `omnisharp-linux-<ARCH>-net6.0.zip` on Linux).
-1. Extract its contents into `neovim/.lsp_vendors/omnisharp`.
-1. Symlink the `OmniSharp` executable, or add `neovim/.lsp_vendors/omnisharp` to your `PATH`.
-1. Make it executable: `chmod ugo+x /path/to/OmniSharp`.
-1. Make sure `$DOTNET_ROOT` points at your .NET installation.
-1. [Trust the ASP.NET Core HTTPS dev certificate](https://learn.microsoft.com/en-us/aspnet/core/security/enforcing-ssl?view=aspnetcore-8.0&tabs=visual-studio%2Clinux-rhel#trust-the-aspnet-core-https-development-certificate-on-windows-and-macos).
-
-###### Setup "jdtls" (Java language server)
-
-Prerequisites: Java 21+. Source: [mfussenegger/nvim-jdtls](https://github.com/mfussenegger/nvim-jdtls). Check the [latest JDTLS milestone](https://download.eclipse.org/jdtls/milestones/) before running the command below.
-
-```sh
-curl -o neovim/.lsp_vendors/jdt-language-server-1.46.0-202503271314.tar.gz \
-  https://download.eclipse.org/jdtls/milestones/1.46.0/jdt-language-server-1.46.0-202503271314.tar.gz
-mkdir neovim/.lsp_vendors/jdtls
-tar xf neovim/.lsp_vendors/jdt-language-server-1.46.0-202503271314.tar.gz \
-  --directory=neovim/.lsp_vendors/jdtls
-```
-
-Per-project jdtls workspaces are stored under `~/.cache/nvim/jdtls/`. Then create `neovim/.lsp_vendors/jdtls/config/intellij-java-google-style.xml`, copying its content from [google/styleguide](https://github.com/google/styleguide/blob/gh-pages/intellij-java-google-style.xml).
-
-###### Setup "vscode-gradle"
-
-```sh
-cd neovim/.lsp_vendors/vscode-gradle && ./gradlew installDist
-```
-
-###### Setup "kotlin-language-server"
-
-Requires Java 11.
-
-```sh
-cd neovim/.lsp_vendors/kotlin-language-server && ./gradlew :server:installDist
-```
-
-###### Setup "lua-language-server"
-
-Requires [ninja](https://ninja-build.org/).
-
-```sh
-cd neovim/.lsp_vendors/lua-language-server && ./make.sh
-```
-
-###### Setup "lemminx" (XML language server)
-
-1. Download the binary from the [vscode-xml releases page](https://github.com/redhat-developer/vscode-xml/releases).
-1. Save it to `neovim/.lsp_vendors/xml-lsp/lemminx`.
-1. Make sure it's on your `PATH`.
-
-##### Neovim debugger (DAP)
-
-- **Install debug adapters**
-  - C/C++/Rust — download the latest `vscode-codelldb` release (`.vsix`) from [releases](https://github.com/vadimcn/codelldb/releases) and unzip it to `neovim/.dap/vscode-codelldb`. See [nvim-dap's C/C++/Rust guide](https://github.com/mfussenegger/nvim-dap/wiki/C-C---Rust-(via--codelldb)).
-  - Go — install delve: `go install github.com/go-delve/delve/cmd/dlv@latest`. See [nvim-dap's install guide](https://github.com/mfussenegger/nvim-dap/wiki/Debug-Adapter-installation#go-using-delve-directly).
-  - JavaScript/TypeScript — download `js-debug-dap-${version}.tar.gz` from the [vscode-js-debug releases](https://github.com/microsoft/vscode-js-debug/releases) and extract it to `neovim/.dap/vscode-js-debug`.
-  - Dart/Flutter — just install the Flutter SDK.
-- **Per-project debug config** — create a `launch.json` inside `.vscode/` at your project root.
-
-#### Installation
-
-```sh
-$ zconf neovim
-```
-
-#### Activate neovim plugins
-
-Open Neovim — [lazy.nvim](https://github.com/folke/lazy.nvim) bootstraps and installs every plugin automatically on first launch.
-
-#### Checking for plugin updates
-
-Every plugin in `neovim/lua/plugins/` is pinned to a `tag` or `commit`. To see which pins have a newer release available upstream:
-
-```sh
-$ zconf neovim check-updates            # check every plugin
-$ zconf neovim check-updates telescope  # filter by repo-slug substring
-```
-
-This runs `neovim/scripts/check_plugin_updates.lua` via `nvim -l`, comparing each pin against its upstream repo through `git ls-remote` (no GitHub API, no token needed). `commit`/`branch` pins are expected to show as behind — that's the point of pinning — only `tag` pins get an "update available" marker, and only when the tags actually resolve to different commits (so repos that alias one release under two tag names don't produce false positives).
-
-After the table, if anything is actually updatable (any `tag` pin with a real newer release, or any `commit` pin that's drifted from its tracked ref), it drops you into an interactive [fzf](https://github.com/junegunn/fzf) multi-select: `SPACE` to toggle a plugin, `ENTER` to apply your selection, `ESC`/`Ctrl-C` to cancel without changing anything. Applying rewrites just the pinned `tag`/`commit` value in-place in the corresponding `neovim/lua/plugins/*.lua` file — nothing else in the file is touched. If nothing is updatable, it skips straight past the prompt.
-
-#### Plugin lockfile
-
-`neovim/lazy-lock.json` records the exact commit of every plugin, including dependencies that have no pin in their spec. lazy.nvim updates it on install/update; commit it alongside spec changes.
-
-LuaRocks support in lazy.nvim is disabled (`rocks = { enabled = false }` in `init.lua`); no plugin here needs it.
-
-## Tmux configs
-
-#### Installation
-
-```sh
-$ zconf tmux
-```
-
-#### Activate the tmux plugin manager
-
-1. Open tmux.
-1. Press `Ctrl+B` then `Shift+I` to install plugins via [TPM](https://github.com/tmux-plugins/tpm).
-
-The status bar theme is the official [dracula/tmux](https://github.com/dracula/tmux) plugin, configured with the `@dracula-*` options in `tmux/.tmux.conf` (see its [CONFIG.md](https://github.com/dracula/tmux/blob/master/docs/CONFIG.md)). Keep `tmux-continuum` as the last `@plugin`: dracula rewrites `status-right`, and continuum's autosave hook must be added after it.
-
-## Resetting a tool's config
-
-Every `<tool>/setup.sh` script **removes and recreates** the tool's config directory/symlinks before installing (e.g. `rm -rf "$HOME/.tmux"`). `neovim/setup.sh` only replaces its own entries in `~/.config/nvim` (`init.lua`, `lua`, `after`, `ftplugin`, `.luarc.json`) and leaves anything else there alone. This is safe for anything managed by this repo, but if you've added unmanaged files directly inside a tool's live config directory (e.g. `~/.config/nvim`), running `zconf <tool>` again will delete them. Keep machine-local additions in the tool's git-ignored override file where one exists (e.g. `kitty/kitty.conf`) instead.
+## Development
+
+- Tests: `zconf/tests/run` (bats-core, pinned through mise, run under macOS's
+  `/bin/bash` 3.2). Tests tagged `network` call the real osv-scanner.
+- Lint: `zconf lint`.
+- Health: `zconf doctor`.

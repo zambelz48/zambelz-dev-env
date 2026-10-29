@@ -1,0 +1,22 @@
+#!/usr/bin/env bash
+set -u
+
+tests_dir="$(cd "$(dirname "$0")" && pwd -P)"
+shim_dir="$(mktemp -d)"
+trap 'rm -rf "$shim_dir"' EXIT
+
+# macOS ships bash 3.2 as /bin/bash; suites must run under it.
+if [ "$(uname -s)" = "Darwin" ]; then
+  ln -s /bin/bash "$shim_dir/bash"
+fi
+export PATH="$shim_dir:$PATH"
+
+if [ "$#" -eq 0 ]; then
+  set -- -r "$tests_dir"
+fi
+
+if ! bats="$(mise -C "$HOME" which bats 2>/dev/null)"; then
+  printf 'ERROR: bats is not installed by mise\n  fix: zconf apply mise\n' >&2
+  exit 1
+fi
+"$bats" "$@"

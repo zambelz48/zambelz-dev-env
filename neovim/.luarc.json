@@ -7,8 +7,7 @@
       "$VIMRUNTIME"
     ],
     "ignoreDir": [
-      ".lsp_vendors",
-      ".dap"
+      ".lsp_vendors"
     ],
     "checkThirdParty": false
   }

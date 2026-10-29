@@ -1,0 +1,5 @@
+tmux-plugins/tpm	e261deb1b47614eed3400089ce7197dc68acc4eb
+tmux-plugins/tmux-sensible	25cb91f42d020f675bb0a2ce3fbd3a5d96119efa
+dracula/tmux	50b5fdfcbece52124c1ecfd5687469d163e05bf3
+tmux-plugins/tmux-resurrect	cff343cf9e81983d3da0c8562b01616f12e8d548
+tmux-plugins/tmux-continuum	0698e8f4b17d6454c71bf5212895ec055c578da0

@@ -1,0 +1,18 @@
+#!/usr/bin/env bash
+set -u
+
+root="$(cd "$(dirname "$0")/.." && pwd -P)"
+# Git runs hooks without an interactive shell; pinned tools come from shims.
+PATH="${MISE_DATA_DIR:-$HOME/.local/share/mise}/shims:$PATH"
+export PATH
+
+run_step() {
+  if ! "$root/zconf/bin/zconf" "$@"; then
+    printf 'ERROR: push blocked: zconf %s failed\n' "$*" >&2
+    exit 1
+  fi
+}
+
+run_step check-pins
+run_step lint
+run_step audit --declared
