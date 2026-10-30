@@ -242,3 +242,7 @@ them your global default, use `zconf use <tool> <version>`.
   `/bin/bash` 3.2). Tests tagged `network` call the real osv-scanner.
 - Lint: `zconf lint`.
 - Health: `zconf doctor`.
+- CI: `.github/workflows/ci.yml` bootstraps a fresh `fedora:44` and
+  `ubuntu:26.04` container on every push and weekly, then runs doctor, a
+  second apply that must change nothing, the tests, lint, pins, audit, and
+  the Neovim and tmux configs, and fails if the clone has any change.

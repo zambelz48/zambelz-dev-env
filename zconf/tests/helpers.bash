@@ -41,6 +41,28 @@ zc_stub() {
   chmod +x "$stub"
 }
 
+# Rebuilds PATH so every directory holding the command is replaced by a
+# mirror of it without that command.
+zc_hide_command() {
+  local name="$1" dir file mirror n=0 path="" dirs
+  IFS=: read -r -a dirs <<<"$PATH"
+  for dir in "${dirs[@]}"; do
+    if [ -e "$dir/$name" ]; then
+      n=$((n + 1))
+      mirror="$BATS_TEST_TMPDIR/hidden/$n"
+      mkdir -p "$mirror"
+      for file in "$dir"/*; do
+        if [ "${file##*/}" != "$name" ]; then
+          ln -s "$file" "$mirror/${file##*/}"
+        fi
+      done
+      dir="$mirror"
+    fi
+    path="${path:+$path:}$dir"
+  done
+  export PATH="$path"
+}
+
 zc_stub_script() {
   local cmd="$1" body
   if [ "$#" -ge 2 ]; then

@@ -149,17 +149,22 @@ bs_darwin_tools() {
   bs_homebrew
 }
 
-# The packages module installs the full lists; zsh, git and curl are needed
-# before it can run.
+# The packages module installs the full lists; these are needed before it
+# can run. Minimal Fedora images ship without chsh.
 bs_linux_tools() {
-  local tool missing=()
-  for tool in zsh git curl; do
+  local chsh_pkg entry tool missing=()
+  case "$BS_OS" in
+    fedora) chsh_pkg=util-linux ;;
+    *) chsh_pkg=passwd ;;
+  esac
+  for entry in zsh:zsh git:git curl:curl "chsh:$chsh_pkg"; do
+    tool="${entry%%:*}"
     if ! command -v "$tool" >/dev/null 2>&1; then
-      missing+=("$tool")
+      missing+=("${entry#*:}")
     fi
   done
   if [ "${#missing[@]}" -eq 0 ]; then
-    zc_ok "zsh, git and curl"
+    zc_ok "zsh, git, curl and chsh"
     return 0
   fi
   case "$BS_OS" in

@@ -203,6 +203,42 @@ EOF
   [[ "$output" == *"CHANGED: login shell /bin/bash -> "*"zsh"* ]] || false
 }
 
+on_linux() {
+  zc_stub uname 0 "Linux"
+  ZC_OS_RELEASE="$BATS_TEST_TMPDIR/os-release"
+  export ZC_OS_RELEASE
+  printf 'ID=%s\n' "$1" >"$ZC_OS_RELEASE"
+  zc_stub id 0 "501"
+  zc_stub sudo 0
+  zc_stub getent 0 "dev:x:501:501::/home/dev:/usr/bin/zsh"
+}
+
+@test "linux prerequisites that are present are only reported" {
+  on_linux fedora
+  run bash "$FIX/bootstrap.sh" </dev/null
+  [ "$status" -eq 0 ]
+  [[ "$output" == *"OK: zsh, git, curl and chsh"* ]] || false
+  [ -z "$(zc_calls sudo)" ]
+}
+
+@test "a missing chsh on fedora is installed from util-linux" {
+  on_linux fedora
+  zc_hide_command chsh
+  run bash "$FIX/bootstrap.sh" </dev/null
+  [ "$status" -eq 0 ]
+  [ "$(zc_calls sudo | tail -1)" = "-n dnf install -y util-linux" ]
+  [[ "$output" == *"CHANGED: installed util-linux"* ]] || false
+}
+
+@test "a missing chsh on ubuntu is installed from passwd" {
+  on_linux ubuntu
+  zc_hide_command chsh
+  run bash "$FIX/bootstrap.sh" </dev/null
+  [ "$status" -eq 0 ]
+  [ "$(zc_calls sudo | tail -1)" = "-n apt-get install -y passwd" ]
+  [[ "$output" == *"CHANGED: installed passwd"* ]] || false
+}
+
 @test "an unsupported OS stops before changing anything" {
   zc_stub uname 0 "FreeBSD"
   run bash "$FIX/bootstrap.sh"

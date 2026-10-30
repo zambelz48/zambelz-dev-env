@@ -1,0 +1,84 @@
+name: ci
+
+on:
+  push:
+  workflow_dispatch:
+  schedule:
+    - cron: "0 3 * * 1"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  fresh-linux:
+    name: fresh ${{ matrix.image }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 180
+    strategy:
+      fail-fast: false
+      matrix:
+        image:
+          - fedora:44
+          - ubuntu:26.04
+    container: ${{ matrix.image }}
+    env:
+      GITHUB_TOKEN: ${{ github.token }}
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - name: Install git
+        run: |
+          if command -v dnf >/dev/null 2>&1; then
+            dnf install -y git
+          else
+            apt-get update
+            apt-get install -y git ca-certificates
+          fi
+
+      - name: Clone the pushed commit
+        run: |
+          git init -q "$HOME/zambelz-dev-env"
+          cd "$HOME/zambelz-dev-env"
+          git remote add origin "$GITHUB_SERVER_URL/$GITHUB_REPOSITORY.git"
+          git fetch -q --depth=1 origin "$GITHUB_SHA"
+          git checkout -q FETCH_HEAD
+
+      - name: Bootstrap
+        run: bash "$HOME/zambelz-dev-env/bootstrap.sh"
+
+      - name: Doctor
+        run: zsh -c 'zconf doctor'
+
+      - name: Second apply changes nothing
+        run: |
+          out="$(zsh -c 'zconf apply' 2>&1)"
+          printf '%s\n' "$out"
+          grep -q '^Summary: 0 changed,' <<<"$out"
+
+      - name: Tests, lint, pins and audit
+        run: |
+          cd "$HOME/zambelz-dev-env"
+          zsh -c 'zconf/tests/run && zconf lint && zconf check-pins &&
+            zconf audit'
+
+      - name: Neovim and tmux load their configs
+        run: |
+          zsh -c 'nvim --headless +qa'
+          zsh -c 'tmux -L ci -f /dev/null new -d \;
+            source-file "$HOME/.tmux.conf"; status=$?;
+            tmux -L ci kill-server; exit $status'
+
+      - name: Repository unchanged
+        run: |
+          changes="$(git -C "$HOME/zambelz-dev-env" status --porcelain)"
+          printf '%s\n' "$changes"
+          [ -z "$changes" ]
+
+      - name: Disk usage
+        if: always()
+        run: df -h "$HOME"
