@@ -4,12 +4,17 @@ pkg_available() {
   command -v dnf >/dev/null 2>&1
 }
 
+# By capability: zlib-devel is provided by zlib-ng-compat-devel since
+# Fedora 40, and every package provides its own name.
 pkg_is_installed() {
-  rpm -q "$1" >/dev/null 2>&1
+  rpm -q --whatprovides "$1" >/dev/null 2>&1
 }
 
 pkg_version() {
-  rpm -q --qf '%{VERSION}-%{RELEASE}\n' "$1"
+  local out
+  out="$(rpm -q --whatprovides --qf '%{VERSION}-%{RELEASE}\n' "$1")" ||
+    return 1
+  printf '%s\n' "${out%%$'\n'*}"
 }
 
 pkg_install() {

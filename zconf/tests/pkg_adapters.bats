@@ -55,6 +55,23 @@ in_adapter() {
   [ "$(zc_calls sudo | tail -1)" = "-n dnf install -y zsh gmp-devel" ]
 }
 
+@test "dnf installed check queries the capability, not the name" {
+  zc_stub rpm 0 "zlib-ng-compat-devel-2.2.5-2.fc44.x86_64"
+  run in_adapter dnf pkg_is_installed zlib-devel
+  [ "$status" -eq 0 ]
+  [ "$(zc_calls rpm)" = "-q --whatprovides zlib-devel" ]
+  zc_stub rpm 1
+  run in_adapter dnf pkg_is_installed zlib-devel
+  [ "$status" -eq 1 ]
+}
+
+@test "dnf version reports the first provider" {
+  zc_stub_script rpm 'printf "2.2.5-2.fc44\n2.2.5-2.fc44\n"'
+  run in_adapter dnf pkg_version zlib-devel
+  [ "$status" -eq 0 ]
+  [ "$output" = "2.2.5-2.fc44" ]
+}
+
 @test "dnf outdated pairs the installed and upgrade versions" {
   zc_stub_script rpm 'printf "0.32.2-1.fc44\n"'
   zc_stub dnf 0 "kitty 0.35.1-1.fc44"

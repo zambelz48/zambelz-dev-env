@@ -104,12 +104,12 @@ EOF
   zc_calls mise | grep -qx -- "-C $HOME which gh"
 }
 
-@test "missing GitHub token is an error with the login fix" {
+@test "missing GitHub token is a warning with the login fix" {
   zc_stub gh 1
   unset GITHUB_TOKEN
   run zc_doctor_core
-  [ "$status" -eq 1 ]
-  [[ "$output" == *"ERROR: no GitHub token"*"fix: gh auth login"* ]] || false
+  [[ "$output" == *"WARN: no GitHub token"*"fix: gh auth login"* ]] || false
+  [[ "$output" != *"ERROR: no GitHub token"* ]] || false
 }
 
 @test "retired manager installs are reported as info only" {

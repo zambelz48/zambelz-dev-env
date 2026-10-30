@@ -89,9 +89,8 @@ zc_doctor_core() {
   if [ -n "${GITHUB_TOKEN:-}" ]; then
     zc_ok "GitHub token available"
   else
-    zc_error "no GitHub token (mise downloads hit the API rate limit)" \
+    zc_warn "no GitHub token (mise downloads may hit the API rate limit)" \
       "gh auth login"
-    status=1
   fi
   _zc_check_path || status=1
   _zc_scan_rc
