@@ -181,9 +181,10 @@ run `uv lock` in `tools/python`, then `zconf apply tools`.
   `node tools/zconf/smoke/lsp-smoke.mjs`.
 
 - `zconf apply git` sets `core.hooksPath` to `.githooks`. The pre-push hook
-  then runs `check-pins`, `lint` and `audit --declared`, and blocks the push
-  if any fails (a scan that cannot run also blocks). `git push --no-verify`
-  skips it.
+  then runs `check-pins`, `lint` and `audit --declared` on a temporary
+  checkout of each pushed commit, so uncommitted changes do not affect the
+  result, and blocks the push if any fails (a scan that cannot run also
+  blocks). `git push --no-verify` skips it.
 
 ## Kitty
 

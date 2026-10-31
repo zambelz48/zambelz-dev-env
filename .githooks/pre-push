@@ -5,14 +5,58 @@ root="$(cd "$(dirname "$0")/.." && pwd -P)"
 # Git runs hooks without an interactive shell; pinned tools come from shims.
 PATH="${MISE_DATA_DIR:-$HOME/.local/share/mise}/shims:$PATH"
 export PATH
+tree=""
+
+remove_tree() {
+  if [ -n "$tree" ]; then
+    git -C "$root" worktree remove --force "$tree" >/dev/null 2>&1 ||
+      rm -rf "$tree"
+    git -C "$root" worktree prune
+    tree=""
+  fi
+}
 
 run_step() {
-  if ! "$root/zconf/bin/zconf" "$@"; then
-    printf 'ERROR: push blocked: zconf %s failed\n' "$*" >&2
+  local short="$1"
+  shift
+  if ! "$tree/zconf/bin/zconf" "$@"; then
+    printf 'ERROR: push blocked: zconf %s failed for %s\n' "$*" "$short" >&2
     exit 1
   fi
 }
 
-run_step check-pins
-run_step lint
-run_step audit --declared
+# The steps run on a checkout of each pushed commit, so uncommitted changes
+# in the working tree neither hide nor cause a failure.
+check_commit() {
+  local commit="$1" short
+  short="$(git -C "$root" rev-parse --short "$commit")"
+  printf 'INFO: checking %s\n' "$short"
+  tree="$(mktemp -d)"
+  if ! git -C "$root" worktree add -q --detach "$tree" "$commit"; then
+    printf 'ERROR: push blocked: cannot check out %s\n' "$short" >&2
+    exit 1
+  fi
+  run_step "$short" check-pins
+  run_step "$short" lint
+  run_step "$short" audit --declared
+  remove_tree
+}
+
+trap remove_tree EXIT
+trap 'exit 130' INT TERM
+checked=$'\n'
+while read -r _ sha _ _; do
+  case "$sha" in
+    *[!0]*) ;;
+    *) continue ;;
+  esac
+  if ! commit="$(git -C "$root" rev-parse -q --verify "$sha^{commit}")"; then
+    continue
+  fi
+  case "$checked" in
+    *$'\n'"$commit"$'\n'*) continue ;;
+    *) ;;
+  esac
+  checked="$checked$commit"$'\n'
+  check_commit "$commit"
+done
