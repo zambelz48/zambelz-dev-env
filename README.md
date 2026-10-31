@@ -238,7 +238,9 @@ run `uv lock` in `tools/python`, then `zconf apply tools`.
 
 - `zconf apply tmux` links `~/.tmux.conf`, keeps TPM and every plugin at the
   commit in `tmux/zconf/pins` and installs missing plugins through TPM.
-- tmux itself is an OS package: the config needs tmux 3.8.
+- tmux itself is an OS package. The config sets tmux 3.8's theme colours
+  for menus and trees; older tmux, such as Ubuntu 26.04's 3.6a, loads the
+  config without them.
 - The status bar is [dracula/tmux](https://github.com/dracula/tmux),
   configured with the `@dracula-*` options. Keep `tmux-continuum` as the last
   `@plugin`: dracula rewrites `status-right` and continuum's autosave hook
@@ -274,6 +276,5 @@ run `uv lock` in `tools/python`, then `zconf apply tools`.
   `ubuntu:26.04` container on every push to `main` and every pull request
   into it, then runs doctor, a second apply that must change nothing, the
   tests, lint, pins, audit, the override checks, a start-up check of every
-  npm language server, the Neovim config, and the tmux config (skipped on
-  Ubuntu, whose tmux 3.6a is older than the 3.8 the config needs), and fails
-  if the clone has any change.
+  npm language server, the Neovim and tmux configs, and fails if the clone
+  has any change.
