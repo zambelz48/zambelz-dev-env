@@ -10,7 +10,8 @@ gmp
 autoconf
 # Not available through mise.
 chafa
-# mise's prebuilt tmux is older than the 3.8 that tmux/.tmux.conf needs.
+# mise's prebuilt tmux stops at 3.7c, before the 3.8 theme colours the
+# config sets; older tmux loads the config without them.
 tmux
 # mcfly publishes no macOS arm64 build; Linux gets it from mise.
 mcfly

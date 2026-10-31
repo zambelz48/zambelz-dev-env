@@ -77,9 +77,7 @@ jobs:
       - name: Neovim loads its config
         run: zsh -c 'nvim --headless +qa'
 
-      # Ubuntu 26.04 ships tmux 3.6a; tmux/.tmux.conf needs 3.8.
       - name: tmux loads its config
-        if: ${{ !startsWith(matrix.image, 'ubuntu') }}
         run: |
           zsh -c 'tmux -L ci -f /dev/null new -d \; \
             source-file "$HOME/.tmux.conf"; rc=$?;

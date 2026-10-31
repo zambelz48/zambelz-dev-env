@@ -150,11 +150,13 @@ stays Temurin 17. Two pins of one tool with the same major (python 3.14 and
 3.10) keep their own minor, and `0.x` versions keep their minor.
 `upgrade --major` crosses majors. Tools from the `http` backend (jdtls,
 kotlin-lsp) are reported, not checked: update their URL and checksum by hand.
-If a new version cannot be locked for all four platforms, `upgrade` and `use`
-restore `mise.toml` and the lock.
+Each tool is set and locked on its own. If a new version cannot be locked for
+all four platforms, `upgrade` and `use` put that tool back in `mise.toml` and
+the lock, report an error, and keep the other upgrades.
 
 Version files in other projects use any version they like. To make one of
-them your global default, use `zconf use <tool> <version>`.
+them your global default, use `zconf use <tool> <version>` with the exact
+version.
 
 For `tools/`, `update` reports newer versions of the listed tools, and
 `upgrade` re-resolves both locks to the newest dependency versions the
@@ -181,9 +183,10 @@ run `uv lock` in `tools/python`, then `zconf apply tools`.
   `node tools/zconf/smoke/lsp-smoke.mjs`.
 
 - `zconf apply git` sets `core.hooksPath` to `.githooks`. The pre-push hook
-  then runs `check-pins`, `lint` and `audit --declared`, and blocks the push
-  if any fails (a scan that cannot run also blocks). `git push --no-verify`
-  skips it.
+  then runs `check-pins`, `lint` and `audit --declared` on a temporary
+  checkout of the commit each pushed branch or tag points to, so uncommitted
+  changes do not affect the result, and blocks the push if any fails (a scan
+  that cannot run also blocks). `git push --no-verify` skips it.
 
 ## Kitty
 
@@ -235,7 +238,9 @@ run `uv lock` in `tools/python`, then `zconf apply tools`.
 
 - `zconf apply tmux` links `~/.tmux.conf`, keeps TPM and every plugin at the
   commit in `tmux/zconf/pins` and installs missing plugins through TPM.
-- tmux itself is an OS package: the config needs tmux 3.8.
+- tmux itself is an OS package. The config sets tmux 3.8's theme colours
+  for menus and trees; older tmux, such as Ubuntu 26.04's 3.6a, loads the
+  config without them.
 - The status bar is [dracula/tmux](https://github.com/dracula/tmux),
   configured with the `@dracula-*` options. Keep `tmux-continuum` as the last
   `@plugin`: dracula rewrites `status-right` and continuum's autosave hook
@@ -271,6 +276,5 @@ run `uv lock` in `tools/python`, then `zconf apply tools`.
   `ubuntu:26.04` container on every push to `main` and every pull request
   into it, then runs doctor, a second apply that must change nothing, the
   tests, lint, pins, audit, the override checks, a start-up check of every
-  npm language server, the Neovim config, and the tmux config (skipped on
-  Ubuntu, whose tmux 3.6a is older than the 3.8 the config needs), and fails
-  if the clone has any change.
+  npm language server, the Neovim and tmux configs, and fails if the clone
+  has any change.

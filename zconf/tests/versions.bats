@@ -150,8 +150,83 @@ outdated() {
     "$expected temurin-21.0.5+11,temurin-17.0.12+7 --type list" ]
 }
 
+@test "use refuses a version that is not exact and changes nothing" {
+  for version in 24 24.11 latest "^24.11.0" lts; do
+    run "$PY" "$V" use "$CFG" node "$version"
+    [ "$status" -eq 1 ]
+    [[ "$output" == *"ERROR: node $version is not an exact version"* ]] ||
+      false
+  done
+  [ "$(zc_calls mise | grep -c '^config set')" -eq 0 ]
+}
+
 @test "use refuses a table-form tool" {
   run "$PY" "$V" use "$CFG" github:cantino/mcfly 0.9.5
   [ "$status" -eq 1 ]
   [ "$(zc_calls mise | grep -c '^config set')" -eq 0 ]
+}
+
+# Writes a lock entry; the third word lists platforms, or none for no
+# platforms at all.
+lock_entry() {
+  local tool version platforms platform
+  read -r tool version platforms <<<"$1"
+  printf '\n[[tools."%s"]]\nversion = "%s"\n' "$tool" "$version"
+  if [ "$platforms" = "none" ]; then
+    return 0
+  fi
+  for platform in ${platforms//,/ }; do
+    printf '[tools."%s"."platforms.%s"]\nurl = "u"\n' "$tool" "$platform"
+  done
+}
+
+locked() {
+  local entry
+  mkdir -p "$BATS_TEST_TMPDIR/zconf"
+  printf 'macos-arm64,linux-x64\n' >"$BATS_TEST_TMPDIR/zconf/platforms"
+  printf '%s\n' "$1" >"$BATS_TEST_TMPDIR/before.lock"
+  shift
+  for entry in "${@:3}"; do
+    lock_entry "$entry"
+  done >"$BATS_TEST_TMPDIR/after.lock"
+  run --separate-stderr "$PY" "$V" locked "$CFG" \
+    "$BATS_TEST_TMPDIR/after.lock" "$BATS_TEST_TMPDIR/before.lock" "$1" "$2"
+}
+
+@test "locked passes a version locked for every platform" {
+  locked "$(lock_entry "node 24.11.0 macos-arm64,linux-x64")" node 24.12.0 \
+    "node 24.12.0 macos-arm64,linux-x64"
+  [ "$status" -eq 0 ]
+}
+
+@test "locked names the platforms a version is missing" {
+  locked "$(lock_entry "node 24.11.0 macos-arm64,linux-x64")" node 24.12.0 \
+    "node 24.12.0 macos-arm64"
+  [ "$status" -eq 1 ]
+  [ "$stderr" = "ERROR: node 24.12.0 is not locked for linux-x64" ]
+}
+
+@test "locked fails a version with no downloads when the old one had them" {
+  locked "$(lock_entry "node 24.11.0 macos-arm64,linux-x64")" node 9.9.9 \
+    "node 9.9.9 none"
+  [ "$status" -eq 1 ]
+  [ "$stderr" = "ERROR: node 9.9.9 has no download for any platform" ]
+}
+
+@test "locked passes a source-built tool that never had platforms" {
+  locked "$(lock_entry "go:example.com/tool 1.0.0 none")" \
+    go:example.com/tool 1.1.0 "go:example.com/tool 1.1.0 none"
+  [ "$status" -eq 0 ]
+}
+
+@test "locked skips platforms the tool's os list excludes" {
+  locked "$(lock_entry "github:cantino/mcfly 0.9.4 linux-x64")" \
+    github:cantino/mcfly 0.9.4 "github:cantino/mcfly 0.9.4 linux-x64"
+  [ "$status" -eq 0 ]
+}
+
+@test "locked fails a version missing from the lock" {
+  locked "" node 24.12.0 "node 24.11.0 macos-arm64,linux-x64"
+  [ "$status" -eq 1 ]
+  [ "$stderr" = "ERROR: node 24.12.0 is not in the lock" ]
 }
