@@ -5,6 +5,8 @@ import tomllib
 from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 
+from check_pins import is_exact
+
 VERSION = re.compile(r"(?P<prefix>\D*?)(?P<nums>\d+(?:\.\d+)*)(?P<rest>.*)")
 DATE = re.compile(r"\d{4}-\d{2}-\d{2}")
 BARE_KEY = re.compile(r"[A-Za-z0-9_-]+")
@@ -121,6 +123,13 @@ def set_version(config: Path, tool: str, old: str, new: str) -> int:
 
 
 def use_version(config: Path, tool: str, version: str) -> int:
+    if not is_exact(version):
+        print(
+            f"ERROR: {tool} {version} is not an exact version; "
+            "give the full version, such as 24.11.1",
+            file=sys.stderr,
+        )
+        return 1
     value = load_tools(config).get(tool)
     match value:
         case None:

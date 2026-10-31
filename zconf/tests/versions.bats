@@ -150,6 +150,16 @@ outdated() {
     "$expected temurin-21.0.5+11,temurin-17.0.12+7 --type list" ]
 }
 
+@test "use refuses a version that is not exact and changes nothing" {
+  for version in 24 24.11 latest "^24.11.0" lts; do
+    run "$PY" "$V" use "$CFG" node "$version"
+    [ "$status" -eq 1 ]
+    [[ "$output" == *"ERROR: node $version is not an exact version"* ]] ||
+      false
+  done
+  [ "$(zc_calls mise | grep -c '^config set')" -eq 0 ]
+}
+
 @test "use refuses a table-form tool" {
   run "$PY" "$V" use "$CFG" github:cantino/mcfly 0.9.5
   [ "$status" -eq 1 ]
