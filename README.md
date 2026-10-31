@@ -184,9 +184,9 @@ run `uv lock` in `tools/python`, then `zconf apply tools`.
 
 - `zconf apply git` sets `core.hooksPath` to `.githooks`. The pre-push hook
   then runs `check-pins`, `lint` and `audit --declared` on a temporary
-  checkout of each pushed commit, so uncommitted changes do not affect the
-  result, and blocks the push if any fails (a scan that cannot run also
-  blocks). `git push --no-verify` skips it.
+  checkout of the commit each pushed branch or tag points to, so uncommitted
+  changes do not affect the result, and blocks the push if any fails (a scan
+  that cannot run also blocks). `git push --no-verify` skips it.
 
 ## Kitty
 

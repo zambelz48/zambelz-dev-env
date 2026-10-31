@@ -25,8 +25,8 @@ run_step() {
   fi
 }
 
-# The steps run on a checkout of each pushed commit, so uncommitted changes
-# in the working tree neither hide nor cause a failure.
+# The steps run on a checkout of the commit each pushed ref points to, so
+# uncommitted changes in the working tree neither hide nor cause a failure.
 check_commit() {
   local commit="$1" short
   short="$(git -C "$root" rev-parse --short "$commit")"
