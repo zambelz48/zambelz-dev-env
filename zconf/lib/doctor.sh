@@ -70,6 +70,14 @@ _zc_check_path() {
     zc_error "mise shims are not on the interactive PATH" "zconf apply mise"
     return 1
   fi
+  case ":$path_line:" in
+    *":$ZC_HOME/.local/bin:"*) ;;
+    *)
+      zc_error "the mise command ($ZC_HOME/.local/bin) is not on PATH" \
+        "zconf apply mise"
+      status=1
+      ;;
+  esac
   if [ "$status" -eq 0 ]; then
     zc_ok "mise shims lead the tool locations on PATH"
   fi

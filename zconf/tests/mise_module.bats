@@ -57,12 +57,21 @@ EOF
   [ "$(readlink "$HOME/.config/mise/mise.lock")" = "$ZC_ROOT/mise/mise.lock" ]
 }
 
-@test "apply adds the shims and zconf PATH lines to .zshenv once" {
+@test "apply adds the mise, shims and zconf PATH lines to .zshenv once" {
   fake_mise "$PINNED" "" 0 0
   zc_module_run mise apply
   zc_module_run mise apply
+  [ "$(grep -c '/.local/bin:' "$HOME/.zshenv")" -eq 1 ]
   [ "$(grep -c '.local/share/mise/shims' "$HOME/.zshenv")" -eq 1 ]
   [ "$(grep -cF "$ZC_ROOT/zconf/bin" "$HOME/.zshenv")" -eq 1 ]
+}
+
+@test "the shims line comes after the mise command line" {
+  fake_mise "$PINNED" "" 0 0
+  zc_module_run mise apply
+  run grep -n -e '/.local/bin:' -e 'mise/shims' "$HOME/.zshenv"
+  [[ "${lines[0]}" == *"/.local/bin:"* ]] || false
+  [[ "${lines[1]}" == *"mise/shims"* ]] || false
 }
 
 @test "apply never adds mise activate to shell files" {

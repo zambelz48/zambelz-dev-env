@@ -66,8 +66,9 @@ only when it is not already satisfied and prints `OK:`, `CHANGED:`, `WARN:` or
 Run on its own (outside a clone), `bootstrap.sh` makes sure git exists,
 clones into `--dir` (default `~/zambelz-dev-env`) and runs the cloned copy.
 
-After bootstrap, open a new terminal. `zconf` is on `PATH` (from
-`~/.zshenv`), in every zsh, interactive or not.
+After bootstrap, open a new terminal. `zconf`, `mise` (in `~/.local/bin`)
+and the mise shims are on `PATH` (from `~/.zshenv`), in every zsh,
+interactive or not.
 
 ## Commands
 

@@ -12,7 +12,7 @@ setup() {
   zc_stub uname 0 "Darwin"
   zc_stub gh 0 "token"
   SHIMS="$HOME/.local/share/mise/shims"
-  shell_path "$SHIMS:/usr/bin:/bin"
+  shell_path "$SHIMS:$HOME/.local/bin:/usr/bin:/bin"
 }
 
 shell_path() {
@@ -86,7 +86,7 @@ EOF
   mkdir -p "$SHIMS" "$brew"
   touch "$SHIMS/python3" "$brew/wget"
   chmod +x "$SHIMS"/* "$brew"/*
-  shell_path "$brew:$SHIMS:/usr/bin"
+  shell_path "$brew:$SHIMS:$HOME/.local/bin:/usr/bin"
   run zc_doctor_core
   [ "$status" -eq 0 ]
 }
@@ -96,6 +96,15 @@ EOF
   run zc_doctor_core
   [ "$status" -eq 1 ]
   zc_contains "$output" "ERROR: mise shims are not on the interactive PATH" \
+    "fix: zconf apply mise"
+}
+
+@test "a PATH without the mise command directory is an error" {
+  shell_path "$SHIMS:/usr/bin:/bin"
+  run zc_doctor_core
+  [ "$status" -eq 1 ]
+  zc_contains "$output" \
+    "ERROR: the mise command ($HOME/.local/bin) is not on PATH" \
     "fix: zconf apply mise"
 }
 

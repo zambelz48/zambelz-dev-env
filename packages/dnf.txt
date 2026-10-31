@@ -4,6 +4,8 @@ curl
 tar
 xz
 unzip
+# cmp, which zconf uses to compare installed fonts; absent from minimal images.
+diffutils
 gcc
 make
 patch
