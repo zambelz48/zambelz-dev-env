@@ -150,11 +150,13 @@ stays Temurin 17. Two pins of one tool with the same major (python 3.14 and
 3.10) keep their own minor, and `0.x` versions keep their minor.
 `upgrade --major` crosses majors. Tools from the `http` backend (jdtls,
 kotlin-lsp) are reported, not checked: update their URL and checksum by hand.
-If a new version cannot be locked for all four platforms, `upgrade` and `use`
-restore `mise.toml` and the lock.
+Each tool is set and locked on its own. If a new version cannot be locked for
+all four platforms, `upgrade` and `use` put that tool back in `mise.toml` and
+the lock, report an error, and keep the other upgrades.
 
 Version files in other projects use any version they like. To make one of
-them your global default, use `zconf use <tool> <version>`.
+them your global default, use `zconf use <tool> <version>` with the exact
+version.
 
 For `tools/`, `update` reports newer versions of the listed tools, and
 `upgrade` re-resolves both locks to the newest dependency versions the

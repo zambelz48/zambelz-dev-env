@@ -4,10 +4,15 @@ _zc_versions() {
   zc_python "${ZC_ROOT:?}/zconf/lib/versions.py" "$@"
 }
 
+_zc_mise_save() {
+  mkdir -p "$1"
+  cp "$ZC_ROOT/mise/mise.toml" "$ZC_ROOT/mise/mise.lock" "$1/"
+}
+
 _zc_mise_snapshot() {
   local dir
   dir="$(mktemp -d)"
-  cp "$ZC_ROOT/mise/mise.toml" "$ZC_ROOT/mise/mise.lock" "$dir/"
+  _zc_mise_save "$dir"
   printf '%s' "$dir"
 }
 
@@ -32,19 +37,28 @@ _zc_mise_restore() {
   rm -rf "$dir"
 }
 
-_zc_relock_and_install() {
-  local snapshot="$1" platforms
+_zc_pin_tool() {
+  local step="$1/step" tool="$2" version="$3" platforms
+  shift 3
   platforms="$(zc_lock_platforms)"
-  zc_github_token
-  if ! mise -C "$ZC_ROOT/mise" lock --global --platform "$platforms"; then
-    _zc_mise_unguard
-    _zc_mise_restore "$snapshot"
-    zc_error "re-lock failed; mise.toml and the lock were restored" \
-      "check the version exists for $platforms"
+  _zc_mise_save "$step"
+  if ! _zc_versions "$@"; then
+    _zc_mise_restore "$step"
+    zc_error "could not set $tool $version; $tool was left as it was"
     return 1
   fi
-  _zc_mise_unguard
-  rm -rf "$snapshot"
+  if ! mise -C "$ZC_ROOT/mise" lock --global --platform "$platforms" \
+    "$tool" || ! _zc_versions locked "$ZC_ROOT/mise/mise.toml" \
+    "$ZC_ROOT/mise/mise.lock" "$step/mise.lock" "$tool" "$version"; then
+    _zc_mise_restore "$step"
+    zc_error "could not lock $tool $version; $tool was left as it was" \
+      "check $tool $version exists for $platforms"
+    return 1
+  fi
+  rm -rf "$step"
+}
+
+_zc_install_locked() {
   if ! mise -C "${ZC_HOME:?}" install --locked; then
     zc_error "mise install --locked failed" "zconf apply mise"
     return 1
@@ -94,26 +108,30 @@ _zc_upgrade_dry_run() {
 }
 
 _zc_upgrade_apply() {
-  local selected="$1" snapshot tool old new changed=()
+  local selected="$1" snapshot tool old new status=0 changed=()
   snapshot="$(_zc_mise_snapshot)"
   _zc_mise_guard "$snapshot"
   while read -r tool old new; do
     if [ -z "$tool" ]; then
       continue
     fi
-    if ! _zc_versions set "$ZC_ROOT/mise/mise.toml" "$tool" "$old" "$new"
-    then
-      _zc_mise_unguard
-      _zc_mise_restore "$snapshot"
-      zc_error "could not set $tool $new; nothing was changed"
-      return 1
+    if _zc_pin_tool "$snapshot" "$tool" "$new" \
+      set "$ZC_ROOT/mise/mise.toml" "$tool" "$old" "$new"; then
+      changed+=("$tool $old -> $new")
+    else
+      status=1
     fi
-    changed+=("$tool $old -> $new")
   done <<<"$selected"
-  _zc_relock_and_install "$snapshot" || return 1
+  _zc_mise_unguard
+  rm -rf "$snapshot"
+  if [ "${#changed[@]}" -eq 0 ]; then
+    return "$status"
+  fi
+  _zc_install_locked || return 1
   for tool in "${changed[@]}"; do
     zc_changed "$tool"
   done
+  return "$status"
 }
 
 zc_upgrade() {
@@ -174,13 +192,16 @@ zc_use() {
   fi
   snapshot="$(_zc_mise_snapshot)"
   _zc_mise_guard "$snapshot"
-  if ! _zc_versions use "${ZC_ROOT:?}/mise/mise.toml" "$1" "$2"; then
+  zc_github_token
+  if ! _zc_pin_tool "$snapshot" "$1" "$2" \
+    use "${ZC_ROOT:?}/mise/mise.toml" "$1" "$2"; then
     _zc_mise_unguard
-    _zc_mise_restore "$snapshot"
-    zc_error "could not make $1 $2 the default; nothing was changed"
+    rm -rf "$snapshot"
     return 1
   fi
-  _zc_relock_and_install "$snapshot" || return 1
+  _zc_mise_unguard
+  rm -rf "$snapshot"
+  _zc_install_locked || return 1
   zc_changed "$1 $2 is the global default"
   _zc_changed_files
 }

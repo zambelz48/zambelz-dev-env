@@ -41,5 +41,8 @@ tmp/
 tools/npm/node_modules/
 tools/python/.venv/
 
+# versions.py imports check_pins
+__pycache__/
+
 # End of https://www.toptal.com/developers/gitignore/api/macos
 

@@ -5,7 +5,7 @@ import tomllib
 from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 
-from check_pins import is_exact
+from check_pins import is_exact, lock_platforms, missing_platforms
 
 VERSION = re.compile(r"(?P<prefix>\D*?)(?P<nums>\d+(?:\.\d+)*)(?P<rest>.*)")
 DATE = re.compile(r"\d{4}-\d{2}-\d{2}")
@@ -150,6 +150,33 @@ def use_version(config: Path, tool: str, version: str) -> int:
             return 1
 
 
+def has_platforms(entries: list[dict]) -> bool:
+    return any(key.startswith("platforms.") for e in entries for key in e)
+
+
+# mise lock exits 0 for a version with no downloads and writes it without
+# platforms, so a tool locked with platforms before must keep them.
+def check_locked(
+    config: Path, lock: Path, before: Path, tool: str, version: str
+) -> int:
+    def entries_of(path: Path) -> list[dict]:
+        return tomllib.loads(path.read_text()).get("tools", {}).get(tool, [])
+
+    entries = [e for e in entries_of(lock) if e.get("version") == version]
+    value = load_tools(config).get(tool)
+    gaps = missing_platforms(value, entries, lock_platforms(config))
+    if not entries:
+        problem = "is not in the lock"
+    elif gaps:
+        problem = f"is not locked for {', '.join(gaps)}"
+    elif has_platforms(entries_of(before)) and not has_platforms(entries):
+        problem = "has no download for any platform"
+    else:
+        return 0
+    print(f"ERROR: {tool} {version} {problem}", file=sys.stderr)
+    return 1
+
+
 def main(argv: list[str]) -> int:
     match argv:
         case ["outdated", config, *rest]:
@@ -160,11 +187,17 @@ def main(argv: list[str]) -> int:
             return set_version(Path(config), tool, old, new)
         case ["use", config, tool, version]:
             return use_version(Path(config), tool, version)
+        case ["locked", config, lock, before, tool, version]:
+            return check_locked(
+                Path(config), Path(lock), Path(before), tool, version
+            )
         case _:
             print(
                 "usage: versions.py outdated <mise.toml> [--major] [tool...]\n"
                 "       versions.py set <mise.toml> <tool> <old> <new>\n"
-                "       versions.py use <mise.toml> <tool> <version>",
+                "       versions.py use <mise.toml> <tool> <version>\n"
+                "       versions.py locked <mise.toml> <mise.lock> "
+                "<lock before> <tool> <version>",
                 file=sys.stderr,
             )
             return 2
