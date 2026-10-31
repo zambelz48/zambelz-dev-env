@@ -23,10 +23,10 @@ setup() {
 }
 
 @test "working in a project leaves the global lock untouched" {
-  before="$(shasum "$ZC_ROOT/mise/mise.lock")"
+  before="$(cksum "$ZC_ROOT/mise/mise.lock")"
   "$ZC_REAL_MISE" -C "$PROJECT" current >/dev/null 2>&1 || true
   "$ZC_REAL_MISE" -C "$PROJECT" ls >/dev/null 2>&1 || true
-  [ "$(shasum "$ZC_ROOT/mise/mise.lock")" = "$before" ]
+  [ "$(cksum "$ZC_ROOT/mise/mise.lock")" = "$before" ]
   [ ! -e "$PROJECT/mise.lock" ]
 }
 

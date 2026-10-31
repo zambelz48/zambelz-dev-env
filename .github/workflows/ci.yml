@@ -72,9 +72,13 @@ jobs:
           zsh -c 'node tools/zconf/smoke/overrides.mjs &&
             node tools/zconf/smoke/lsp-smoke.mjs'
 
-      - name: Neovim and tmux load their configs
+      - name: Neovim loads its config
+        run: zsh -c 'nvim --headless +qa'
+
+      # Ubuntu 26.04 ships tmux 3.6a; tmux/.tmux.conf needs 3.8.
+      - name: tmux loads its config
+        if: ${{ !startsWith(matrix.image, 'ubuntu') }}
         run: |
-          zsh -c 'nvim --headless +qa'
           zsh -c 'tmux -L ci -f /dev/null new -d \;
             source-file "$HOME/.tmux.conf"; status=$?;
             tmux -L ci kill-server; exit $status'

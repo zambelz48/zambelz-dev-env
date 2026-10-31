@@ -70,6 +70,7 @@ EOF
 
 @test "apply fails with a fix when the package manager is missing" {
   on_fedora
+  zc_hide_command dnf
   run zc_module_run packages apply
   [ "$status" -eq 1 ]
   [[ "$output" == *"ERROR: dnf is not available"* ]] || false

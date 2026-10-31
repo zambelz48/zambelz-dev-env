@@ -120,6 +120,7 @@ EOF
 }
 
 @test "the token check runs the global gh, not a project's" {
+  unset GITHUB_TOKEN
   run zc_doctor_core
   zc_calls mise | grep -qx -- "-C $HOME which gh"
 }
