@@ -79,9 +79,9 @@ jobs:
       - name: tmux loads its config
         if: ${{ !startsWith(matrix.image, 'ubuntu') }}
         run: |
-          zsh -c 'tmux -L ci -f /dev/null new -d \;
-            source-file "$HOME/.tmux.conf"; status=$?;
-            tmux -L ci kill-server; exit $status'
+          zsh -c 'tmux -L ci -f /dev/null new -d \; \
+            source-file "$HOME/.tmux.conf"; rc=$?;
+            tmux -L ci kill-server; exit $rc'
 
       - name: Repository unchanged
         run: |
