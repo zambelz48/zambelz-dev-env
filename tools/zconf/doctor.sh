@@ -16,7 +16,7 @@ _tools_check_install() {
 
 _tools_check_commands() {
   local bin entries cmd kind expected file target wanted=$'\n' status=0 n=0
-  local shims runtime duplicates=()
+  local shims runtime plugin duplicates=()
   bin="$(_tools_bin_dir)"
   shims="$(_tools_shims)"
   entries="$(_tools_entries)"
@@ -26,16 +26,19 @@ _tools_check_commands() {
     fi
     wanted="$wanted$cmd"$'\n'
     runtime="$(_tools_runtime "$kind")"
-    if [ -e "$shims/$cmd" ] && [ "$(mise -C "${ZC_HOME:?}" which --plugin \
-      "$cmd" </dev/null 2>/dev/null)" = "$runtime" ]; then
-      duplicates+=("$cmd")
+    if [ -e "$shims/$cmd" ]; then
+      plugin="$(mise -C "${ZC_HOME:?}" which --plugin "$cmd" </dev/null \
+        2>/dev/null)" || plugin=""
+      if [ "$plugin" = "$runtime" ]; then
+        duplicates+=("$cmd")
+      fi
     fi
     target="$(_tools_target "$cmd" "$kind")"
     expected="$(_tools_wrapper "$cmd" "$kind")" || expected=""
     if [ ! -f "$bin/$cmd" ]; then
       zc_error "$cmd is missing from $bin" "zconf apply tools"
       status=1
-    elif [ "$(cat "$bin/$cmd")" != "$expected" ]; then
+    elif ! _tools_same "$bin/$cmd" "$expected"; then
       zc_error "$bin/$cmd is out of date" "zconf apply tools"
       status=1
     elif [ ! -x "$target" ]; then
@@ -68,12 +71,14 @@ _tools_check_commands() {
 }
 
 mod_doctor() {
-  local status=0 dir="${ZC_ROOT:?}/tools"
+  local status=0 dir="${ZC_ROOT:?}/tools" bin line
+  bin="$(_tools_bin_dir)"
+  line="$(_tools_path_line)"
   if [ -f "${ZC_HOME:?}/.zshenv" ] &&
-    grep -Fxq -- "$(_tools_path_line)" "$ZC_HOME/.zshenv"; then
-    zc_ok "$(_tools_bin_dir) is on PATH (.zshenv)"
+    grep -Fxq -- "$line" "$ZC_HOME/.zshenv"; then
+    zc_ok "$bin is on PATH (.zshenv)"
   else
-    zc_error "$(_tools_bin_dir) is not on PATH" "zconf apply tools"
+    zc_error "$bin is not on PATH" "zconf apply tools"
     status=1
   fi
   _tools_check_install npm "$dir/npm/node_modules" || status=1

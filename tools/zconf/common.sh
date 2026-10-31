@@ -28,10 +28,17 @@ _tools_installed() {
 }
 
 _tools_record() {
-  local stamp
+  local stamp lock
   stamp="$(_tools_stamp "$1")"
+  lock="$(_tools_lock "$1")"
   mkdir -p "${stamp%/*}"
-  cp "$(_tools_lock "$1")" "$stamp"
+  cp "$lock" "$stamp"
+}
+
+_tools_same() {
+  local current
+  current="$(cat "$1")" || return 1
+  [ "$current" = "$2" ]
 }
 
 _tools_entries() {
@@ -73,15 +80,17 @@ _tools_shims() {
 }
 
 _tools_wrapper() {
-  local cmd="$1" kind="$2" dir target mise
+  local cmd="$1" kind="$2" dir target mise runtime shims
   dir="$(_tools_path_dir "$kind")" || return 1
   mise="$(command -v mise)" || return 1
   target="$(_tools_target "$cmd" "$kind")"
+  runtime="$(_tools_runtime "$kind")"
+  shims="$(_tools_shims)"
   # shellcheck disable=SC2016 # $PATH and $@ expand when the wrapper runs
   printf '%s\n' '#!/bin/sh' \
     "case \"\$(\"$mise\" which --plugin $cmd </dev/null 2>/dev/null)\" in" \
-    "  '' | $(_tools_runtime "$kind")) ;;" \
-    "  *) exec \"$(_tools_shims)/$cmd\" \"\$@\" ;;" \
+    "  '' | $runtime) ;;" \
+    "  *) exec \"$shims/$cmd\" \"\$@\" ;;" \
     'esac' \
     "PATH=\"$dir:\$PATH\" exec \"$target\" \"\$@\""
 }

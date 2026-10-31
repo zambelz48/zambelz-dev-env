@@ -28,7 +28,7 @@ _tools_link() {
       status=1
       continue
     fi
-    if [ -f "$bin/$cmd" ] && [ "$(cat "$bin/$cmd")" = "$content" ]; then
+    if [ -f "$bin/$cmd" ] && _tools_same "$bin/$cmd" "$content"; then
       continue
     fi
     if _zc_dry_run; then
@@ -66,8 +66,9 @@ _tools_link() {
 }
 
 mod_apply() {
-  local status=0
-  zc_ensure_line "${ZC_HOME:?}/.zshenv" "$(_tools_path_line)" || status=1
+  local status=0 line
+  line="$(_tools_path_line)"
+  zc_ensure_line "${ZC_HOME:?}/.zshenv" "$line" || status=1
   _tools_install_npm || status=1
   _tools_install_python || status=1
   _tools_link || status=1

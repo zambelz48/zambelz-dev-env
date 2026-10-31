@@ -120,6 +120,7 @@ all_commands() {
   [ "$(zc_calls pnpm)" = "install --frozen-lockfile" ]
   [ "$(zc_calls uv)" = "sync --locked" ]
   [ "$(find "$BIN" -type f | wc -l | tr -d ' ')" -eq "$(all_commands)" ]
+  # shellcheck disable=SC2016 # the literal .zshenv line
   grep -Fxq 'export PATH="$HOME/.local/share/zconf/bin:$PATH"' \
     "$HOME/.zshenv"
 }
@@ -324,12 +325,12 @@ EOF
 
 @test "update reports newer versions of the declared tools only" {
   zc_module_run tools apply
-  PNPM_OUTDATED='{"typescript": {"current": "7.0.2", "latest": "7.1.0"}}'
-  PNPM_OUTDATED_RC=1
-  UV_OUTDATED='[{"name": "pyrefly", "version": "1.4.0",
+  export PNPM_OUTDATED='{"typescript": {"current": "7.0.2",
+    "latest": "7.1.0"}}'
+  export PNPM_OUTDATED_RC=1
+  export UV_OUTDATED='[{"name": "pyrefly", "version": "1.4.0",
     "latest_version": "1.5.0"}, {"name": "filelock", "version": "4.2.5",
     "latest_version": "4.3.0"}]'
-  export PNPM_OUTDATED PNPM_OUTDATED_RC UV_OUTDATED
   run zc_module_run tools update
   [ "$status" -eq 0 ]
   zc_contains "$output" "INFO: npm typescript 7.0.2 -> 7.1.0" \
