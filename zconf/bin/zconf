@@ -119,7 +119,8 @@ case "$command" in
     zc_python "$ZC_ROOT/zconf/lib/check_pins.py" \
       "$ZC_ROOT/mise/mise.toml" "$ZC_ROOT/mise/mise.lock" \
       "$ZC_ROOT/zsh/zconf/pins" "$ZC_ROOT/tmux/.tmux.conf" \
-      "$ZC_ROOT/tmux/zconf/pins"
+      "$ZC_ROOT/tmux/zconf/pins" "$ZC_ROOT/tools/npm/package.json" \
+      "$ZC_ROOT/tools/python/pyproject.toml"
     ;;
   audit)
     zc_audit "$@"

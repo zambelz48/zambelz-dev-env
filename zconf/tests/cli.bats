@@ -74,9 +74,12 @@ setup() {
 }
 
 pin_files() {
-  mkdir -p "$FIX/mise/zconf" "$FIX/zsh/zconf" "$FIX/tmux/zconf"
+  mkdir -p "$FIX/mise/zconf" "$FIX/zsh/zconf" "$FIX/tmux/zconf" \
+    "$FIX/tools/npm" "$FIX/tools/python"
   for f in mise/mise.toml mise/mise.lock mise/zconf/platforms \
-    zsh/zconf/pins tmux/.tmux.conf tmux/zconf/pins; do
+    zsh/zconf/pins tmux/.tmux.conf tmux/zconf/pins \
+    tools/npm/package.json tools/npm/pnpm-lock.yaml \
+    tools/python/pyproject.toml tools/python/uv.lock; do
     cp "$REPO/$f" "$FIX/$f"
   done
 }

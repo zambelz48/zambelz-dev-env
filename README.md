@@ -107,6 +107,20 @@ Modules, applied in this order: `packages`, `mise`, `zsh`, `kitty`, `tmux`,
   `mise activate`, so no prompt or `cd` hooks. `.zshrc` puts the shims ahead
   of Homebrew again, because `path_helper` and Homebrew's `PATH` line reorder
   it.
+- **npm and Python tools** (the language servers, `ansible-lint`, `pyrefly`)
+  are not mise tools: mise cannot override their dependencies, so a
+  vulnerable dependency inside a tool could not be fixed. They live in
+  `tools/npm` (`package.json`, `pnpm-workspace.yaml`, `pnpm-lock.yaml`,
+  installed with the pinned pnpm) and `tools/python` (`pyproject.toml`,
+  `uv.lock`, installed with the pinned uv into `tools/python/.venv`).
+  `overrides` in `pnpm-workspace.yaml` force fixed versions of dependencies
+  past the tools' own ranges; each entry names the advisory it fixes.
+  `apply tools` writes a small launcher per command listed in
+  `tools/zconf/bins` into `~/.local/share/zconf/bin`, which `.zshenv` and
+  `.zshrc` put first on `PATH`. npm commands run on the global node, so a
+  project's node version cannot break them; Python commands run with their
+  venv's `bin` on `PATH`. `check-pins` rejects `npm:`, `pipx:` and `pypi:`
+  tools in `mise/mise.toml`.
 - **Global tools are locked; projects stay independent.** The global config
   locks only its own tools with `[tool_config] locked = true`. A project with
   its own `mise.toml` (or `.nvmrc`, `.python-version`, ...) resolves and
@@ -121,7 +135,9 @@ Modules, applied in this order: `packages`, `mise`, `zsh`, `kitty`, `tmux`,
 
 | What | Pinned by | Where |
 | --- | --- | --- |
-| Runtimes, language servers, CLI tools | exact version, URLs and checksums for 4 platforms | `mise/mise.toml`, `mise/mise.lock`, `mise/.mise/locks/` |
+| Runtimes, CLI tools, binary language servers | exact version, URLs and checksums for 4 platforms | `mise/mise.toml`, `mise/mise.lock` |
+| npm language servers | exact version; full dependency graph with integrity hashes | `tools/npm/package.json`, `tools/npm/pnpm-lock.yaml` |
+| Python tools | exact version; full dependency graph with hashes | `tools/python/pyproject.toml`, `tools/python/uv.lock` |
 | mise itself | minimum version | `min_version` in `mise/mise.toml` |
 | oh-my-zsh | commit | `zsh/zconf/pins` |
 | TPM and tmux plugins | commit | `tmux/zconf/pins` |
@@ -140,22 +156,29 @@ restore `mise.toml` and the lock.
 Version files in other projects use any version they like. To make one of
 them your global default, use `zconf use <tool> <version>`.
 
+For `tools/`, `update` reports newer versions of the listed tools, and
+`upgrade` re-resolves both locks to the newest dependency versions the
+tools' ranges and the overrides allow, then installs them. A tool's own
+version changes by hand: edit `package.json` and run
+`pnpm install --lockfile-only` in `tools/npm`, or edit `pyproject.toml` and
+run `uv lock` in `tools/python`, then `zconf apply tools`.
+
 ## Security audit and pre-push hook
 
-- `zconf audit --declared` (default) scans every pinned language package
-  (npm, PyPI, crates, Go, RubyGems) plus their full dependency graphs from
-  `mise/.mise/locks/`. Exit 0 clean, 1 findings, 3 scan could not run.
-- `zconf audit --installed` scans everything under mise's install directory
-  and the built Gradle language server, then lists OS security advisories
-  (Fedora) as information only.
-- Accept a finding with a dated entry in `osv-scanner.toml`:
-
-  ```toml
-  [[IgnoredVulns]]
-  id = "GHSA-xxxx-xxxx-xxxx"
-  ignoreUntil = 2026-12-31
-  reason = "Why it does not apply, and when to revisit"
-  ```
+- `zconf audit --declared` (default) scans the crates, Go and RubyGems
+  tools in `mise/mise.lock` and the full dependency graphs in
+  `tools/npm/pnpm-lock.yaml` and `tools/python/uv.lock`. Exit 0 clean,
+  1 findings, 3 scan could not run.
+- `zconf audit --installed` scans everything under mise's install
+  directory, `tools/` and the built Gradle language server, then lists OS
+  security advisories (Fedora) as information only.
+- Findings are never accepted: there is no ignore list. Each scan passes an
+  empty config, so an `osv-scanner.toml` next to a lock (even one shipped
+  inside a dependency) cannot hide a finding. Fix a finding by upgrading the
+  tool, or by forcing the fixed version in `tools/npm/pnpm-workspace.yaml`
+  `overrides` (or `tools/python/pyproject.toml`), then check the tool still
+  works with `node tools/zconf/smoke/overrides.mjs` and
+  `node tools/zconf/smoke/lsp-smoke.mjs`.
 
 - `zconf apply git` sets `core.hooksPath` to `.githooks`. The pre-push hook
   then runs `check-pins`, `lint` and `audit --declared`, and blocks the push
@@ -230,10 +253,11 @@ them your global default, use `zconf use <tool> <version>`.
 │   ├── modules           # module order
 │   └── tests/            # bats suites; run with zconf/tests/run
 ├── packages/             # OS package lists per manager
-├── mise/                 # mise.toml, mise.lock, sidecar locks
+├── mise/                 # mise.toml, mise.lock
+├── tools/                # npm and Python tools: manifests, locks, overrides
+│   └── zconf/            # module, command list, smoke tests
 ├── zsh/ kitty/ tmux/ neovim/ git/   # configs, each with a zconf/ module dir
 ├── .githooks/pre-push
-├── osv-scanner.toml      # accepted vulnerabilities, with expiry
 └── AGENTS.md             # rules for AI coding agents
 ```
 
@@ -245,5 +269,6 @@ them your global default, use `zconf use <tool> <version>`.
 - Health: `zconf doctor`.
 - CI: `.github/workflows/ci.yml` bootstraps a fresh `fedora:44` and
   `ubuntu:26.04` container on every push and weekly, then runs doctor, a
-  second apply that must change nothing, the tests, lint, pins, audit, and
-  the Neovim and tmux configs, and fails if the clone has any change.
+  second apply that must change nothing, the tests, lint, pins, audit, the
+  override checks, a start-up check of every npm language server, and the
+  Neovim and tmux configs, and fails if the clone has any change.

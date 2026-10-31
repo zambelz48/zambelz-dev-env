@@ -5,13 +5,15 @@ _zc_mise_data() {
 }
 
 _zc_osv_run() {
-  local osv rc config="${ZC_ROOT:?}/osv-scanner.toml"
+  local osv rc config
   if ! osv="$(zc_tool osv-scanner)"; then
     zc_error "osv-scanner is not installed by mise" "zconf apply mise"
     return 3
   fi
+  config="$(mktemp)"
   "$osv" scan --config "$config" "$@"
   rc=$?
+  rm -f "$config"
   case "$rc" in
     0)
       zc_ok "no known vulnerabilities"
@@ -19,19 +21,19 @@ _zc_osv_run() {
       ;;
     1)
       zc_error "vulnerabilities found" \
-        "upgrade the tool, or accept with [[IgnoredVulns]] in $config"
+        "upgrade the tool, or force a fixed version in ${ZC_ROOT:?}/tools"
       return 1
       ;;
     *)
       zc_error "scan could not run (osv-scanner exit $rc)" \
-        "$osv scan --config $config $*"
+        "$osv scan $*"
       return 3
       ;;
   esac
 }
 
 _zc_audit_declared() {
-  local tmp file files status args=()
+  local tmp status
   tmp="$(mktemp -d)"
   if ! zc_python "$ZC_ROOT/zconf/lib/audit_lock_to_osv.py" \
     "$ZC_ROOT/mise/mise.lock" "$tmp/mise-lock.json"; then
@@ -39,17 +41,9 @@ _zc_audit_declared() {
     zc_error "scan could not run (mise.lock conversion failed)"
     return 3
   fi
-  args=(-L "osv-scanner:$tmp/mise-lock.json")
-  files="$(find "$ZC_ROOT/mise/.mise/locks" -type f \
-    \( -name aube-lock.yaml -o -name uv.lock \) 2>/dev/null)" || files=""
-  while IFS= read -r file; do
-    case "$file" in
-      */aube-lock.yaml) args+=(-L "pnpm-lock.yaml:$file") ;;
-      */uv.lock) args+=(-L "$file") ;;
-      *) ;;
-    esac
-  done <<<"$files"
-  _zc_osv_run "${args[@]}"
+  _zc_osv_run -L "osv-scanner:$tmp/mise-lock.json" \
+    -L "$ZC_ROOT/tools/npm/pnpm-lock.yaml" \
+    -L "$ZC_ROOT/tools/python/uv.lock"
   status=$?
   rm -rf "$tmp"
   return "$status"
@@ -78,7 +72,7 @@ _zc_os_advisories() {
 
 _zc_audit_installed() {
   local status gradle
-  local args=(-r "$(_zc_mise_data)/installs")
+  local args=(-r "$(_zc_mise_data)/installs" "$ZC_ROOT/tools")
   gradle="$ZC_ROOT/neovim/.lsp_vendors/vscode-gradle/gradle-language-server"
   if [ -d "$gradle/build/install" ]; then
     args+=("$gradle/build/install")

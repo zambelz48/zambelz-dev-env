@@ -1,3 +1,4 @@
+import json
 import re
 import sys
 import tomllib
@@ -13,6 +14,9 @@ ARCH = {"aarch64": "arm64", "x86_64": "x64", "amd64": "x64"}
 # Global [settings] apply in every directory, including other projects.
 GLOBAL_SETTINGS_ALLOWED = {"idiomatic_version_file_enable_tools"}
 GLOBAL_KEYS_ALLOWED = {"min_version", "settings", "tool_config", "tools"}
+# mise cannot override their dependencies, so they live in tools/ instead.
+WORKSPACE_BACKENDS = ("npm:", "pipx:", "pypi:")
+PYTHON_PIN = re.compile(r"[A-Za-z0-9._-]+==[A-Za-z0-9.+!_-]+")
 
 
 def is_exact(version: str) -> bool:
@@ -105,6 +109,11 @@ def check_mise(config: Path, lock: Path) -> tuple[list[str], int]:
     locked = tomllib.loads(lock.read_text()).get("tools", {})
     platforms = lock_platforms(config)
     errors = check_global_policy(parsed)
+    errors += [
+        f"{name} belongs in tools/npm or tools/python, not mise"
+        for name in tools
+        if name.startswith(WORKSPACE_BACKENDS)
+    ]
     for name, value in tools.items():
         versions = tool_versions(value)
         if not versions:
@@ -122,6 +131,43 @@ def check_mise(config: Path, lock: Path) -> tuple[list[str], int]:
                     f"{name} {version} is not locked for {', '.join(gaps)}"
                 )
     return errors, len(tools)
+
+
+def missing_lock(manifest: Path, name: str) -> list[str]:
+    if (manifest.parent / name).is_file():
+        return []
+    return [f"{manifest.parent / name} is missing"]
+
+
+def check_npm(manifest: Path, config: Path) -> tuple[list[str], int]:
+    parsed = json.loads(manifest.read_text())
+    deps = parsed.get("dependencies", {})
+    errors = [
+        f'{name} "{version}" in {manifest} is not an exact version'
+        for name, version in deps.items()
+        if not is_exact(version)
+    ]
+    pins = tool_versions(
+        tomllib.loads(config.read_text()).get("tools", {}).get("pnpm")
+    )
+    match pins:
+        case [pin, *_]:
+            want = f"pnpm@{pin}"
+        case _:
+            want = "pnpm@<mise pnpm pin>"
+    if parsed.get("packageManager") != want:
+        errors.append(f'packageManager in {manifest} is not "{want}"')
+    return errors + missing_lock(manifest, "pnpm-lock.yaml"), len(deps)
+
+
+def check_python(manifest: Path) -> tuple[list[str], int]:
+    deps = tomllib.loads(manifest.read_text())["project"]["dependencies"]
+    errors = [
+        f'"{dep}" in {manifest} is not pinned with =='
+        for dep in deps
+        if not PYTHON_PIN.fullmatch(dep)
+    ]
+    return errors + missing_lock(manifest, "uv.lock"), len(deps)
 
 
 def check_zsh(pins: Path) -> list[str]:
@@ -169,14 +215,22 @@ def main(argv: list[str]) -> int:
     match argv:
         case ["--mise", config, lock]:
             errors, count = check_mise(Path(config), Path(lock))
-        case [config, lock, zsh_pins, tmux_conf, tmux_pins]:
+            summary = f"{count} mise tools"
+        case [config, lock, zsh_pins, tmux_conf, tmux_pins, npm, python]:
             errors, count = check_mise(Path(config), Path(lock))
+            npm_errors, npm_count = check_npm(Path(npm), Path(config))
+            py_errors, py_count = check_python(Path(python))
+            errors += npm_errors + py_errors
             errors += check_zsh(Path(zsh_pins))
             errors += check_tmux(Path(tmux_conf), Path(tmux_pins))
+            summary = (
+                f"{count} mise tools, {npm_count} npm tools, "
+                f"{py_count} python tools"
+            )
         case _:
             print(
                 "usage: check_pins.py <mise.toml> <mise.lock> <zsh pins> "
-                "<tmux.conf> <tmux pins>\n"
+                "<tmux.conf> <tmux pins> <package.json> <pyproject.toml>\n"
                 "       check_pins.py --mise <mise.toml> <mise.lock>",
                 file=sys.stderr,
             )
@@ -185,7 +239,7 @@ def main(argv: list[str]) -> int:
         print(f"ERROR: {error}")
     if errors:
         return 1
-    print(f"OK: pins exact and locked ({count} mise tools)")
+    print(f"OK: pins exact and locked ({summary})")
     return 0
 
 

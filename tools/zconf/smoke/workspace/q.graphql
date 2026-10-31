@@ -1,0 +1,7 @@
+query Q {
+  ...F
+}
+
+fragment F on Query {
+  a
+}

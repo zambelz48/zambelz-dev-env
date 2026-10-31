@@ -66,6 +66,12 @@ jobs:
           zsh -c 'zconf/tests/run && zconf lint && zconf check-pins &&
             zconf audit'
 
+      - name: Language servers start and overrides hold
+        run: |
+          cd "$HOME/zambelz-dev-env"
+          zsh -c 'node tools/zconf/smoke/overrides.mjs &&
+            node tools/zconf/smoke/lsp-smoke.mjs'
+
       - name: Neovim and tmux load their configs
         run: |
           zsh -c 'nvim --headless +qa'

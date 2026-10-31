@@ -37,5 +37,9 @@ kitty/kitty.conf
 
 tmp/
 
+# installed by zconf apply tools
+tools/npm/node_modules/
+tools/python/.venv/
+
 # End of https://www.toptal.com/developers/gitignore/api/macos
 

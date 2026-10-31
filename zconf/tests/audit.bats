@@ -9,7 +9,7 @@ setup() {
   export ZC_ROOT
   mkdir -p "$ZC_ROOT/mise"
   cp -R "$REAL/zconf" "$ZC_ROOT/zconf"
-  printf '' >"$ZC_ROOT/osv-scanner.toml"
+  mkdir -p "$ZC_ROOT/tools/npm" "$ZC_ROOT/tools/python"
   cat >"$ZC_ROOT/mise/mise.lock" <<'EOF'
 lockfile_version = 3
 
@@ -67,8 +67,6 @@ EOF
   run packages
   [ "$status" -eq 0 ]
   [ "$output" = "$(printf '%s\n' \
-    'npm lodash 4.17.20' \
-    'PyPI black 24.1.0' \
     'crates.io neocmakelsp 0.11.2' \
     'Go golang.org/x/tools/gopls 0.24.0' \
     'RubyGems solargraph 0.61.0')" ]
@@ -110,21 +108,27 @@ EOF
   [ "$status" -eq 0 ]
 }
 
-@test "declared audit scans the converted lock and the sidecar locks" {
-  mkdir -p "$ZC_ROOT/mise/.mise/locks/npm-x/1.0.0" \
-    "$ZC_ROOT/mise/.mise/locks/pipx-y/2.0.0"
-  touch "$ZC_ROOT/mise/.mise/locks/npm-x/1.0.0/aube-lock.yaml" \
-    "$ZC_ROOT/mise/.mise/locks/pipx-y/2.0.0/uv.lock"
+@test "declared audit scans the converted lock and the tools locks" {
   zc_stub osv-scanner 0
   run zc_audit --declared
   [ "$status" -eq 0 ]
   call="$(zc_calls osv-scanner)"
-  [[ "$call" == "scan --config $ZC_ROOT/osv-scanner.toml "* ]] || false
-  [[ "$call" == *"-L osv-scanner:"*".json"* ]] || false
-  lock="$ZC_ROOT/mise/.mise/locks/npm-x/1.0.0/aube-lock.yaml"
-  zc_contains "$call" "-L pnpm-lock.yaml:$lock"
-  [[ "$call" == *"-L $ZC_ROOT/mise/.mise/locks/pipx-y/2.0.0/uv.lock"* ]] ||
-    false
+  zc_contains "$call" "-L osv-scanner:" ".json" \
+    "-L $ZC_ROOT/tools/npm/pnpm-lock.yaml" \
+    "-L $ZC_ROOT/tools/python/uv.lock"
+}
+
+@test "an ignore file next to a scanned lock cannot hide findings" {
+  printf '[[IgnoredVulns]]\nid = "GHSA-x"\n' \
+    >"$ZC_ROOT/tools/npm/osv-scanner.toml"
+  zc_stub_script osv-scanner <<'EOF'
+printf '%s %s\n' "$2" "$(wc -c <"$3" | tr -d ' ')" >"$BATS_TEST_TMPDIR/config"
+EOF
+  run zc_audit --declared
+  [ "$status" -eq 0 ]
+  read -r flag size <"$BATS_TEST_TMPDIR/config"
+  [ "$flag" = "--config" ]
+  [ "$size" -eq 0 ]
 }
 
 @test "installed audit reports OS advisories as info only" {
@@ -132,7 +136,7 @@ EOF
   run zc_audit --installed
   [ "$status" -eq 0 ]
   [[ "$output" == *"INFO: no native OS advisory source"* ]] || false
-  zc_calls osv-scanner | grep -q -- "-r $MISE_DATA_DIR/installs"
+  zc_calls osv-scanner | grep -q -- "-r $MISE_DATA_DIR/installs $ZC_ROOT/tools"
 }
 
 @test "installed audit on fedora lists security updates without failing" {
@@ -148,51 +152,13 @@ EOF
     false
 }
 
-lodash_lock() {
-  printf '%s\n' 'lockfile_version = 3' '' '[[tools."npm:lodash"]]' \
-    'version = "4.17.20"' >"$ZC_ROOT/mise/mise.lock"
-}
-
 # bats test_tags=network
-@test "a known vulnerable npm pin fails the real scan" {
-  lodash_lock
+@test "a known vulnerable gem pin fails the real scan" {
+  printf '%s\n' 'lockfile_version = 3' '' '[[tools."gem:rack"]]' \
+    'version = "2.0.0"' >"$ZC_ROOT/mise/mise.lock"
+  cp "$REAL/tools/npm/pnpm-lock.yaml" "$ZC_ROOT/tools/npm/"
+  cp "$REAL/tools/python/uv.lock" "$ZC_ROOT/tools/python/"
   run zc_audit --declared
   [ "$status" -eq 1 ]
-  [[ "$output" == *"lodash"*"ERROR: vulnerabilities found"* ]] || false
-}
-
-ids_for_lodash() {
-  "$MISE_DATA_DIR/shims/osv-scanner" scan --format json \
-    -L "osv-scanner:$1" 2>/dev/null |
-    "$PY" -c 'import json,sys
-d = json.load(sys.stdin)
-for r in d["results"]:
-    for p in r["packages"]:
-        for v in p["vulnerabilities"]:
-            print(v["id"])'
-}
-
-accept_lodash_until() {
-  local until="$1" id
-  lodash_lock
-  convert
-  : >"$ZC_ROOT/osv-scanner.toml"
-  for id in $(ids_for_lodash "$BATS_TEST_TMPDIR/out.json"); do
-    printf '[[IgnoredVulns]]\nid = "%s"\nignoreUntil = %s\nreason = "t"\n\n' \
-      "$id" "$until" >>"$ZC_ROOT/osv-scanner.toml"
-  done
-}
-
-# bats test_tags=network
-@test "an acceptance with a future ignoreUntil passes" {
-  accept_lodash_until 2099-01-01
-  run zc_audit --declared
-  [ "$status" -eq 0 ]
-}
-
-# bats test_tags=network
-@test "an expired acceptance fails again" {
-  accept_lodash_until 2020-01-01
-  run zc_audit --declared
-  [ "$status" -eq 1 ]
+  [[ "$output" == *"rack"*"ERROR: vulnerabilities found"* ]] || false
 }

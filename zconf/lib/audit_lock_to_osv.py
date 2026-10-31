@@ -4,9 +4,6 @@ import tomllib
 from pathlib import Path
 
 ECOSYSTEMS = {
-    "npm": "npm",
-    "pipx": "PyPI",
-    "pypi": "PyPI",
     "cargo": "crates.io",
     "go": "Go",
     "gem": "RubyGems",

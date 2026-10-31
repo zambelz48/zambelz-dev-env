@@ -8,9 +8,6 @@ _zc_mise_snapshot() {
   local dir
   dir="$(mktemp -d)"
   cp "$ZC_ROOT/mise/mise.toml" "$ZC_ROOT/mise/mise.lock" "$dir/"
-  if [ -d "$ZC_ROOT/mise/.mise" ]; then
-    cp -R "$ZC_ROOT/mise/.mise" "$dir/.mise"
-  fi
   printf '%s' "$dir"
 }
 
@@ -32,10 +29,6 @@ _zc_mise_unguard() {
 _zc_mise_restore() {
   local dir="$1"
   cp "$dir/mise.toml" "$dir/mise.lock" "$ZC_ROOT/mise/"
-  rm -rf "$ZC_ROOT/mise/.mise"
-  if [ -d "$dir/.mise" ]; then
-    cp -R "$dir/.mise" "$ZC_ROOT/mise/.mise"
-  fi
   rm -rf "$dir"
 }
 

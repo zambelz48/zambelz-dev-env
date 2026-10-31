@@ -1,6 +1,9 @@
 vim.g.loaded_perl_provider = 0
 vim.g.loaded_python3_provider = 0
 vim.g.loaded_ruby_provider = 0
+-- The node host comes from the repo's tools/npm, not a global npm install.
+vim.g.node_host_prog = vim.fs.dirname(require('utils').neovim_dir())
+  .. '/tools/npm/node_modules/neovim/bin/cli.js'
 
 vim.opt.hlsearch = false
 

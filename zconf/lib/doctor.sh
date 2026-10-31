@@ -52,6 +52,7 @@ _zc_check_path() {
       break
     fi
     case "$entry" in
+      "$ZC_HOME/.local/share/zconf/bin") ;;
       */.pyenv/* | */.rbenv/* | */.jenv/* | */.gvm/* | *fnm*)
         zc_error "$entry comes before the mise shims on PATH" \
           "zconf doctor (remove the retired manager lines it reports)"

@@ -6,14 +6,12 @@ setup() {
   REAL="$ZC_ROOT"
   ZC_ROOT="$BATS_TEST_TMPDIR/repo"
   export ZC_ROOT
-  mkdir -p "$ZC_ROOT/mise/.mise/locks" "$ZC_ROOT/mise/zconf" \
-    "$ZC_ROOT/packages/zconf"
+  mkdir -p "$ZC_ROOT/mise/zconf" "$ZC_ROOT/packages/zconf"
   cp -R "$REAL/zconf" "$ZC_ROOT/zconf"
   cp "$REAL/mise/zconf/platforms" "$ZC_ROOT/mise/zconf/platforms"
   printf 'packages\n' >"$ZC_ROOT/zconf/modules"
   printf '[tools]\nnode = ["24.11.0", "22.12.0"]\n' >"$ZC_ROOT/mise/mise.toml"
   printf '# lock-v1\nlockfile_version = 3\n' >"$ZC_ROOT/mise/mise.lock"
-  printf 'sidecar-v1\n' >"$ZC_ROOT/mise/.mise/locks/x"
   for lib in log paths os exec links modules audit upgrade; do
     # shellcheck source=/dev/null
     . "$ZC_ROOT/zconf/lib/$lib.sh"
@@ -55,14 +53,13 @@ EOF
   zc_contains "$calls" "-C $ZC_ROOT/mise lock --global --platform $platforms"
 }
 
-@test "upgrade restores mise.toml, the lock and sidecars when re-lock fails" {
+@test "upgrade restores mise.toml and the lock when re-lock fails" {
   fake_mise 1
   run zc_upgrade --yes
   [ "$status" -eq 1 ]
   [ "$(cat "$ZC_ROOT/mise/mise.toml")" = \
     "$(printf '[tools]\nnode = ["24.11.0", "22.12.0"]')" ]
   [ "$(head -1 "$ZC_ROOT/mise/mise.lock")" = "# lock-v1" ]
-  [ "$(cat "$ZC_ROOT/mise/.mise/locks/x")" = "sidecar-v1" ]
   zc_contains "$output" \
     "ERROR: re-lock failed; mise.toml and the lock were restored"
   run zc_calls mise
@@ -147,13 +144,12 @@ esac
 EOF
 }
 
-@test "an interrupt during re-lock restores config, lock and sidecars" {
+@test "an interrupt during re-lock restores config and lock" {
   interrupt_during_lock
   run zc_upgrade --yes
   [ "$status" -eq 130 ]
   [ "$(head -1 "$ZC_ROOT/mise/mise.lock")" = "# lock-v1" ]
   [ "$(cat "$ZC_ROOT/mise/mise.toml")" != "changed" ]
-  [ "$(cat "$ZC_ROOT/mise/.mise/locks/x")" = "sidecar-v1" ]
   [ "$(zc_calls mise | grep -c 'install --locked')" -eq 0 ]
 }
 

@@ -760,78 +760,6 @@ url = "https://nodejs.org/dist/v22.23.4/node-v22.23.4-darwin-arm64.tar.gz"
 checksum = "sha256:efcc2b0db6f94bf53eddb038fe2b370277a042bd29e4f19b8f8e23598795b819"
 url = "https://nodejs.org/dist/v22.23.4/node-v22.23.4-darwin-x64.tar.gz"
 
-[[tools."npm:@ansible/ansible-language-server"]]
-version = "26.6.0"
-aube = { path = ".mise/locks/npm-ansible-ansible-language-server/26.6.0", digest = "sha256:e738726e71555346b70446cd35c314e8c6172701816a4afd677a98bd0cb197ec" }
-backend = "npm:@ansible/ansible-language-server"
-specifiers = ["26.6.0"]
-
-[[tools."npm:@microsoft/compose-language-service"]]
-version = "1.0.0"
-aube = { path = ".mise/locks/npm-microsoft-compose-language-service/1.0.0", digest = "sha256:1fc3bb3bb81101c7fb3e6a55dcebb198d1bbd9d6c2991f80bc771f96dac7031d" }
-backend = "npm:@microsoft/compose-language-service"
-specifiers = ["1.0.0"]
-
-[[tools."npm:@prisma/language-server"]]
-version = "31.13.0"
-aube = { path = ".mise/locks/npm-prisma-language-server/31.13.0", digest = "sha256:f1a0e5bd80254f2135f298c804585f52196bcf8887f4d3fe60d97fbb59d35412" }
-backend = "npm:@prisma/language-server"
-specifiers = ["31.13.0"]
-
-[[tools."npm:@tailwindcss/language-server"]]
-version = "0.16.0"
-aube = { path = ".mise/locks/npm-tailwindcss-language-server/0.16.0", digest = "sha256:fc4d7ea57df94cfd16f73e26409d8070d4a9383fda9b9e92533a3e3df5c705fe" }
-backend = "npm:@tailwindcss/language-server"
-specifiers = ["0.16.0"]
-
-[[tools."npm:bash-language-server"]]
-version = "5.8.1"
-aube = { path = ".mise/locks/npm-bash-language-server/5.8.1", digest = "sha256:8884e71e19a3bb70df45b356a06194f6c0cf3e99f83f1332f8ca26a62eacb6ef" }
-backend = "npm:bash-language-server"
-specifiers = ["5.8.1"]
-
-[[tools."npm:dockerfile-language-server-nodejs"]]
-version = "0.15.0"
-aube = { path = ".mise/locks/npm-dockerfile-language-server-nodejs/0.15.0", digest = "sha256:6880afcf61b2038285079efa4624ae2d0d46a0ba49119260cd2c64abb3aac0d7" }
-backend = "npm:dockerfile-language-server-nodejs"
-specifiers = ["0.15.0"]
-
-[[tools."npm:graphql-language-service-cli"]]
-version = "3.5.0"
-aube = { path = ".mise/locks/npm-graphql-language-service-cli/3.5.0", digest = "sha256:7464b7d5a4aa8d147f29b6cd7d9f1ef43a0bc1a9c2e35eb792dd561cc3f64d2e" }
-backend = "npm:graphql-language-service-cli"
-specifiers = ["3.5.0"]
-
-[[tools."npm:neovim"]]
-version = "5.5.0"
-aube = { path = ".mise/locks/npm-neovim/5.5.0", digest = "sha256:62253b81f469f8de332bab457d2c7966632f83befbd564276e04b5dad9b66a57" }
-backend = "npm:neovim"
-specifiers = ["5.5.0"]
-
-[[tools."npm:typescript"]]
-version = "7.0.2"
-aube = { path = ".mise/locks/npm-typescript/7.0.2", digest = "sha256:3d06b3b23564c68cdad7815c356edb1506fab1c42bfb8c54234134fd9650ec17" }
-backend = "npm:typescript"
-specifiers = ["7.0.2"]
-
-[[tools."npm:vim-language-server"]]
-version = "2.3.1"
-aube = { path = ".mise/locks/npm-vim-language-server/2.3.1", digest = "sha256:c3e2bea9573e33bd71adc0554749afeea58c8c1aeb0e84f774089aecf9c44c96" }
-backend = "npm:vim-language-server"
-specifiers = ["2.3.1"]
-
-[[tools."npm:vscode-langservers-extracted"]]
-version = "4.10.0"
-aube = { path = ".mise/locks/npm-vscode-langservers-extracted/4.10.0", digest = "sha256:a6b6ca76702702ce4247c4b82fad51bf8afc0fa6578811420bef8f5d21046e11" }
-backend = "npm:vscode-langservers-extracted"
-specifiers = ["4.10.0"]
-
-[[tools."npm:yaml-language-server"]]
-version = "2.0.0"
-aube = { path = ".mise/locks/npm-yaml-language-server/2.0.0", digest = "sha256:f14f9558f1769c0512641de8d5616c039d5428aa64c46fdf60f0082e960a60b8" }
-backend = "npm:yaml-language-server"
-specifiers = ["2.0.0"]
-
 [[tools.osv-scanner]]
 version = "2.7.0"
 backend = "aqua:google/osv-scanner"
@@ -860,18 +788,6 @@ checksum = "sha256:e82c5df7ab0a42dff29a1cd0660711447b56b4c0483ff66ad8634df10fd81
 checksum_source = "mise-versions"
 url = "https://github.com/google/osv-scanner/releases/download/v2.7.0/osv-scanner_darwin_amd64"
 url_api = "https://api.github.com/repos/google/osv-scanner/releases/assets/632251567"
-
-[[tools."pipx:ansible-lint"]]
-version = "26.10.1"
-backend = "pipx:ansible-lint"
-specifiers = ["26.10.1"]
-uv = { path = ".mise/locks/pipx-ansible-lint/26.10.1", digest = "sha256:48281d87a53d9e0483833d0fc1f10491f9c9873934be50901ba2518242fd549d" }
-
-[[tools."pipx:pyrefly"]]
-version = "1.4.0"
-backend = "pipx:pyrefly"
-specifiers = ["1.4.0"]
-uv = { path = ".mise/locks/pipx-pyrefly/1.4.0", digest = "sha256:bd771837d2e778d0ebd6453f3ad8af3856e1d707081177f3a6c0d69be56c0ddc" }
 
 [[tools.pnpm]]
 version = "12.16.1"

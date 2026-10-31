@@ -107,9 +107,9 @@ source "$ZAMBELZ_DEV_ENV_PATH/zsh/.themes/dracula-syntax-highlighting/zsh-syntax
 # source: https://github.com/zsh-users/zsh-syntax-highlighting
 source "$ZAMBELZ_DEV_ENV_PATH/zsh/.themes/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh"
 
-# path_helper and the brew line above push the .zshenv shims back; pinned
-# tools must win.
-path=("$HOME/.local/share/mise/shims" $path)
+# path_helper and the brew line above push the .zshenv entries back; pinned
+# tools must win, and the tools/ commands win over any same-named shim.
+path=("$HOME/.local/share/zconf/bin" "$HOME/.local/share/mise/shims" $path)
 
 # Cleanup PATH (de-duplicate)
 typeset -U path PATH

@@ -91,6 +91,17 @@ EOF
   [ "$status" -eq 0 ]
 }
 
+@test "the tools commands directory may come before the shims" {
+  tools="$HOME/.local/share/zconf/bin"
+  mkdir -p "$SHIMS" "$tools"
+  touch "$SHIMS/ansible-lint" "$tools/ansible-lint"
+  chmod +x "$SHIMS"/* "$tools"/*
+  shell_path "$tools:$SHIMS:$HOME/.local/bin:/usr/bin"
+  run zc_doctor_core
+  [ "$status" -eq 0 ]
+  [[ "$output" != *"shadows"* ]] || false
+}
+
 @test "missing shims on PATH is an error with the apply fix" {
   shell_path "/usr/bin:/bin"
   run zc_doctor_core

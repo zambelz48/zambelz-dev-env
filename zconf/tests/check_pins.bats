@@ -22,6 +22,7 @@ locked = true
 node = ["24.11.0", "22.12.0"]
 java = "temurin-25.0.1+8"
 marksman = "2026-02-08"
+pnpm = "12.16.1"
 "github:cantino/mcfly" = { version = "0.9.4", os = ["linux"] }
 
 [tools."http:jdtls"]
@@ -42,6 +43,9 @@ version = "temurin-25.0.1+8"
 [[tools.marksman]]
 version = "2026-02-08"
 
+[[tools.pnpm]]
+version = "12.16.1"
+
 [[tools."github:cantino/mcfly"]]
 version = "0.9.4"
 
@@ -54,11 +58,32 @@ EOF
     >"$F/tmux.conf"
   printf 'tmux-plugins/tpm\t%s\ndracula/tmux\t%s\n' "$SHA_A" "$SHA_B" \
     >"$F/tmux-pins"
+  mkdir -p "$F/npm" "$F/python"
+  npm_manifest '"bash-language-server": "5.8.1"' 'pnpm@12.16.1'
+  touch "$F/npm/pnpm-lock.yaml" "$F/python/uv.lock"
+  python_manifest '"ansible-lint==26.10.1"'
+}
+
+npm_manifest() {
+  cat >"$F/npm/package.json" <<EOF
+{
+  "packageManager": "$2",
+  "dependencies": {
+    $1
+  }
+}
+EOF
+}
+
+python_manifest() {
+  printf '[project]\nname = "t"\ndependencies = [%s]\n' "$1" \
+    >"$F/python/pyproject.toml"
 }
 
 check() {
   run "$PY" "$SCRIPT" "$F/mise.toml" "$F/mise.lock" "$F/zsh-pins" \
-    "$F/tmux.conf" "$F/tmux-pins"
+    "$F/tmux.conf" "$F/tmux-pins" "$F/npm/package.json" \
+    "$F/python/pyproject.toml"
 }
 
 set_tool() {
@@ -74,7 +99,58 @@ EOF
 @test "exact pins present in the lock pass" {
   check
   [ "$status" -eq 0 ]
-  [[ "$output" == "OK: "* ]] || false
+  [ "$output" = \
+    "OK: pins exact and locked (6 mise tools, 1 npm tools, 1 python tools)" ]
+}
+
+@test "an npm tool with a range is rejected" {
+  npm_manifest '"bash-language-server": "^5.8.1"' 'pnpm@12.16.1'
+  check
+  [ "$status" -eq 1 ]
+  zc_contains "$output" \
+    "ERROR: bash-language-server \"^5.8.1\" in $F/npm/package.json" \
+    "is not an exact version"
+}
+
+@test "an exact prerelease npm tool passes" {
+  npm_manifest '"graphql-language-service-cli": "4.0.0-rc.2"' 'pnpm@12.16.1'
+  check
+  [ "$status" -eq 0 ]
+}
+
+@test "packageManager must match the pnpm pinned in mise" {
+  npm_manifest '"bash-language-server": "5.8.1"' 'pnpm@12.0.0'
+  check
+  [ "$status" -eq 1 ]
+  zc_contains "$output" \
+    "ERROR: packageManager in $F/npm/package.json is not \"pnpm@12.16.1\""
+}
+
+@test "a python tool without == is rejected" {
+  python_manifest '"ansible-lint>=26"'
+  check
+  [ "$status" -eq 1 ]
+  zc_contains "$output" \
+    "ERROR: \"ansible-lint>=26\" in $F/python/pyproject.toml" \
+    "is not pinned with =="
+}
+
+@test "a missing tools lock is rejected" {
+  rm "$F/npm/pnpm-lock.yaml" "$F/python/uv.lock"
+  check
+  [ "$status" -eq 1 ]
+  zc_contains "$output" "ERROR: $F/npm/pnpm-lock.yaml is missing" \
+    "ERROR: $F/python/uv.lock is missing"
+}
+
+@test "npm and pipx tools in mise are rejected" {
+  set_tool '"npm:typescript" = "7.0.2"'
+  set_tool '"pipx:pyrefly" = "1.4.0"'
+  check
+  [ "$status" -eq 1 ]
+  zc_contains "$output" \
+    "ERROR: pipx:pyrefly belongs in tools/npm or tools/python, not mise" \
+    "ERROR: npm:typescript belongs in tools/npm or tools/python, not mise"
 }
 
 replace_in_config() {
