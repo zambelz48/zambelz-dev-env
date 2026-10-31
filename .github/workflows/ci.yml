@@ -2,9 +2,11 @@ name: ci
 
 on:
   push:
-  workflow_dispatch:
-  schedule:
-    - cron: "0 3 * * 1"
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
 
 permissions:
   contents: read
@@ -40,7 +42,7 @@ jobs:
             apt-get install -y git ca-certificates
           fi
 
-      - name: Clone the pushed commit
+      - name: Clone the commit under test
         run: |
           git init -q "$HOME/zambelz-dev-env"
           cd "$HOME/zambelz-dev-env"

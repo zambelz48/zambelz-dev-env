@@ -268,7 +268,9 @@ run `uv lock` in `tools/python`, then `zconf apply tools`.
 - Lint: `zconf lint`.
 - Health: `zconf doctor`.
 - CI: `.github/workflows/ci.yml` bootstraps a fresh `fedora:44` and
-  `ubuntu:26.04` container on every push and weekly, then runs doctor, a
-  second apply that must change nothing, the tests, lint, pins, audit, the
-  override checks, a start-up check of every npm language server, and the
-  Neovim and tmux configs, and fails if the clone has any change.
+  `ubuntu:26.04` container on every push to `main` and every pull request
+  into it, then runs doctor, a second apply that must change nothing, the
+  tests, lint, pins, audit, the override checks, a start-up check of every
+  npm language server, the Neovim config, and the tmux config (skipped on
+  Ubuntu, whose tmux 3.6a is older than the 3.8 the config needs), and fails
+  if the clone has any change.
