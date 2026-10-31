@@ -1,0 +1,14 @@
+shell=bash
+external-sources=true
+source-path=SCRIPTDIR
+enable=all
+# Repo style is plain $var; quoting stays enforced by SC2086.
+disable=SC2250
+# Repo style is POSIX [ ] tests, as in every existing script.
+disable=SC2292
+# bats and helpers.bash assign status, output, lines, BATS_* and ZC_*.
+disable=SC2154
+# Substitutions inside bats assertions are checked by the assertion itself.
+disable=SC2312
+# Test doubles such as _zc_has_tty are called by the code under test.
+disable=SC2329

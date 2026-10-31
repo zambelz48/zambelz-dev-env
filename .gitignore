@@ -32,23 +32,14 @@ Temporary Items
 
 .certificates
 
-# jdtls language server
-neovim/.lsp_vendors/jdtls
-
-# marksman language server
-neovim/.lsp_vendors/marksman
-
-# omnisharp language server
-neovim/.lsp_vendors/omnisharp
-
-# vscode-codelldb debugger
-neovim/.dap/vscode-codelldb
-neovim/.dap/vscode-js-debug
-
 # per-machine kitty overrides (includes kitty.base.conf)
 kitty/kitty.conf
 
 tmp/
+
+# installed by zconf apply tools
+tools/npm/node_modules/
+tools/python/.venv/
 
 # End of https://www.toptal.com/developers/gitignore/api/macos
 

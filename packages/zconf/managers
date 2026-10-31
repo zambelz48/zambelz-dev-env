@@ -1,0 +1,4 @@
+darwin	brew
+darwin	brew-cask
+fedora	dnf
+ubuntu	apt

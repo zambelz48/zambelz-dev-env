@@ -1,0 +1,99 @@
+#!/usr/bin/env bash
+set -u
+
+root="${ZC_ROOT:-$(cd "$(dirname "$0")/../.." && pwd -P)}"
+failed=0
+
+tool_path() {
+  mise -C "${ZC_HOME:-$HOME}" which "$1" 2>/dev/null
+}
+
+missing_tool() {
+  printf 'ERROR: %s is not installed by mise\n  fix: zconf apply mise\n' "$1"
+}
+
+repo_files() {
+  local list file
+  list="$(git -C "$root" ls-files --cached --others --exclude-standard)" ||
+    return 1
+  while IFS= read -r file; do
+    if [ -f "$root/$file" ]; then
+      printf '%s\n' "$file"
+    fi
+  done <<<"$list"
+}
+
+lint_shell() {
+  local files=() file list shellcheck
+  if ! shellcheck="$(tool_path shellcheck)"; then
+    missing_tool shellcheck
+    return 1
+  fi
+  list="$(repo_files)" || return 1
+  while IFS= read -r file; do
+    case "$file" in
+      *.sh | *.bats | *.bash | zconf/bin/* | zconf/tests/run | .githooks/*)
+        files+=("$file")
+        ;;
+      *) ;;
+    esac
+  done <<<"$list"
+  if (cd "$root" && "$shellcheck" -f gcc "${files[@]}"); then
+    printf 'OK: shellcheck (%d files)\n' "${#files[@]}"
+  else
+    printf 'ERROR: shellcheck\n'
+    return 1
+  fi
+}
+
+lint_zsh() {
+  local file list status=0 count=0
+  list="$(repo_files)" || return 1
+  while IFS= read -r file; do
+    case "$file" in
+      zsh/.zshrc | zsh/helpers/*.zsh)
+        count=$((count + 1))
+        if ! zsh -n "$root/$file"; then
+          printf '%s: zsh -n failed\n' "$file"
+          status=1
+        fi
+        ;;
+      *) ;;
+    esac
+  done <<<"$list"
+  if [ "$status" -eq 0 ]; then
+    printf 'OK: zsh -n (%d files)\n' "$count"
+  else
+    printf 'ERROR: zsh -n\n'
+  fi
+  return "$status"
+}
+
+lint_lua() {
+  local logdir nvim luals vimruntime
+  if ! nvim="$(tool_path nvim)"; then
+    missing_tool nvim
+    return 1
+  fi
+  if ! luals="$(tool_path lua-language-server)"; then
+    missing_tool lua-language-server
+    return 1
+  fi
+  logdir="$(mktemp -d)"
+  vimruntime="$("$nvim" --clean --headless \
+    "+lua io.write(vim.env.VIMRUNTIME)" +qa 2>/dev/null)"
+  if VIMRUNTIME="$vimruntime" "$luals" \
+    --check="$root/neovim" --checklevel=Warning --logpath="$logdir"; then
+    printf 'OK: lua-language-server\n'
+    rm -rf "$logdir"
+  else
+    printf 'ERROR: lua-language-server\n'
+    rm -rf "$logdir"
+    return 1
+  fi
+}
+
+lint_shell || failed=1
+lint_zsh || failed=1
+lint_lua || failed=1
+exit "$failed"

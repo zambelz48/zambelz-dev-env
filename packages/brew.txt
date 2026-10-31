@@ -1,0 +1,16 @@
+# Provided by macOS or the Xcode Command Line Tools when present.
+zsh	zsh
+git	git
+curl	curl
+# mise builds ruby with ruby-build, which needs these.
+openssl@3
+readline
+libyaml
+gmp
+autoconf
+# Not available through mise.
+chafa
+# mise's prebuilt tmux is older than the 3.8 that tmux/.tmux.conf needs.
+tmux
+# mcfly publishes no macOS arm64 build; Linux gets it from mise.
+mcfly

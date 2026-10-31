@@ -27,14 +27,14 @@ return {
     { '<leader><ESC>', function() dap().terminate() end },
   },
   config = function()
-    local nvim_dir = require('utils').neovim_dir()
+    local mise_where = require('utils').mise_where
 
     vim.fn.sign_define('DapBreakpoint', { text = '\u{f0ec3}' })
     vim.fn.sign_define('DapStopped', { text = '\u{f0734}' })
 
     -- C/C++/Rust
-    local codelldb_executable = nvim_dir ..
-        '/.dap/vscode-codelldb/extension/adapter/codelldb'
+    local codelldb_executable = (mise_where('github:vadimcn/codelldb') or '')
+        .. '/extension/adapter/codelldb'
     if vim.fn.executable(codelldb_executable) == 1 then
       dap().adapters.codelldb = {
         type = 'server',
@@ -48,8 +48,9 @@ return {
 
     -- Javascript/Typescript
     -- TODO: Still doesn't work in 'Typescript'
-    local js_debug_server_file = nvim_dir ..
-        '/.dap/vscode-js-debug/src/dapDebugServer.js'
+    local js_debug_server_file =
+        (mise_where('github:microsoft/vscode-js-debug') or '')
+        .. '/src/dapDebugServer.js'
     if vim.fn.filereadable(js_debug_server_file) == 1 then
       dap().adapters['pwa-node'] = {
         type = 'server',

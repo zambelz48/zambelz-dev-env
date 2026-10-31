@@ -1,5 +1,4 @@
 KERNEL_NAME=$(uname -s)
-KERNEL_ARCH=$(uname -m)
 
 # Path to your oh-my-zsh installation.
 export ZSH=$HOME/.oh-my-zsh
@@ -66,9 +65,6 @@ case "$KERNEL_NAME" in
       export BREW_HOME="/opt/homebrew"
       export PATH="$BREW_HOME/bin:$PATH"
 
-      export RUBY_HOME="$BREW_HOME/opt/ruby"
-      export PATH="$RUBY_HOME/bin:$PATH"
-
       export HOMEBREW_NO_ANALYTICS=1
     fi
     ;;
@@ -83,62 +79,18 @@ fi
 
 ZAMBELZ_HELPER_PATH="$ZAMBELZ_DEV_ENV_PATH/zsh/helpers"
 
-# Neovim LSP
-export LSP_VENDOR_ROOT_PATH="$ZAMBELZ_DEV_ENV_PATH/neovim/.lsp_vendors"
-
-export KOTLIN_LANGUAGE_SERVER_PATH="$LSP_VENDOR_ROOT_PATH/kotlin-language-server/server/build/install/server/bin"
-export PATH="$KOTLIN_LANGUAGE_SERVER_PATH:$PATH"
-
-export GRADLE_LANGUAGE_SERVER_PATH="$LSP_VENDOR_ROOT_PATH/vscode-gradle/gradle-language-server/build/install/gradle-language-server/bin"
-export PATH="$GRADLE_LANGUAGE_SERVER_PATH:$PATH"
-
-export JAVA_LANGUAGE_SERVER_PATH="$LSP_VENDOR_ROOT_PATH/jdtls/bin"
-export PATH="$JAVA_LANGUAGE_SERVER_PATH:$PATH"
-
-export LUA_LANGUAGE_SERVER_PATH="$LSP_VENDOR_ROOT_PATH/lua-language-server/bin"
-export PATH="$LUA_LANGUAGE_SERVER_PATH:$PATH"
-
-if [ "$KERNEL_NAME" = "Linux" ]; then
-  export XML_LANGUAGE_SERVER_PATH="$LSP_VENDOR_ROOT_PATH/xml-lsp/linux"
-  export PATH="$XML_LANGUAGE_SERVER_PATH:$PATH"
-fi
-
-if [ "$KERNEL_NAME" = "Darwin" ]; then
-  if [ "$KERNEL_ARCH" = "arm64" ]; then
-    export XML_LANGUAGE_SERVER_PATH="$LSP_VENDOR_ROOT_PATH/xml-lsp/darwin/arm"
-  else
-    export XML_LANGUAGE_SERVER_PATH="$LSP_VENDOR_ROOT_PATH/xml-lsp/darwin/x86"
-  fi
-  export PATH="$XML_LANGUAGE_SERVER_PATH:$PATH"
-fi
-
 # Dracula theme for fzf
 export FZF_DEFAULT_OPTS="--color=fg:#f8f8f2,bg:#282a36,hl:#bd93f9
 --color=fg+:#f8f8f2,bg+:#44475a,hl+:#bd93f9
 --color=info:#ffb86c,prompt:#50fa7b,pointer:#ff79c6
 --color=marker:#ff79c6,spinner:#ffb86c,header:#6272a4"
 
-# FNM (Fast Node Manager)
-FNM_DIR="$HOME/.local/share/fnm"
-if [ -d "$FNM_DIR" ]; then
-  export PATH="$FNM_DIR:$PATH"
-fi
-if command -v fnm &> /dev/null; then
-  eval "$(fnm env --use-on-cd --shell zsh)"
-fi
-
 if command -v mcfly &> /dev/null; then
   _evalcache mcfly init zsh
 fi
 
-# Version managers
-source "$ZAMBELZ_HELPER_PATH/version-managers.zsh"
-
 # Postgres Tools
 source "$ZAMBELZ_HELPER_PATH/pg_tools.zsh"
-
-# Aliases
-alias zconf="$ZAMBELZ_DEV_ENV_PATH/main.sh"
 
 # Helper functions
 source "$ZAMBELZ_HELPER_PATH/utils.zsh"
@@ -154,6 +106,10 @@ source "$ZAMBELZ_DEV_ENV_PATH/zsh/.themes/dracula-syntax-highlighting/zsh-syntax
 # zsh syntax highlighting
 # source: https://github.com/zsh-users/zsh-syntax-highlighting
 source "$ZAMBELZ_DEV_ENV_PATH/zsh/.themes/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh"
+
+# path_helper and the brew line above push the .zshenv entries back; pinned
+# tools must win, and the tools/ commands win over any same-named shim.
+path=("$HOME/.local/share/zconf/bin" "$HOME/.local/share/mise/shims" $path)
 
 # Cleanup PATH (de-duplicate)
 typeset -U path PATH

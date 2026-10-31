@@ -1,0 +1,146 @@
+#!/usr/bin/env bash
+set -u
+
+ZC_EXIT_USAGE=2
+
+self="$0"
+while [ -L "$self" ]; do
+  link="$(readlink "$self")"
+  case "$link" in
+    /*) self="$link" ;;
+    *) self="$(dirname "$self")/$link" ;;
+  esac
+done
+ZC_ROOT="$(cd "$(dirname "$self")/../.." && pwd -P)"
+export ZC_ROOT
+
+for lib in log paths os exec version links fonts modules doctor audit \
+  upgrade; do
+  # shellcheck source=/dev/null
+  . "$ZC_ROOT/zconf/lib/$lib.sh"
+done
+owned_log=""
+if [ -z "${ZC_RUN_LOG:-}" ]; then
+  owned_log=1
+fi
+zc_log_init
+
+remove_owned_log() {
+  if [ -n "$owned_log" ]; then
+    rm -f "$ZC_RUN_LOG"
+  fi
+}
+trap remove_owned_log EXIT
+
+usage() {
+  cat <<'EOF'
+usage: zconf <command> [args]
+
+  apply [--dry-run] [module...]   install and link what is missing
+  doctor [--perf] [module...]     read-only health check
+  update [module...]              report newer versions (read-only)
+  upgrade [--yes] [--major] [--dry-run] [tool...]
+                                  apply newer versions, re-lock, install
+  use <tool> <version>            make a version the global default
+  lint                            run the shell, zsh and Lua linters
+  check-pins                      fail on floating or unlocked pins
+  audit [--declared|--installed]  scan pinned or installed tools (osv)
+  help                            show this help
+
+  zconf <module>                  same as: zconf apply <module>
+  zconf neovim check-updates      interactive neovim plugin pin updates
+EOF
+}
+
+usage_error() {
+  printf '%s\n' "$1" >&2
+  usage >&2
+  exit "$ZC_EXIT_USAGE"
+}
+
+run_phase() {
+  local phase="$1" module failed=0
+  shift
+  for module in "$@"; do
+    zc_module_known "$module" || usage_error "zconf: unknown module: $module"
+  done
+  zc_modules_run "$phase" "$@" || failed=1
+  zc_summary || failed=1
+  return "$failed"
+}
+
+command="${1:-help}"
+if [ "$#" -gt 0 ]; then
+  shift
+fi
+
+# Reporting commands must never install; mise's documented per-process switch.
+case "$command" in
+  doctor | update | check-pins | audit)
+    MISE_AUTO_INSTALL=0
+    export MISE_AUTO_INSTALL
+    ;;
+  *) ;;
+esac
+
+case "$command" in
+  help | -h | --help)
+    usage
+    ;;
+  apply)
+    if [ "${1:-}" = "--dry-run" ]; then
+      ZC_DRY_RUN=1
+      export ZC_DRY_RUN
+      shift
+    fi
+    run_phase apply "$@"
+    ;;
+  doctor)
+    core_failed=0
+    if [ "${1:-}" = "--perf" ]; then
+      shift
+      zc_doctor_perf
+    fi
+    if [ "$#" -eq 0 ]; then
+      zc_info "core: doctor"
+      zc_doctor_core || core_failed=1
+    fi
+    run_phase doctor "$@" || core_failed=1
+    exit "$core_failed"
+    ;;
+  update)
+    run_phase update "$@"
+    ;;
+  lint)
+    remove_owned_log
+    exec "$ZC_ROOT/zconf/bin/lint"
+    ;;
+  check-pins)
+    zc_python "$ZC_ROOT/zconf/lib/check_pins.py" \
+      "$ZC_ROOT/mise/mise.toml" "$ZC_ROOT/mise/mise.lock" \
+      "$ZC_ROOT/zsh/zconf/pins" "$ZC_ROOT/tmux/.tmux.conf" \
+      "$ZC_ROOT/tmux/zconf/pins" "$ZC_ROOT/tools/npm/package.json" \
+      "$ZC_ROOT/tools/python/pyproject.toml"
+    ;;
+  audit)
+    zc_audit "$@"
+    ;;
+  upgrade)
+    zc_upgrade "$@"
+    ;;
+  use)
+    zc_use "$@"
+    ;;
+  *)
+    if [ "$command" = "neovim" ] && [ "${1:-}" = "check-updates" ]; then
+      shift
+      remove_owned_log
+      exec bash "$ZC_ROOT/neovim/scripts/apply_plugin_updates.sh" "$@"
+    fi
+    if zc_module_known "$command" 2>/dev/null; then
+      run_phase apply "$command"
+    else
+      usage_error "zconf: unknown command: $command"
+    fi
+    ;;
+esac

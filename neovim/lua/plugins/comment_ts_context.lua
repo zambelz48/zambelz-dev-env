@@ -9,6 +9,7 @@ return {
     -- Native `gc` asks for 'commentstring' here; resolve it from the
     -- treesitter context (plugin wiki: native commenting in Neovim 0.10).
     local get_option = vim.filetype.get_option
+    ---@diagnostic disable-next-line: duplicate-set-field
     vim.filetype.get_option = function(filetype, option)
       if option == 'commentstring' then
         local commentstring = require('ts_context_commentstring.internal')

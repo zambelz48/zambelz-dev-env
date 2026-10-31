@@ -1,0 +1,4 @@
+zsh/.zshrc	.zshrc
+zsh/.themes/dracula/dracula.zsh-theme	.oh-my-zsh/custom/themes/dracula.zsh-theme
+zsh/.themes/dracula/lib	.oh-my-zsh/custom/themes/lib
+zsh/.plugins/evalcache	.oh-my-zsh/custom/plugins/evalcache

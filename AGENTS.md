@@ -77,11 +77,16 @@ override any default behaviour, skill, or workflow that conflicts with them.
 
 ## Build/Lint/Test
 
-- There are no project-wide build, lint, or test commands.
-- Configuration is managed by setup scripts in each tool's directory (e.g.,
-  `zsh/setup.sh`, `neovim/setup.sh`).
-- When modifying a tool's configuration, refer to its specific documentation
-  and `README.md` for validation steps. At minimum:
+- Tests: `zconf/tests/run` (bats, runs under `/bin/bash` 3.2). Lint:
+  `zconf/bin/lint` (also `zconf lint`). Both must pass before reporting done.
+- Machine state: `zconf doctor` (read-only). Pins: `zconf check-pins`.
+- Configuration is applied by zconf modules (`<tool>/zconf/`, ordered in
+  `zconf/modules`); see `README.md`.
+- Never add a behaviour-changing setting to `mise/mise.toml` `[settings]`: it
+  is the global mise config and applies to every project on the machine.
+  `zconf check-pins` rejects it.
+- When modifying a tool's configuration, also validate it directly. At
+  minimum:
   - Neovim: `nvim --headless +qa` exits cleanly, and the relevant
     `:checkhealth` sections report no new errors.
   - tmux: load the config on an isolated server

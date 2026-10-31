@@ -1,0 +1,8 @@
+shell=bash
+external-sources=true
+source-path=SCRIPTDIR
+enable=all
+# Repo style is plain $var; quoting stays enforced by SC2086.
+disable=SC2250
+# Repo style is POSIX [ ] tests, as in every existing script.
+disable=SC2292

@@ -31,4 +31,22 @@ function Mod.neovim_dir()
   return vim.fs.dirname(init)
 end
 
+local mise_paths = {}
+
+-- Install dir of a globally pinned mise tool, or nil when it is missing.
+function Mod.mise_where(tool)
+  if mise_paths[tool] == nil then
+    mise_paths[tool] = false
+    local ok, job = pcall(vim.system, { 'mise', 'where', tool },
+      { cwd = vim.uv.os_homedir(), text = true })
+    if ok then
+      local result = job:wait()
+      if result.code == 0 then
+        mise_paths[tool] = vim.trim(result.stdout)
+      end
+    end
+  end
+  return mise_paths[tool] or nil
+end
+
 return Mod

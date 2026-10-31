@@ -1,0 +1,96 @@
+name: ci
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  fresh-linux:
+    name: fresh ${{ matrix.image }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 180
+    strategy:
+      fail-fast: false
+      matrix:
+        image:
+          - fedora:44
+          - ubuntu:26.04
+    container: ${{ matrix.image }}
+    env:
+      GITHUB_TOKEN: ${{ github.token }}
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - name: Install git
+        run: |
+          if command -v dnf >/dev/null 2>&1; then
+            dnf install -y git
+          else
+            apt-get update
+            apt-get install -y git ca-certificates
+          fi
+
+      - name: Clone the commit under test
+        run: |
+          git init -q "$HOME/zambelz-dev-env"
+          cd "$HOME/zambelz-dev-env"
+          git remote add origin "$GITHUB_SERVER_URL/$GITHUB_REPOSITORY.git"
+          git fetch -q --depth=1 origin "$GITHUB_SHA"
+          git checkout -q FETCH_HEAD
+
+      - name: Bootstrap
+        run: bash "$HOME/zambelz-dev-env/bootstrap.sh"
+
+      - name: Doctor
+        run: zsh -c 'zconf doctor'
+
+      - name: Second apply changes nothing
+        run: |
+          out="$(zsh -c 'zconf apply' 2>&1)"
+          printf '%s\n' "$out"
+          grep -q '^Summary: 0 changed,' <<<"$out"
+
+      - name: Tests, lint, pins and audit
+        run: |
+          cd "$HOME/zambelz-dev-env"
+          zsh -c 'zconf/tests/run && zconf lint && zconf check-pins &&
+            zconf audit'
+
+      - name: Language servers start and overrides hold
+        run: |
+          cd "$HOME/zambelz-dev-env"
+          zsh -c 'node tools/zconf/smoke/overrides.mjs &&
+            node tools/zconf/smoke/lsp-smoke.mjs'
+
+      - name: Neovim loads its config
+        run: zsh -c 'nvim --headless +qa'
+
+      # Ubuntu 26.04 ships tmux 3.6a; tmux/.tmux.conf needs 3.8.
+      - name: tmux loads its config
+        if: ${{ !startsWith(matrix.image, 'ubuntu') }}
+        run: |
+          zsh -c 'tmux -L ci -f /dev/null new -d \; \
+            source-file "$HOME/.tmux.conf"; rc=$?;
+            tmux -L ci kill-server; exit $rc'
+
+      - name: Repository unchanged
+        run: |
+          changes="$(git -C "$HOME/zambelz-dev-env" status --porcelain)"
+          printf '%s\n' "$changes"
+          [ -z "$changes" ]
+
+      - name: Disk usage
+        if: always()
+        run: df -h "$HOME"

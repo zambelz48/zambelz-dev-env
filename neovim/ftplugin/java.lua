@@ -1,4 +1,10 @@
-local jdtls_path = require('utils').neovim_dir() .. '/.lsp_vendors/jdtls'
+local utils = require('utils')
+local jdtls_path = utils.mise_where('http:jdtls')
+if jdtls_path == nil then
+  vim.notify_once('jdtls is not installed (zconf apply mise)',
+    vim.log.levels.WARN)
+  return
+end
 local launcher_jar = vim.fn.glob(jdtls_path ..
   '/plugins/org.eclipse.equinox.launcher_*.jar')
 if launcher_jar == '' then
@@ -49,7 +55,7 @@ jdtls.start_or_attach({
       format = {
         enabled = true,
         settings = {
-          url = jdtls_path .. '/config/intellij-java-google-style.xml',
+          url = utils.neovim_dir() .. '/jdtls/eclipse-java-google-style.xml',
           profile = 'GoogleStyle',
         },
       },
