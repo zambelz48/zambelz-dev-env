@@ -1,6 +1,6 @@
 return {
   'zbirenbaum/copilot.lua',
-  tag = 'v3.1.10',
+  tag = 'v3.2.3',
   cond = function()
     return require('utils').coding_assistant() == 'copilot'
   end,

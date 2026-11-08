@@ -4,7 +4,7 @@ end
 
 return {
   'nvim-telescope/telescope.nvim',
-  commit = '40aedd8',
+  commit = '1e1bab7',
   cmd = 'Telescope',
   dependencies = {
     'nvim-lua/plenary.nvim',

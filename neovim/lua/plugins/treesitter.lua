@@ -1,6 +1,6 @@
 return {
   'nvim-treesitter/nvim-treesitter',
-  commit = '728e031',
+  commit = '19bdfc0',
   lazy = false,
   build = ':TSUpdate',
   config = function()
