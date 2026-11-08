@@ -125,6 +125,10 @@ Modules, applied in this order: `packages`, `mise`, `zsh`, `kitty`, `tmux`,
   locks only its own tools with `[tool_config] locked = true`. A project with
   its own `mise.toml` (or `.nvmrc`, `.python-version`, ...) resolves and
   installs its own pins with mise's defaults; zconf never writes into it.
+  mise locks a version file into the nearest config whose root contains it,
+  and the global config's root defaults to `$HOME`, so a `go.mod` anywhere
+  under `$HOME` would land in `mise/mise.lock`. `.zshenv` sets
+  `MISE_GLOBAL_CONFIG_ROOT="$HOME/.config/mise"` to keep it out.
   `zconf doctor` run inside such a project reports its missing tools as
   warnings. The only global mise setting is reading those version files.
 - **OS packages** come from `packages/<manager>.txt` (one package per line,

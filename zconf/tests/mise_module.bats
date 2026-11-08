@@ -74,6 +74,43 @@ EOF
   [[ "${lines[1]}" == *"mise/shims"* ]] || false
 }
 
+@test "apply sets the global config root in .zshenv once" {
+  fake_mise "$PINNED" "" 0 0
+  zc_module_run mise apply
+  zc_module_run mise apply
+  # shellcheck disable=SC2016 # the literal .zshenv line
+  line='export MISE_GLOBAL_CONFIG_ROOT="$HOME/.config/mise"'
+  [ "$(grep -cFx "$line" "$HOME/.zshenv")" -eq 1 ]
+}
+
+@test "doctor fails when .zshenv does not set the global config root" {
+  fake_mise "$PINNED" "" 0 0
+  run zc_module_run mise doctor
+  [ "$status" -eq 1 ]
+  zc_contains "$output" \
+    "ERROR: $HOME/.zshenv does not set MISE_GLOBAL_CONFIG_ROOT" \
+    "fix: zconf apply mise"
+}
+
+@test "doctor warns when this shell has not loaded the global config root" {
+  fake_mise "$PINNED" "" 0 0
+  zc_module_run mise apply
+  MISE_GLOBAL_CONFIG_ROOT="$HOME" run zc_module_run mise doctor
+  [ "$status" -eq 0 ]
+  zc_contains "$output" \
+    "WARN: MISE_GLOBAL_CONFIG_ROOT is not $HOME/.config/mise in this shell" \
+    "fix: open a new shell"
+}
+
+@test "doctor accepts the global config root from .zshenv" {
+  fake_mise "$PINNED" "" 0 0
+  zc_module_run mise apply
+  MISE_GLOBAL_CONFIG_ROOT="$HOME/.config/mise" run zc_module_run mise doctor
+  [ "$status" -eq 0 ]
+  [[ "$output" == *"OK: MISE_GLOBAL_CONFIG_ROOT=$HOME/.config/mise"* ]] ||
+    false
+}
+
 @test "apply never adds mise activate to shell files" {
   fake_mise "$PINNED" "" 0 0
   zc_module_run mise apply
@@ -112,7 +149,7 @@ EOF
 }
 
 @test "doctor compares mise versions numerically, not as text" {
-  fake_mise "2026.11.1" "" 0 0
+  fake_mise "2026.11.10" "" 0 0
   zc_module_run mise apply
   run zc_module_run mise doctor
   [ "$status" -eq 0 ]

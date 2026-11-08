@@ -1,4 +1,4 @@
-min_version = "2026.10.21"
+min_version = "2026.11.4"
 
 [settings]
 idiomatic_version_file_enable_tools = ["node", "python", "ruby", "java", "go"]

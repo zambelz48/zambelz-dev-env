@@ -50,6 +50,22 @@ _mise_pins() {
   return 1
 }
 
+_mise_global_root() {
+  local want="${ZC_HOME:?}/.config/mise" line
+  line="$(_mise_global_root_line)"
+  if ! grep -Fxq -- "$line" "$ZC_HOME/.zshenv" 2>/dev/null; then
+    zc_error "$ZC_HOME/.zshenv does not set MISE_GLOBAL_CONFIG_ROOT" \
+      "zconf apply mise"
+    return 1
+  fi
+  if [ "${MISE_GLOBAL_CONFIG_ROOT:-}" = "$want" ]; then
+    zc_ok "MISE_GLOBAL_CONFIG_ROOT=$want"
+  else
+    zc_warn "MISE_GLOBAL_CONFIG_ROOT is not $want in this shell" \
+      "open a new shell"
+  fi
+}
+
 mod_doctor() {
   local status=0 pinned line version missing tools ruby ruby_dir
   pinned="$(zc_mise_min_version)"
@@ -63,6 +79,7 @@ mod_doctor() {
     status=1
   fi
   _mise_pins || status=1
+  _mise_global_root || status=1
   missing="$(mise -C "$ZC_HOME" ls --missing 2>/dev/null)" || missing=""
   if [ -n "$missing" ]; then
     tools="$(_mise_tool_versions "$missing")"
