@@ -88,7 +88,7 @@ fi
 
 ZC_ROOT="$bs_root"
 export ZC_ROOT
-for lib in log paths os exec version; do
+for lib in log paths os exec version misebin; do
   # shellcheck source=/dev/null
   . "$ZC_ROOT/zconf/lib/$lib.sh"
 done
@@ -196,48 +196,6 @@ bs_login_shell() {
   fi
 }
 
-# Only checks out submodules that are missing; one at another commit is the
-# owner's work and is left alone.
-bs_submodules() {
-  local lines line state path paths=() warned=0
-  lines="$(git -C "$ZC_ROOT" submodule status 2>/dev/null)" || {
-    zc_error "cannot read submodules" "git -C $ZC_ROOT submodule status"
-    return 1
-  }
-  while IFS= read -r line; do
-    if [ -z "$line" ]; then
-      continue
-    fi
-    state="${line:0:1}"
-    read -r _ path _ <<<"${line:1}"
-    case "$state" in
-      -) paths+=("$path") ;;
-      +)
-        zc_warn "submodule $path is not at its recorded commit; left as is" \
-          "git -C $ZC_ROOT submodule update -- $path"
-        warned=1
-        ;;
-      *) ;;
-    esac
-  done <<<"$lines"
-  if [ "${#paths[@]}" -eq 0 ]; then
-    if [ "$warned" -eq 0 ]; then
-      zc_ok "submodules checked out"
-    fi
-    return 0
-  fi
-  if ! zc_do git -C "$ZC_ROOT" \
-    -c "url.https://github.com/.insteadOf=git@github.com:" \
-    submodule update --init --recursive -- "${paths[@]}"; then
-    zc_error "submodule checkout failed" \
-      "git -C $ZC_ROOT submodule update --init --recursive"
-    return 1
-  fi
-  for path in "${paths[@]}"; do
-    zc_changed "submodule $path"
-  done
-}
-
 bs_token() {
   local token=""
   if [ -z "${GITHUB_TOKEN:-}" ] && command -v gh >/dev/null 2>&1; then
@@ -255,45 +213,6 @@ bs_token() {
     "export GITHUB_TOKEN=<token>, or gh auth login after zconf apply"
 }
 
-bs_mise_version() {
-  local line version=""
-  if [ -x "$1" ]; then
-    line="$("$1" --version 2>/dev/null)" || line=""
-    read -r version _ <<<"$line"
-  fi
-  printf '%s' "$version"
-}
-
-bs_mise() {
-  local pinned bin current installer after
-  pinned="$(zc_mise_min_version)"
-  bin="${ZC_HOME:?}/.local/bin/mise"
-  current="$(bs_mise_version "$bin")"
-  if [ -n "$current" ] && zc_version_ge "$current" "$pinned"; then
-    zc_ok "mise $current (>= $pinned)"
-    return 0
-  fi
-  if _zc_dry_run; then
-    printf 'DRY-RUN: install mise %s from https://mise.run\n' "$pinned"
-    return 0
-  fi
-  installer="$(curl -fsSL https://mise.run)" || {
-    zc_error "cannot download the mise installer" "https://mise.run"
-    return 1
-  }
-  printf '%s\n' "$installer" | MISE_VERSION="v$pinned" sh || {
-    zc_error "mise installer failed" "https://mise.jdx.dev/installing-mise.html"
-    return 1
-  }
-  after="$(bs_mise_version "$bin")"
-  if [ "$after" != "$pinned" ]; then
-    zc_error "mise is ${after:-missing} after the install, expected $pinned" \
-      "https://mise.jdx.dev/installing-mise.html"
-    return 1
-  fi
-  zc_changed "mise ${current:-missing} -> $pinned"
-}
-
 bs_main() {
   bs_os || return 1
   case "$BS_OS" in
@@ -301,9 +220,8 @@ bs_main() {
     *) bs_linux_tools || return 1 ;;
   esac
   bs_login_shell || return 1
-  bs_submodules || return 1
   bs_token
-  bs_mise || return 1
+  zc_mise_ensure || return 1
 }
 
 # shellcheck disable=SC2154 # ZC_RUN_LOG is set by zc_log_init (log.sh)

@@ -1,4 +1,6 @@
 # shellcheck shell=bash
+# shellcheck source=../../zconf/lib/misebin.sh
+. "${ZC_ROOT:?}/zconf/lib/misebin.sh"
 
 # The global config's root defaults to $HOME, so mise locks a version file
 # (go.mod, .nvmrc) anywhere under $HOME into the global mise.lock.

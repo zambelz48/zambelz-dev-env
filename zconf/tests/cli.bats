@@ -9,8 +9,9 @@ setup() {
   FIX="$BATS_TEST_TMPDIR/repo dir"
   mkdir -p "$FIX"
   cp -R "$ZC_ROOT/zconf" "$FIX/zconf"
-  mkdir -p "$FIX/alpha/zconf" "$FIX/beta/zconf"
+  mkdir -p "$FIX/alpha/zconf" "$FIX/beta/zconf" "$FIX/mise"
   printf 'alpha\nbeta\n' >"$FIX/zconf/modules"
+  printf 'min_version = "2026.1.1"\n' >"$FIX/mise/mise.toml"
   TRACE="$BATS_TEST_TMPDIR/trace"
   export TRACE
   for m in alpha beta; do
@@ -160,12 +161,45 @@ auto_install_probe() {
 @test "zconf finds the bootstrap mise when PATH lacks it" {
   mkdir -p "$HOME/.local/bin"
   printf '#!/bin/sh\necho "OK: fake python"\n' >"$BATS_TEST_TMPDIR/py"
-  printf '#!/bin/sh\necho %s\n' "$BATS_TEST_TMPDIR/py" \
+  # shellcheck disable=SC2016 # script text, expanded when the stub runs
+  printf '#!/bin/sh\n[ "$1" = --version ] && echo 2099.1.1 && exit\n' \
     >"$HOME/.local/bin/mise"
+  printf 'echo %s\n' "$BATS_TEST_TMPDIR/py" >>"$HOME/.local/bin/mise"
   chmod +x "$BATS_TEST_TMPDIR/py" "$HOME/.local/bin/mise"
   run env PATH=/usr/bin:/bin "$ZCONF" check-pins
   [ "$status" -eq 0 ]
   [ "$output" = "OK: fake python" ]
+}
+
+old_mise() {
+  zc_stub_script mise 'echo "2026.1.0 macos-arm64"'
+}
+
+@test "commands that need mise stop on an old mise with the apply fix" {
+  old_mise
+  for args in "doctor alpha" "update alpha" check-pins audit lint \
+    "upgrade --yes" "use node 24" "apply alpha"; do
+    # shellcheck disable=SC2086 # split into command and arguments
+    run "$ZCONF" $args
+    [ "$status" -eq 1 ]
+    zc_contains "$output" "ERROR: mise 2026.1.0 is older than 2026.1.1" \
+      "fix: zconf apply mise"
+  done
+  [ ! -e "$TRACE" ]
+}
+
+@test "apply that includes mise is not stopped by an old mise" {
+  old_mise
+  run "$ZCONF" apply
+  [ "$(cat "$TRACE")" = "$(printf 'alpha\nbeta')" ]
+}
+
+@test "a missing mise is reported with the apply fix" {
+  zc_hide_command mise
+  run "$ZCONF" doctor alpha
+  [ "$status" -eq 1 ]
+  zc_contains "$output" "ERROR: mise is not installed (min_version 2026.1.1)" \
+    "fix: zconf apply mise"
 }
 
 @test "zconf works when called through a symlink" {

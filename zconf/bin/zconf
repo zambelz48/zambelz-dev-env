@@ -14,8 +14,8 @@ done
 ZC_ROOT="$(cd "$(dirname "$self")/../.." && pwd -P)"
 export ZC_ROOT
 
-for lib in log paths os exec version links fonts modules doctor audit \
-  upgrade; do
+for lib in log paths os exec version misebin links fonts modules doctor \
+  audit upgrade; do
   # shellcheck source=/dev/null
   . "$ZC_ROOT/zconf/lib/$lib.sh"
 done
@@ -58,12 +58,37 @@ usage_error() {
   exit "$ZC_EXIT_USAGE"
 }
 
+need_mise() {
+  if zc_mise_ready; then
+    return 0
+  fi
+  zc_mise_check
+  zc_summary
+  exit 1
+}
+
+applies_mise() {
+  local module
+  if [ "$#" -eq 0 ]; then
+    return 0
+  fi
+  for module in "$@"; do
+    if [ "$module" = "mise" ]; then
+      return 0
+    fi
+  done
+  return 1
+}
+
 run_phase() {
   local phase="$1" module failed=0
   shift
   for module in "$@"; do
     zc_module_known "$module" || usage_error "zconf: unknown module: $module"
   done
+  if [ "$phase" != "apply" ] || ! applies_mise "$@"; then
+    need_mise
+  fi
   zc_modules_run "$phase" "$@" || failed=1
   zc_summary || failed=1
   return "$failed"
@@ -101,6 +126,7 @@ case "$command" in
       shift
       zc_doctor_perf
     fi
+    need_mise
     if [ "$#" -eq 0 ]; then
       zc_info "core: doctor"
       zc_doctor_core || core_failed=1
@@ -112,10 +138,12 @@ case "$command" in
     run_phase update "$@"
     ;;
   lint)
+    need_mise
     remove_owned_log
     exec "$ZC_ROOT/zconf/bin/lint"
     ;;
   check-pins)
+    need_mise
     zc_python "$ZC_ROOT/zconf/lib/check_pins.py" \
       "$ZC_ROOT/mise/mise.toml" "$ZC_ROOT/mise/mise.lock" \
       "$ZC_ROOT/zsh/zconf/pins" "$ZC_ROOT/tmux/.tmux.conf" \
@@ -123,17 +151,21 @@ case "$command" in
       "$ZC_ROOT/tools/python/pyproject.toml"
     ;;
   audit)
+    need_mise
     zc_audit "$@"
     ;;
   upgrade)
+    need_mise
     zc_upgrade "$@"
     ;;
   use)
+    need_mise
     zc_use "$@"
     ;;
   *)
     if [ "$command" = "neovim" ] && [ "${1:-}" = "check-updates" ]; then
       shift
+      need_mise
       remove_owned_log
       exec bash "$ZC_ROOT/neovim/scripts/apply_plugin_updates.sh" "$@"
     fi

@@ -1,4 +1,6 @@
 # shellcheck shell=bash
+# shellcheck source=submodules.sh
+. "${ZC_ROOT:?}/zconf/lib/submodules.sh"
 
 zc_modules_list() {
   local name status=0
@@ -42,6 +44,11 @@ zc_module_run() {
     if [ "$phase" = "apply" ] && _zc_has_function mod_pre_apply; then
       mod_pre_apply || exit 1
     fi
+    case "$phase" in
+      apply) zc_submodules_apply "$module" || status=1 ;;
+      doctor) zc_submodules_check "$module" || status=1 ;;
+      *) ;;
+    esac
     if [ -f "$dir/links" ]; then
       case "$phase" in
         apply) zc_links_apply "$dir/links" || status=1 ;;

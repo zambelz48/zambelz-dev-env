@@ -2,10 +2,11 @@
 # shellcheck source=common.sh
 . "${ZC_ROOT:?}/mise/zconf/common.sh"
 
-# bootstrap installs the mise command in ~/.local/bin; its PATH line goes
-# before the shims line so the shims end up first.
+# The mise command lives in ~/.local/bin; its PATH line goes before the shims
+# line so the shims end up first.
 mod_apply() {
   local status=0 missing tools root_line
+  zc_mise_ensure || return 1
   zc_github_token
   zc_do mise trust -q "$ZC_ROOT/mise/mise.toml" || status=1
   zc_ensure_line "${ZC_HOME:?}/.zshenv" \

@@ -15,6 +15,7 @@ the machine, reports and applies updates, and scans for vulnerabilities.
 
 1. [Platforms](#platforms)
 1. [Install](#install)
+   1. [Keeping machines in sync](#keeping-machines-in-sync)
 1. [Commands](#commands)
 1. [How it works](#how-it-works)
 1. [Pins and updates](#pins-and-updates)
@@ -52,16 +53,13 @@ only when it is not already satisfied and prints `OK:`, `CHANGED:`, `WARN:` or
    missing; rerun when it finishes), then Homebrew. Linux: `zsh`, `git` and
    `curl` through `sudo dnf` or `sudo apt-get`.
 1. Login shell: `chsh` to zsh (may ask for your password).
-1. Git submodules that are not checked out yet, fetched over HTTPS. A
-   submodule at a different commit than recorded is left alone with a
-   warning.
 1. GitHub token: `GITHUB_TOKEN` or `gh auth token`. Without one, mise
    downloads can hit GitHub's anonymous rate limit; the step warns and goes
    on.
-1. mise at `min_version` from `mise/mise.toml`, through the official installer
-   (`https://mise.run`), which verifies the release checksum. A newer mise is
-   kept.
-1. Hands over to `zconf apply` (all modules, or only the ones you name).
+1. mise at `min_version` from `mise/mise.toml`, the same step `zconf apply
+   mise` runs (see [Keeping machines in sync](#keeping-machines-in-sync)).
+1. Hands over to `zconf apply` (all modules, or only the ones you name),
+   which also checks out the git submodules.
 
 Run on its own (outside a clone), `bootstrap.sh` makes sure git exists,
 clones into `--dir` (default `~/zambelz-dev-env`) and runs the cloned copy.
@@ -69,6 +67,28 @@ clones into `--dir` (default `~/zambelz-dev-env`) and runs the cloned copy.
 After bootstrap, open a new terminal. `zconf`, `mise` (in `~/.local/bin`)
 and the mise shims are on `PATH` (from `~/.zshenv`), in every zsh,
 interactive or not.
+
+### Keeping machines in sync
+
+On every machine, `git pull` then `zconf apply` brings the machine to what
+the repository records, whichever machine made the change:
+
+- **mise itself.** `~/.config/mise/config.toml` is a symlink into the clone,
+  so a pull that raises `min_version` takes effect at once: mise then
+  refuses every command, the shims and `mise self-update` included.
+  `zconf apply mise` (part of a full `zconf apply`) runs first in the mise
+  module and installs exactly `min_version` into `~/.local/bin` through the
+  official installer (`https://mise.run`), which verifies the release
+  checksum, without calling mise. A newer mise is kept. An older mise that
+  comes before `~/.local/bin` on `PATH` is reported, not replaced. Every
+  other `zconf` command stops with `fix: zconf apply mise` while mise is too
+  old.
+- **Git submodules** under a module's directory (`zsh/`, `neovim/`) are
+  checked out at the recorded commit by that module's apply; `git pull`
+  alone does not move them. A submodule at a commit the repository recorded
+  before is moved; one with local changes is an error; one at a commit the
+  repository never recorded is your work in progress and is left alone with
+  a warning. `zconf doctor` reports each of these.
 
 ## Commands
 
@@ -93,7 +113,9 @@ Modules, applied in this order: `packages`, `mise`, `zsh`, `kitty`, `tmux`,
 - **Modules.** Each module is a `<tool>/zconf/` directory: a `links` file
   (`repo/path<TAB>home/path` per line) and optional `apply.sh`, `doctor.sh`,
   `update.sh` and `upgrade.sh`. Adding a module means adding that directory
-  and one line in `zconf/modules`.
+  and one line in `zconf/modules`. Submodules in `.gitmodules` whose path is
+  under `<tool>/` belong to that module; its apply checks them out before
+  the links.
 - **Links.** `apply` creates each symlink. A real file already at the target
   is moved to `~/.local/state/zconf/backup/<timestamp>-<pid>.<random>/` first;
   nothing is deleted.

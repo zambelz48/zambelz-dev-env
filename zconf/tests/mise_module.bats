@@ -136,8 +136,45 @@ EOF
   fake_mise "2026.4.24" "" 0 0
   run zc_module_run mise doctor
   [ "$status" -eq 1 ]
-  [[ "$output" == *"ERROR: mise 2026.4.24 is older than $PINNED"* ]] || false
-  [[ "$output" == *"fix: $ZC_ROOT/bootstrap.sh"* ]] || false
+  zc_contains "$output" "ERROR: mise 2026.4.24 is older than $PINNED" \
+    "fix: zconf apply mise"
+}
+
+@test "apply updates an older mise before running any mise command" {
+  ORDER="$BATS_TEST_TMPDIR/order"
+  export ORDER
+  zc_hide_command mise
+  mkdir -p "$HOME/.local/bin"
+  cat >"$HOME/.local/bin/mise" <<'EOF'
+#!/usr/bin/env bash
+case "$*" in
+  --version) echo "2026.4.24 macos-arm64" ;;
+  *)
+    echo "old mise $*" >>"$ORDER"
+    exit 1
+    ;;
+esac
+EOF
+  chmod +x "$HOME/.local/bin/mise"
+  zc_stub_script curl <<'EOF'
+cat <<'SCRIPT'
+echo installer >>"$ORDER"
+printf '#!/usr/bin/env bash\necho "%s macos-arm64"\n' "${MISE_VERSION#v}" \
+  >"$MISE_INSTALL_PATH"
+chmod +x "$MISE_INSTALL_PATH"
+SCRIPT
+EOF
+  run zc_module_run mise apply
+  zc_contains "$output" "CHANGED: mise 2026.4.24 -> $PINNED"
+  [ "$(cat "$ORDER")" = "installer" ]
+}
+
+@test "apply stops when mise cannot be brought to min_version" {
+  fake_mise "2026.4.24" "" 0 0
+  run zc_module_run mise apply
+  [ "$status" -eq 1 ]
+  zc_contains "$output" "ERROR: mise 2026.4.24 at " "is older than $PINNED"
+  [ "$(zc_calls mise | grep -c -v -- '--version')" -eq 0 ]
 }
 
 @test "doctor accepts a mise newer than the pinned minimum" {

@@ -67,17 +67,8 @@ _mise_global_root() {
 }
 
 mod_doctor() {
-  local status=0 pinned line version missing tools ruby ruby_dir
-  pinned="$(zc_mise_min_version)"
-  line="$(mise --version 2>/dev/null)" || line=""
-  read -r version _ <<<"$line"
-  if [ -n "$version" ] && zc_version_ge "$version" "$pinned"; then
-    zc_ok "mise $version (>= $pinned)"
-  else
-    zc_error "mise ${version:-missing} is older than $pinned" \
-      "$ZC_ROOT/bootstrap.sh"
-    status=1
-  fi
+  local status=0 missing tools ruby ruby_dir
+  zc_mise_check || status=1
   _mise_pins || status=1
   _mise_global_root || status=1
   missing="$(mise -C "$ZC_HOME" ls --missing 2>/dev/null)" || missing=""

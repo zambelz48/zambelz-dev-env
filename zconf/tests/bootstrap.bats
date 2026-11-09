@@ -26,28 +26,20 @@ setup() {
   zc_stub gh 0 "token"
   zc_stub dscl 0 "UserShell: /bin/zsh"
   zc_stub chsh 0
-  # The fake installer replaces ~/.local/bin/mise like the real one.
+  # The fake installer writes MISE_INSTALL_PATH like the real one.
   zc_stub_script curl <<'EOF'
 cat <<'SCRIPT'
 echo "installer MISE_VERSION=$MISE_VERSION" >>"$TRACE"
+echo "installer MISE_INSTALL_PATH=$MISE_INSTALL_PATH" >>"$TRACE"
 printf '#!/usr/bin/env bash\necho "%s macos-arm64"\n' "${MISE_VERSION#v}" \
-  >"$HOME/.local/bin/mise"
-chmod +x "$HOME/.local/bin/mise"
+  >"$MISE_INSTALL_PATH"
+chmod +x "$MISE_INSTALL_PATH"
 SCRIPT
 EOF
-  submodules " 3153dcd zsh/.plugins/evalcache (v1.0.2)"
+  zc_stub git 0
+  zc_hide_command mise
   mise_at "$PINNED"
   unset ZC_ROOT
-}
-
-submodules() {
-  local status="$1"
-  zc_stub_script git <<EOF
-case "\$*" in
-  *"submodule status"*) printf '%s\n' "$status" ;;
-  *) exit 0 ;;
-esac
-EOF
 }
 
 mise_at() {
@@ -63,7 +55,6 @@ mise_at() {
   [[ "$output" == *"OK: Xcode Command Line Tools"* ]] || false
   [[ "$output" == *"OK: Homebrew"* ]] || false
   [[ "$output" == *"OK: login shell is /bin/zsh"* ]] || false
-  [[ "$output" == *"OK: submodules checked out"* ]] || false
   [[ "$output" == *"OK: GitHub token available"* ]] || false
   [[ "$output" == *"OK: mise $PINNED (>= $PINNED)"* ]] || false
   [[ "$output" != *"CHANGED:"* ]] || false
@@ -124,6 +115,7 @@ EOF
   run bash "$FIX/bootstrap.sh"
   [ "$status" -eq 0 ]
   grep -qx "installer MISE_VERSION=v$PINNED" "$TRACE"
+  grep -qx "installer MISE_INSTALL_PATH=$HOME/.local/bin/mise" "$TRACE"
   zc_calls curl | grep -qx -- "-fsSL https://mise.run"
   [[ "$output" == *"CHANGED: mise 2026.4.24 -> $PINNED"* ]] || false
 }
@@ -152,24 +144,26 @@ EOF
   [ "$(zc_calls curl | grep -c 'mise.run')" -eq 0 ]
 }
 
-@test "uninitialized submodules are fetched over https" {
-  submodules "-3153dcd zsh/.plugins/evalcache"
-  run bash "$FIX/bootstrap.sh"
-  [ "$status" -eq 0 ]
-  expected="-c url.https://github.com/.insteadOf=git@github.com:"
-  expected+=" submodule update --init --recursive -- zsh/.plugins/evalcache"
-  zc_contains "$(zc_calls git)" "$expected"
-  [[ "$output" == *"CHANGED: submodule zsh/.plugins/evalcache"* ]] || false
+@test "an older mise ahead of ~/.local/bin on PATH is an error, not replaced" {
+  mise_at "2026.4.24"
+  mkdir -p "$BATS_TEST_TMPDIR/other"
+  printf '#!/usr/bin/env bash\necho "2026.4.24 macos-arm64"\n' \
+    >"$BATS_TEST_TMPDIR/other/mise"
+  chmod +x "$BATS_TEST_TMPDIR/other/mise"
+  PATH="$BATS_TEST_TMPDIR/other:$HOME/.local/bin:$PATH" \
+    run bash "$FIX/bootstrap.sh"
+  [ "$status" -eq 1 ]
+  zc_contains "$output" \
+    "ERROR: mise 2026.4.24 at $BATS_TEST_TMPDIR/other/mise is older" \
+    "fix: remove $BATS_TEST_TMPDIR/other/mise"
+  [ "$(zc_calls curl | grep -c 'mise.run')" -eq 0 ]
+  [ ! -e "$TRACE" ]
 }
 
-@test "a submodule at another commit is left alone with a warning" {
-  submodules "+9999999 neovim/.lsp_vendors/vscode-gradle (3.15.0)"
+@test "bootstrap leaves submodules to zconf apply" {
   run bash "$FIX/bootstrap.sh"
   [ "$status" -eq 0 ]
-  [ "$(zc_calls git | grep -c 'submodule update')" -eq 0 ]
-  expected="WARN: submodule neovim/.lsp_vendors/vscode-gradle is not at its"
-  expected+=" recorded commit; left as is"
-  zc_contains "$output" "$expected"
+  [ "$(zc_calls git | grep -c 'submodule')" -eq 0 ]
 }
 
 @test "missing Command Line Tools starts the installer and stops" {
