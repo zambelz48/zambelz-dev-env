@@ -55,9 +55,47 @@ _nvim_restore() {
   fi
 }
 
+_nvim_parsers_sync() {
+  local out err installed updated count status=0
+  _nvim_parsers_prepare sync || return 1
+  if _zc_dry_run; then
+    printf 'DRY-RUN: install and update treesitter parsers with %s\n' \
+      "$_NVIM_BIN"
+    return 0
+  fi
+  out="$(mktemp)"
+  err="$(mktemp)"
+  if ! _nvim_parsers_run sync "$out" "$err"; then
+    cat "$err"
+    zc_error "treesitter parser sync failed" "zconf apply neovim"
+    rm -f "$out" "$err"
+    return 1
+  fi
+  installed="$(_nvim_parsers_names installed "$out")"
+  updated="$(_nvim_parsers_names updated "$out")"
+  if [ -n "$installed" ]; then
+    zc_changed "treesitter parsers installed: $installed"
+  fi
+  if [ -n "$updated" ]; then
+    zc_changed "treesitter parsers updated: $updated"
+  fi
+  if ! _nvim_parsers_problems "$out"; then
+    cat "$err"
+    status=1
+  elif [ -z "$installed$updated" ]; then
+    count="$(_nvim_parsers_count "$out")"
+    zc_ok "treesitter parsers match nvim-treesitter ($count)"
+  fi
+  rm -f "$out" "$err"
+  return "$status"
+}
+
 mod_apply() {
   local status=0
   _nvim_restore || status=1
+  if zc_tool nvim >/dev/null; then
+    _nvim_parsers_sync || status=1
+  fi
   _nvim_build_gradle || status=1
   return "$status"
 }

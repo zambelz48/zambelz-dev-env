@@ -15,7 +15,7 @@ EOF
 
 _nvim_check_lazy() {
   local dir entries name commit head count=0 status=0
-  dir="${XDG_DATA_HOME:-$ZC_HOME/.local/share}/nvim/lazy"
+  dir="$(_nvim_lazy_dir)"
   if ! entries="$(_nvim_lock_entries)"; then
     zc_error "cannot read neovim/lazy-lock.json"
     return 1
@@ -38,9 +38,29 @@ _nvim_check_lazy() {
   return "$status"
 }
 
+_nvim_check_parsers() {
+  local out err count status=0
+  _nvim_parsers_prepare check || return 1
+  out="$(mktemp)"
+  err="$(mktemp)"
+  if ! _nvim_parsers_run check "$out" "$err"; then
+    cat "$err"
+    zc_error "treesitter parser check failed" "zconf apply neovim"
+    status=1
+  elif _nvim_parsers_problems "$out"; then
+    count="$(_nvim_parsers_count "$out")"
+    zc_ok "treesitter parsers match nvim-treesitter ($count)"
+  else
+    status=1
+  fi
+  rm -f "$out" "$err"
+  return "$status"
+}
+
 mod_doctor() {
   local status=0 dir out head built
   _nvim_check_lazy || status=1
+  _nvim_check_parsers || status=1
   dir="$(_nvim_gradle_dir)"
   out="$(_nvim_gradle_out)"
   head="$(zc_git_head "$dir")" || head=""

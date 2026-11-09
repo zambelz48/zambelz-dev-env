@@ -238,8 +238,20 @@ run `uv lock` in `tools/python`, then `zconf apply tools`.
 
 - `zconf apply neovim` links `init.lua`, `lua`, `after`, `ftplugin` and
   `.luarc.json` into `~/.config/nvim`, restores plugins from
-  `neovim/lazy-lock.json` (`nvim --headless "+Lazy! restore" +qa`) and builds
-  the Gradle language server when its submodule commit changed.
+  `neovim/lazy-lock.json` (`nvim --headless "+Lazy! restore" +qa`), brings
+  the treesitter parsers to the pinned nvim-treesitter and builds the Gradle
+  language server when its submodule commit changed.
+- Treesitter parsers: `neovim/lua/treesitter_parsers.lua` lists them. Neovim
+  installs missing ones in the background at start-up, and lazy.nvim runs
+  `:TSUpdate` after an interactive plugin update. Neither finishes in a
+  headless restore, which exits first, so `zconf apply neovim` runs
+  `neovim/scripts/treesitter_parsers.lua sync` under `nvim -l`: it installs
+  the listed parsers and updates every installed one, waiting for both
+  (nvim-treesitter's documented `install():wait()` and `update():wait()`),
+  with the pinned `tree-sitter` CLI on `PATH`. `zconf doctor` runs the same
+  script with `check`, which loads no config and installs nothing, and
+  reports parsers that are missing or older than the revision the pinned
+  nvim-treesitter expects (the comparison its `:TSUpdate` uses).
 - Every file in `neovim/after/lsp/` enables that language server; its content
   only overrides [nvim-lspconfig](https://github.com/neovim/nvim-lspconfig)'s
   defaults. Every file in `neovim/lua/plugins/` is a lazy.nvim spec.
