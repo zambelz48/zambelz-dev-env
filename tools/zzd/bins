@@ -1,4 +1,4 @@
-# Commands linked into ~/.local/share/zconf/bin: <command><TAB><npm|python>
+# Commands linked into ~/.local/share/zzd/bin: <command><TAB><npm|python>
 ansible-language-server	npm
 bash-language-server	npm
 css-language-server	npm

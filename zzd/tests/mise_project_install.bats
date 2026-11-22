@@ -6,18 +6,18 @@ bats_require_minimum_version 1.5.0
 # ~/.config/mise holds symlinks into a copy of this repository's mise dir.
 setup() {
   load helpers
-  zc_test_setup
+  zzd_test_setup
   PY="$MISE_DATA_DIR/shims/python3"
   REPO="$BATS_TEST_TMPDIR/repo"
   PROJECT="$HOME/Dev/project"
   MIRROR="$BATS_TEST_TMPDIR/mirror"
   mkdir -p "$REPO" "$HOME/.config/mise" "$PROJECT" "$MIRROR" \
     "$BATS_TEST_TMPDIR/fake/go/bin" "$BATS_TEST_TMPDIR/shims"
-  cp "$ZC_ROOT/mise/mise.toml" "$ZC_ROOT/mise/mise.lock" "$REPO/"
+  cp "$ZZD_ROOT/mise/mise.toml" "$ZZD_ROOT/mise/mise.lock" "$REPO/"
   ln -s "$REPO/mise.toml" "$HOME/.config/mise/config.toml"
   ln -s "$REPO/mise.lock" "$HOME/.config/mise/mise.lock"
   printf 'module example\n\ngo 1.25.99\n' >"$PROJECT/go.mod"
-  ln -s "$ZC_REAL_MISE" "$BATS_TEST_TMPDIR/shims/go"
+  ln -s "$ZZD_REAL_MISE" "$BATS_TEST_TMPDIR/shims/go"
 
   printf '#!/bin/sh\necho "go version go1.25.99"\n' \
     >"$BATS_TEST_TMPDIR/fake/go/bin/go"
@@ -60,8 +60,8 @@ teardown() {
 }
 
 @test "a shim auto-installing a go.mod version leaves the global lock untouched" {
-  # shellcheck source=../../mise/zconf/common.sh
-  . "$ZC_ROOT/mise/zconf/common.sh"
+  # shellcheck source=../../mise/zzd/common.sh
+  . "$ZZD_ROOT/mise/zzd/common.sh"
   eval "$(_mise_global_root_line)"
   before="$(cksum <"$REPO/mise.lock")"
   cd "$PROJECT"

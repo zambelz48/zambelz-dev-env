@@ -11,10 +11,10 @@ because the change looks unrelated.
 
 ## 1. The gate
 
-1. `zconf/tests/run`
-2. `zconf/bin/lint`
-3. `zconf/bin/zconf check-pins`
-4. `zconf/bin/zconf audit --declared --gate`: exit 0 means nothing blocks.
+1. `zzd/tests/run`
+2. `zzd/bin/lint`
+3. `zzd/bin/zzd check-pins`
+4. `zzd/bin/zzd audit --declared --gate`: exit 0 means nothing blocks.
    Report the summary line, and list every finding marked
    `waiting for upstream` with its Action line; they are open vulnerabilities,
    not a pass.

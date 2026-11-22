@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -u
 
-ZC_EXIT_USAGE=2
+ZZD_EXIT_USAGE=2
 
 self="$0"
 while [ -L "$self" ]; do
@@ -11,30 +11,30 @@ while [ -L "$self" ]; do
     *) self="$(dirname "$self")/$link" ;;
   esac
 done
-ZC_ROOT="$(cd "$(dirname "$self")/../.." && pwd -P)"
-export ZC_ROOT
+ZZD_ROOT="$(cd "$(dirname "$self")/../.." && pwd -P)"
+export ZZD_ROOT
 
 for lib in log paths os exec version misebin links fonts modules doctor \
   audit upgrade; do
   # shellcheck source=/dev/null
-  . "$ZC_ROOT/zconf/lib/$lib.sh"
+  . "$ZZD_ROOT/zzd/lib/$lib.sh"
 done
 owned_log=""
-if [ -z "${ZC_RUN_LOG:-}" ]; then
+if [ -z "${ZZD_RUN_LOG:-}" ]; then
   owned_log=1
 fi
-zc_log_init
+zzd_log_init
 
 remove_owned_log() {
   if [ -n "$owned_log" ]; then
-    rm -f "$ZC_RUN_LOG"
+    rm -f "$ZZD_RUN_LOG"
   fi
 }
 trap remove_owned_log EXIT
 
 usage() {
   cat <<'EOF'
-usage: zconf <command> [args]
+usage: zzd <command> [args]
 
   apply [--dry-run] [module...]   install and link what is missing
   doctor [--perf] [module...]     read-only health check
@@ -49,23 +49,23 @@ usage: zconf <command> [args]
                                   for known vulnerabilities (default --all)
   help                            show this help
 
-  zconf <module>                  same as: zconf apply <module>
-  zconf neovim check-updates      interactive neovim plugin pin updates
+  zzd <module>                  same as: zzd apply <module>
+  zzd neovim check-updates      interactive neovim plugin pin updates
 EOF
 }
 
 usage_error() {
   printf '%s\n' "$1" >&2
   usage >&2
-  exit "$ZC_EXIT_USAGE"
+  exit "$ZZD_EXIT_USAGE"
 }
 
 need_mise() {
-  if zc_mise_ready; then
+  if zzd_mise_ready; then
     return 0
   fi
-  zc_mise_check
-  zc_summary
+  zzd_mise_check
+  zzd_summary
   exit 1
 }
 
@@ -86,13 +86,13 @@ run_phase() {
   local phase="$1" module failed=0
   shift
   for module in "$@"; do
-    zc_module_known "$module" || usage_error "zconf: unknown module: $module"
+    zzd_module_known "$module" || usage_error "zzd: unknown module: $module"
   done
   if [ "$phase" != "apply" ] || ! applies_mise "$@"; then
     need_mise
   fi
-  zc_modules_run "$phase" "$@" || failed=1
-  zc_summary || failed=1
+  zzd_modules_run "$phase" "$@" || failed=1
+  zzd_summary || failed=1
   return "$failed"
 }
 
@@ -116,8 +116,8 @@ case "$command" in
     ;;
   apply)
     if [ "${1:-}" = "--dry-run" ]; then
-      ZC_DRY_RUN=1
-      export ZC_DRY_RUN
+      ZZD_DRY_RUN=1
+      export ZZD_DRY_RUN
       shift
     fi
     run_phase apply "$@"
@@ -126,12 +126,12 @@ case "$command" in
     core_failed=0
     if [ "${1:-}" = "--perf" ]; then
       shift
-      zc_doctor_perf
+      zzd_doctor_perf
     fi
     need_mise
     if [ "$#" -eq 0 ]; then
-      zc_info "core: doctor"
-      zc_doctor_core || core_failed=1
+      zzd_info "core: doctor"
+      zzd_doctor_core || core_failed=1
     fi
     run_phase doctor "$@" || core_failed=1
     exit "$core_failed"
@@ -142,39 +142,39 @@ case "$command" in
   lint)
     need_mise
     remove_owned_log
-    exec "$ZC_ROOT/zconf/bin/lint"
+    exec "$ZZD_ROOT/zzd/bin/lint"
     ;;
   check-pins)
     need_mise
-    zc_python "$ZC_ROOT/zconf/lib/check_pins.py" \
-      "$ZC_ROOT/mise/mise.toml" "$ZC_ROOT/mise/mise.lock" \
-      "$ZC_ROOT/zsh/zconf/pins" "$ZC_ROOT/tmux/.tmux.conf" \
-      "$ZC_ROOT/tmux/zconf/pins" "$ZC_ROOT/tools/npm/package.json" \
-      "$ZC_ROOT/tools/python/pyproject.toml"
+    zzd_python "$ZZD_ROOT/zzd/lib/check_pins.py" \
+      "$ZZD_ROOT/mise/mise.toml" "$ZZD_ROOT/mise/mise.lock" \
+      "$ZZD_ROOT/zsh/zzd/pins" "$ZZD_ROOT/tmux/.tmux.conf" \
+      "$ZZD_ROOT/tmux/zzd/pins" "$ZZD_ROOT/tools/npm/package.json" \
+      "$ZZD_ROOT/tools/python/pyproject.toml"
     ;;
   audit)
     need_mise
-    zc_audit "$@"
+    zzd_audit "$@"
     ;;
   upgrade)
     need_mise
-    zc_upgrade "$@"
+    zzd_upgrade "$@"
     ;;
   use)
     need_mise
-    zc_use "$@"
+    zzd_use "$@"
     ;;
   *)
     if [ "$command" = "neovim" ] && [ "${1:-}" = "check-updates" ]; then
       shift
       need_mise
       remove_owned_log
-      exec bash "$ZC_ROOT/neovim/scripts/apply_plugin_updates.sh" "$@"
+      exec bash "$ZZD_ROOT/neovim/scripts/apply_plugin_updates.sh" "$@"
     fi
-    if zc_module_known "$command" 2>/dev/null; then
+    if zzd_module_known "$command" 2>/dev/null; then
       run_phase apply "$command"
     else
-      usage_error "zconf: unknown command: $command"
+      usage_error "zzd: unknown command: $command"
     fi
     ;;
 esac

@@ -1,21 +1,21 @@
 ai_test_setup() {
   load helpers
-  zc_test_setup
+  zzd_test_setup
 
   REPO="$BATS_TEST_TMPDIR/repo"
   AI="$REPO/ai"
   export REPO AI
 
   mkdir -p "$AI/commands" "$AI/skills" "$AI/hooks"
-  cp "$ZC_ROOT/ai/sync-ai.sh" "$ZC_ROOT/ai/hook.sh" "$AI/"
-  cp -R "$ZC_ROOT/ai/lib" "$AI/lib"
+  cp "$ZZD_ROOT/ai/sync-ai.sh" "$ZZD_ROOT/ai/hook.sh" "$AI/"
+  cp -R "$ZZD_ROOT/ai/lib" "$AI/lib"
   find "$AI/lib" -name __pycache__ -prune -exec rm -rf {} +
 }
 
 ai_stub_agents() {
-  zc_stub claude 0 "2.1.330 (Claude Code)"
-  zc_stub opencode 0 "opencode v2.2.7"
-  zc_stub agy 0 "1.5.14"
+  zzd_stub claude 0 "2.1.330 (Claude Code)"
+  zzd_stub opencode 0 "opencode v2.2.7"
+  zzd_stub agy 0 "1.5.14"
 }
 
 ai_command() {
@@ -50,7 +50,7 @@ for key, value in values.items():
     text = text.replace(f"@{key}@", json.dumps(value)[1:-1])
 
 sys.stdout.write(text)
-' "$ZC_ROOT/zconf/tests/fixtures/ai/$fixture" "$REPO" "$@"
+' "$ZZD_ROOT/zzd/tests/fixtures/ai/$fixture" "$REPO" "$@"
 }
 
 ai_hook_module() {

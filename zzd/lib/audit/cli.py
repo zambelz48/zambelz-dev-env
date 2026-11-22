@@ -36,7 +36,7 @@ SCOPES = {
 
 
 def repo_root() -> Path:
-    return Path(os.environ.get("ZC_ROOT") or Path(__file__).resolve().parents[3])
+    return Path(os.environ.get("ZZD_ROOT") or Path(__file__).resolve().parents[3])
 
 
 def paths() -> inventory.Paths:
@@ -86,7 +86,7 @@ def run_inventory(scope: str, as_json: bool) -> int:
     root = paths()
 
     try:
-        catalog = Catalog(root.repo / "zconf/audit/catalog.toml")
+        catalog = Catalog(root.repo / "zzd/audit/catalog.toml")
 
         match scope:
             case "--declared":
@@ -106,7 +106,7 @@ def run_catalog(live: bool) -> int:
     root = paths()
 
     try:
-        catalog = Catalog(root.repo / "zconf/audit/catalog.toml")
+        catalog = Catalog(root.repo / "zzd/audit/catalog.toml")
         declared = inventory.declared(root, ghapi.raw_file, catalog.repo)
         installed = inventory.installed(root)
         components = [*declared.components, *installed.components]
@@ -328,7 +328,7 @@ def run_audit(flag: str, options: set[str]) -> int:
     collected = inventory.Inventory()
 
     try:
-        catalog = Catalog(root.repo / "zconf/audit/catalog.toml")
+        catalog = Catalog(root.repo / "zzd/audit/catalog.toml")
         problems = catalog.problems()
 
         for scope in SCOPES[flag]:

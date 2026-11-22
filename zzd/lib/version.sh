@@ -1,7 +1,7 @@
 # shellcheck shell=bash
 
 # True when version $1 >= $2, comparing up to three numeric components.
-zc_version_ge() {
+zzd_version_ge() {
   local IFS=.
   local -a have want
   local i a b
@@ -21,7 +21,7 @@ zc_version_ge() {
 }
 
 # bootstrap reads it before mise or Python exist, so no TOML parser.
-zc_mise_min_version() {
+zzd_mise_min_version() {
   local key value
   while read -r key _ value || [ -n "$key" ]; do
     case "$key" in
@@ -33,6 +33,6 @@ zc_mise_min_version() {
         ;;
       *) ;;
     esac
-  done <"${ZC_ROOT:?}/mise/mise.toml"
+  done <"${ZZD_ROOT:?}/mise/mise.toml"
   return 1
 }

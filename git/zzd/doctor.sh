@@ -2,13 +2,13 @@
 
 mod_doctor() {
   local current
-  current="$(git -C "${ZC_ROOT:?}" config --get core.hooksPath)" ||
+  current="$(git -C "${ZZD_ROOT:?}" config --get core.hooksPath)" ||
     current=""
   if [ "$current" = ".githooks" ]; then
-    zc_ok "core.hooksPath = .githooks"
+    zzd_ok "core.hooksPath = .githooks"
     return 0
   fi
-  zc_error "core.hooksPath is not .githooks (${current:-unset})" \
-    "zconf apply git"
+  zzd_error "core.hooksPath is not .githooks (${current:-unset})" \
+    "zzd apply git"
   return 1
 }

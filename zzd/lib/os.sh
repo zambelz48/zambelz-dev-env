@@ -18,8 +18,8 @@ _zc_os_release_value() {
   done <"$file"
 }
 
-zc_os() {
-  local kernel release="${ZC_OS_RELEASE:-/etc/os-release}" id="" id_like=""
+zzd_os() {
+  local kernel release="${ZZD_OS_RELEASE:-/etc/os-release}" id="" id_like=""
   kernel="$(uname -s)"
   case "$kernel" in
     Darwin)
@@ -43,10 +43,10 @@ zc_os() {
   esac
 }
 
-zc_login_shell() {
+zzd_login_shell() {
   local user line
   user="$(id -un)"
-  case "$(zc_os)" in
+  case "$(zzd_os)" in
     darwin)
       line="$(dscl . -read "/Users/$user" UserShell 2>/dev/null)" || line=""
       printf '%s' "${line#UserShell: }"

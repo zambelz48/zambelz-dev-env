@@ -15,7 +15,7 @@ pkg_version() {
 }
 
 pkg_install() {
-  zc_sudo apt-get install -y "$@"
+  zzd_sudo apt-get install -y "$@"
 }
 
 pkg_outdated() {
@@ -39,5 +39,5 @@ pkg_outdated() {
 }
 
 pkg_upgrade() {
-  zc_sudo apt-get install -y --only-upgrade "$@"
+  zzd_sudo apt-get install -y --only-upgrade "$@"
 }

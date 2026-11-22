@@ -1,20 +1,20 @@
 #!/usr/bin/env bats
 
 setup() {
-  if [ "${ZC_AI_LIVE:-}" != "1" ]; then
-    skip "live agent acceptance; run with ZC_AI_LIVE=1"
+  if [ "${ZZD_AI_LIVE:-}" != "1" ]; then
+    skip "live agent acceptance; run with ZZD_AI_LIVE=1"
   fi
 
-  ZC_ROOT="$(cd "$BATS_TEST_DIRNAME/../.." && pwd -P)"
+  ZZD_ROOT="$(cd "$BATS_TEST_DIRNAME/../.." && pwd -P)"
   LIVE="$(mktemp -d "${TMPDIR:-/tmp}/zambelz-ai-live.XXXXXX")"
   CLONE="$LIVE/repo"
   OUT="$LIVE/output.txt"
-  export ZC_ROOT LIVE CLONE OUT
+  export ZZD_ROOT LIVE CLONE OUT
 
-  git clone -q "$ZC_ROOT" "$CLONE"
+  git clone -q "$ZZD_ROOT" "$CLONE"
   git -C "$CLONE" config user.email live@example.invalid
   git -C "$CLONE" config user.name live
-  cat >"$CLONE/zconf/bin/zconf" <<'EOF'
+  cat >"$CLONE/zzd/bin/zzd" <<'EOF'
 #!/usr/bin/env bash
 printf '| https://osv.dev/GHSA-live-test | effect | 3.20.0 | tools/npm/pnpm-lock.yaml |\n'
 printf 'ERROR: vulnerabilities found\n'
@@ -26,7 +26,7 @@ EOF
 }
 
 teardown() {
-  if [ "${ZC_AI_LIVE:-}" != "1" ]; then
+  if [ "${ZZD_AI_LIVE:-}" != "1" ]; then
     return
   fi
 
@@ -65,7 +65,7 @@ assert_guarded() {
 @test "claude code: guards, skills and MCP work live" {
   cd "$CLONE"
 
-  run claude -p --model "${ZC_AI_LIVE_CLAUDE_MODEL:-claude-haiku-5-5}" --permission-mode acceptEdits -- "$(prompt)"
+  run claude -p --model "${ZZD_AI_LIVE_CLAUDE_MODEL:-claude-haiku-5-5}" --permission-mode acceptEdits -- "$(prompt)"
   printf '%s\n' "$output" >"$OUT"
 
   assert_guarded
@@ -74,7 +74,7 @@ assert_guarded() {
 @test "opencode: guards, skills and MCP work live" {
   cd "$CLONE"
 
-  run opencode run --standalone --archived --auto -m "${ZC_AI_LIVE_OPENCODE_MODEL:-google/gemini-3.5-flash}" "$(prompt)"
+  run opencode run --standalone --archived --auto -m "${ZZD_AI_LIVE_OPENCODE_MODEL:-google/gemini-3.5-flash}" "$(prompt)"
   printf '%s\n' "$output" >"$OUT"
 
   assert_guarded

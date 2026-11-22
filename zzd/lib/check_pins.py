@@ -61,7 +61,7 @@ def check_global_policy(config: dict) -> list[str]:
     ]
     errors += [
         f"global setting {key} applies to every project; "
-        "keep policy in [tool_config] or zconf"
+        "keep policy in [tool_config] or zzd"
         for key in setting_keys(config.get("settings", {}))
         if key not in GLOBAL_SETTINGS_ALLOWED
     ]
@@ -71,7 +71,7 @@ def check_global_policy(config: dict) -> list[str]:
 
 
 def lock_platforms(config: Path) -> list[str]:
-    text = (config.parent / "zconf" / "platforms").read_text()
+    text = (config.parent / "zzd" / "platforms").read_text()
     return [p for p in text.strip().split(",") if p]
 
 

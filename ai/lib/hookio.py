@@ -7,7 +7,7 @@ from writer import atomic_write, json_bytes
 
 SAFE_ID = re.compile(r"[^A-Za-z0-9_-]")
 CONTEXT_LIMIT = 9000
-TRUNCATED = "\n(truncated; run the command again or zconf audit --declared for the full output)"
+TRUNCATED = "\n(truncated; run the command again or zzd audit --declared for the full output)"
 
 
 @dataclass(frozen=True)

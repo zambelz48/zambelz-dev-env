@@ -2,14 +2,14 @@
 
 setup() {
   load helpers
-  zc_test_setup
-  REAL="$ZC_ROOT"
-  ZC_ROOT="$BATS_TEST_TMPDIR/repo"
-  export ZC_ROOT
-  N="$ZC_ROOT/neovim"
+  zzd_test_setup
+  REAL="$ZZD_ROOT"
+  ZZD_ROOT="$BATS_TEST_TMPDIR/repo"
+  export ZZD_ROOT
+  N="$ZZD_ROOT/neovim"
   mkdir -p "$N/lua" "$N/after/lsp" "$N/ftplugin"
-  cp -R "$REAL/zconf" "$ZC_ROOT/zconf"
-  cp -R "$REAL/neovim/zconf" "$N/zconf"
+  cp -R "$REAL/zzd" "$ZZD_ROOT/zzd"
+  cp -R "$REAL/neovim/zzd" "$N/zzd"
   printf -- '-- init\n' >"$N/init.lua"
   printf '{}\n' >"$N/.luarc.json"
   printf '{\n  "a.nvim": { "branch": "main", "commit": "%s" }\n}\n' \
@@ -31,22 +31,22 @@ EOF
   chmod +x "$GRADLE/gradlew"
   for lib in log paths exec links modules; do
     # shellcheck source=/dev/null
-    . "$ZC_ROOT/zconf/lib/$lib.sh"
+    . "$ZZD_ROOT/zzd/lib/$lib.sh"
   done
-  zc_log_init
+  zzd_log_init
   TS="$BATS_TEST_TMPDIR/treesitter"
   mkdir -p "$TS"
   fake_nvim 0 ""
-  zc_stub tree-sitter 0
-  zc_stub_script mise <<EOF
+  zzd_stub tree-sitter 0
+  zzd_stub_script mise <<EOF
 case "\$*" in
-$(zc_mise_which_branch)
+$(zzd_mise_which_branch)
   *"where java@temurin-17"*) echo "/fake/jdk17" ;;
   *) exit 0 ;;
 esac
 EOF
   # Checkouts keep their fake HEAD in .git/stub_head.
-  zc_stub_script git <<'EOF'
+  zzd_stub_script git <<'EOF'
 case "$*" in
   *"rev-parse HEAD"*)
     [ -d "$2/.git" ] || exit 128
@@ -62,7 +62,7 @@ EOF
 }
 
 fake_nvim() {
-  zc_stub_script nvim <<EOF
+  zzd_stub_script nvim <<EOF
 case "\$*" in
   "-l $N/scripts/treesitter_parsers.lua "*)
     printf '%s\n' "\${PATH%%:*}" >"$TS/path"
@@ -93,7 +93,7 @@ lazy_at() {
 }
 
 @test "apply links the neovim entries into ~/.config/nvim" {
-  run zc_module_run neovim apply
+  run zzd_module_run neovim apply
   [ "$status" -eq 0 ]
   for entry in init.lua lua after ftplugin .luarc.json; do
     [ "$(readlink "$HOME/.config/nvim/$entry")" = "$N/$entry" ]
@@ -101,49 +101,49 @@ lazy_at() {
 }
 
 @test "apply restores lazy.nvim plugins headless from the lock" {
-  run zc_module_run neovim apply
+  run zzd_module_run neovim apply
   [ "$status" -eq 0 ]
-  zc_calls nvim | grep -qx -- "--headless +Lazy! restore +qa"
+  zzd_calls nvim | grep -qx -- "--headless +Lazy! restore +qa"
 }
 
 @test "apply runs the global nvim, found through mise, not PATH" {
-  run zc_module_run neovim apply
+  run zzd_module_run neovim apply
   [ "$status" -eq 0 ]
-  zc_calls mise | grep -qx -- "-C $HOME which nvim"
+  zzd_calls mise | grep -qx -- "-C $HOME which nvim"
 }
 
 @test "apply without neovim installed is an error with the mise fix" {
-  zc_stub_script mise <<EOF
+  zzd_stub_script mise <<EOF
 case "\$*" in
   *" which nvim") exit 1 ;;
   *"where java@temurin-17"*) echo "/fake/jdk17" ;;
   *) exit 0 ;;
 esac
 EOF
-  run zc_module_run neovim apply
+  run zzd_module_run neovim apply
   [ "$status" -eq 1 ]
-  zc_contains "$output" "ERROR: neovim is not installed by mise" \
-    "fix: zconf apply mise"
-  [ -z "$(zc_calls nvim)" ]
+  zzd_contains "$output" "ERROR: neovim is not installed by mise" \
+    "fix: zzd apply mise"
+  [ -z "$(zzd_calls nvim)" ]
 }
 
 @test "apply keeps lazy.nvim restore output out of the report" {
   fake_nvim 0 "[LuaSnip] checkout | Finished task checkout"
-  run zc_module_run neovim apply
+  run zzd_module_run neovim apply
   [ "$status" -eq 0 ]
   [[ "$output" != *"LuaSnip"* ]] || false
 }
 
 @test "apply shows lazy.nvim output when the restore fails" {
   fake_nvim 1 "[LuaSnip] checkout failed"
-  run zc_module_run neovim apply
+  run zzd_module_run neovim apply
   [ "$status" -eq 1 ]
-  zc_contains "$output" "[LuaSnip] checkout failed" \
+  zzd_contains "$output" "[LuaSnip] checkout failed" \
     "ERROR: lazy.nvim restore failed"
 }
 
 @test "apply builds a missing gradle server with Java 17" {
-  run zc_module_run neovim apply
+  run zzd_module_run neovim apply
   [ "$status" -eq 0 ]
   expected="gradlew --no-daemon -q :gradle-language-server:installDist"
   grep -qx "$expected JAVA_HOME=/fake/jdk17" "$TRACE"
@@ -153,9 +153,9 @@ EOF
 }
 
 @test "apply skips the gradle build when built at the submodule's commit" {
-  zc_module_run neovim apply
+  zzd_module_run neovim apply
   rm "$TRACE"
-  run zc_module_run neovim apply
+  run zzd_module_run neovim apply
   [ "$status" -eq 0 ]
   [ ! -e "$TRACE" ]
   [[ "$output" == *"OK: gradle-language-server built at 3171aaa"* ]] ||
@@ -163,10 +163,10 @@ EOF
 }
 
 @test "apply rebuilds when the submodule moved, even to an older commit" {
-  zc_module_run neovim apply
+  zzd_module_run neovim apply
   rm "$TRACE"
   submodule_at 3150bbb
-  run zc_module_run neovim apply
+  run zzd_module_run neovim apply
   [ "$status" -eq 0 ]
   [ -s "$TRACE" ]
   [[ "$output" == *"CHANGED: built gradle-language-server at 3150bbb"* ]] ||
@@ -177,98 +177,98 @@ EOF
   mkdir -p "$(dirname "$OUT")"
   printf '#!/bin/sh\n' >"$OUT"
   chmod +x "$OUT"
-  run zc_module_run neovim apply
+  run zzd_module_run neovim apply
   [ "$status" -eq 0 ]
   [ -s "$TRACE" ]
 }
 
 @test "apply reports an uninitialized gradle submodule" {
   rm "$GRADLE/gradlew"
-  run zc_module_run neovim apply
+  run zzd_module_run neovim apply
   [ "$status" -eq 1 ]
-  fix="fix: git -C $ZC_ROOT submodule update --init"
+  fix="fix: git -C $ZZD_ROOT submodule update --init"
   fix+=" neovim/.lsp_vendors/vscode-gradle"
-  zc_contains "$output" "ERROR: vscode-gradle submodule is not checked out" \
+  zzd_contains "$output" "ERROR: vscode-gradle submodule is not checked out" \
     "$fix"
 }
 
 @test "apply fails when the gradle build fails" {
   printf '#!/usr/bin/env bash\nexit 1\n' >"$GRADLE/gradlew"
-  run zc_module_run neovim apply
+  run zzd_module_run neovim apply
   [ "$status" -eq 1 ]
   [[ "$output" == *"ERROR: gradle-language-server build failed"* ]] || false
 }
 
 @test "doctor passes when links, plugins and the gradle build are in place" {
-  zc_module_run neovim apply
+  zzd_module_run neovim apply
   lazy_at aaa111
-  run zc_module_run neovim doctor
+  run zzd_module_run neovim doctor
   [ "$status" -eq 0 ]
   [[ "$output" == *"OK: lazy.nvim plugins match lazy-lock.json (1)"* ]] ||
     false
 }
 
 @test "doctor flags a lazy plugin off its lock commit" {
-  zc_module_run neovim apply
+  zzd_module_run neovim apply
   lazy_at bbb222
-  run zc_module_run neovim doctor
+  run zzd_module_run neovim doctor
   [ "$status" -eq 1 ]
-  zc_contains "$output" "ERROR: a.nvim at bbb222, locked aaa111" \
-    "fix: zconf apply neovim"
+  zzd_contains "$output" "ERROR: a.nvim at bbb222, locked aaa111" \
+    "fix: zzd apply neovim"
 }
 
 @test "dry-run apply neither restores nor builds" {
-  ZC_DRY_RUN=1 run zc_module_run neovim apply
+  ZZD_DRY_RUN=1 run zzd_module_run neovim apply
   [ "$status" -eq 0 ]
-  [ -z "$(zc_calls nvim)" ]
+  [ -z "$(zzd_calls nvim)" ]
   [ ! -e "$TRACE" ]
   [[ "$output" != *"OK: lazy.nvim plugins restored"* ]] || false
 }
 
 @test "update runs the existing plugin update check" {
-  run zc_module_run neovim update
+  run zzd_module_run neovim update
   [ "$status" -eq 0 ]
-  zc_calls nvim | grep -qx -- "-l $N/scripts/check_plugin_updates.lua"
+  zzd_calls nvim | grep -qx -- "-l $N/scripts/check_plugin_updates.lua"
 }
 
 @test "doctor flags a gradle server built from another commit" {
-  zc_module_run neovim apply
+  zzd_module_run neovim apply
   lazy_at aaa111
   submodule_at 3150bbb
-  run zc_module_run neovim doctor
+  run zzd_module_run neovim doctor
   [ "$status" -eq 1 ]
-  zc_contains "$output" \
+  zzd_contains "$output" \
     "ERROR: gradle-language-server built at 3171aaa, submodule at 3150bbb" \
-    "fix: zconf apply neovim"
+    "fix: zzd apply neovim"
 }
 
 @test "doctor flags a missing gradle server build" {
-  zc_module_run neovim apply
+  zzd_module_run neovim apply
   lazy_at aaa111
   rm "$OUT"
-  run zc_module_run neovim doctor
+  run zzd_module_run neovim doctor
   [ "$status" -eq 1 ]
-  zc_contains "$output" "ERROR: gradle-language-server is not built" \
-    "fix: zconf apply neovim"
+  zzd_contains "$output" "ERROR: gradle-language-server is not built" \
+    "fix: zzd apply neovim"
 }
 
 @test "apply syncs treesitter parsers after the restore, tree-sitter first" {
-  run zc_module_run neovim apply
+  run zzd_module_run neovim apply
   [ "$status" -eq 0 ]
-  restore="$(zc_calls nvim | grep -n 'Lazy! restore' | cut -d: -f1)"
-  sync="$(zc_calls nvim | grep -n 'treesitter_parsers.lua sync' | cut -d: -f1)"
+  restore="$(zzd_calls nvim | grep -n 'Lazy! restore' | cut -d: -f1)"
+  sync="$(zzd_calls nvim | grep -n 'treesitter_parsers.lua sync' | cut -d: -f1)"
   [ "$restore" -lt "$sync" ]
-  zc_calls nvim | grep -qx -- \
+  zzd_calls nvim | grep -qx -- \
     "-l $N/scripts/treesitter_parsers.lua sync $LAZY/nvim-treesitter"
   [ "$(cat "$TS/path")" = "$BATS_TEST_TMPDIR/stubs" ]
-  zc_contains "$output" "OK: treesitter parsers match nvim-treesitter (2)"
+  zzd_contains "$output" "OK: treesitter parsers match nvim-treesitter (2)"
 }
 
 @test "apply reports installed and updated parsers as changes" {
   parsers_say 'installed\tvim\ninstalled\tlua\nupdated\tbash\nchecked\t3\n'
-  run zc_module_run neovim apply
+  run zzd_module_run neovim apply
   [ "$status" -eq 0 ]
-  zc_contains "$output" "CHANGED: treesitter parsers installed: vim, lua" \
+  zzd_contains "$output" "CHANGED: treesitter parsers installed: vim, lua" \
     "CHANGED: treesitter parsers updated: bash"
   [[ "$output" != *"OK: treesitter"* ]] || false
 }
@@ -277,82 +277,82 @@ EOF
   parsers_say 'missing\tvim\noutdated\tlua\tdeadbeef0000aa\t10fe0054734e99\n'
   printf 'checked\t1\n' >>"$TS/out"
   printf 'Error during "tree-sitter build"\n' >"$TS/err"
-  run zc_module_run neovim apply
+  run zzd_module_run neovim apply
   [ "$status" -eq 1 ]
-  zc_contains "$output" \
-    "ERROR: treesitter parser vim is not installed" "fix: zconf apply neovim"
-  zc_contains "$output" \
+  zzd_contains "$output" \
+    "ERROR: treesitter parser vim is not installed" "fix: zzd apply neovim"
+  zzd_contains "$output" \
     "ERROR: treesitter parser lua at deadbeef0000, nvim-treesitter wants" \
     "10fe0054734e"
-  zc_contains "$output" 'Error during "tree-sitter build"'
+  zzd_contains "$output" 'Error during "tree-sitter build"'
 }
 
 @test "apply fails when a parser task did not finish" {
   parsers_say 'failed\tupdate\ttimeout\nchecked\t2\n'
-  run zc_module_run neovim apply
+  run zzd_module_run neovim apply
   [ "$status" -eq 1 ]
-  zc_contains "$output" "ERROR: treesitter update did not finish: timeout"
+  zzd_contains "$output" "ERROR: treesitter update did not finish: timeout"
 }
 
 @test "apply fails with the logs when the parser script fails" {
   printf '1\n' >"$TS/status"
   printf 'E5113: Lua chunk: boom\n' >"$TS/err"
-  run zc_module_run neovim apply
+  run zzd_module_run neovim apply
   [ "$status" -eq 1 ]
-  zc_contains "$output" "E5113: Lua chunk: boom" \
+  zzd_contains "$output" "E5113: Lua chunk: boom" \
     "ERROR: treesitter parser sync failed"
 }
 
 @test "apply fails when the parser script prints no result" {
   : >"$TS/out"
-  run zc_module_run neovim apply
+  run zzd_module_run neovim apply
   [ "$status" -eq 1 ]
-  zc_contains "$output" "ERROR: treesitter parser sync failed"
+  zzd_contains "$output" "ERROR: treesitter parser sync failed"
 }
 
 @test "apply reports a missing nvim-treesitter checkout" {
   rmdir "$LAZY/nvim-treesitter"
-  run zc_module_run neovim apply
+  run zzd_module_run neovim apply
   [ "$status" -eq 1 ]
-  zc_contains "$output" "ERROR: nvim-treesitter is not installed" \
-    "fix: zconf apply neovim"
-  [ "$(zc_calls nvim | grep -c treesitter_parsers)" -eq 0 ]
+  zzd_contains "$output" "ERROR: nvim-treesitter is not installed" \
+    "fix: zzd apply neovim"
+  [ "$(zzd_calls nvim | grep -c treesitter_parsers)" -eq 0 ]
 }
 
 @test "apply needs the pinned tree-sitter to build parsers" {
   rm "$BATS_TEST_TMPDIR/stubs/tree-sitter"
-  zc_stub_script mise <<EOF
+  zzd_stub_script mise <<EOF
 case "\$*" in
   *" which tree-sitter") exit 1 ;;
-$(zc_mise_which_branch)
+$(zzd_mise_which_branch)
   *"where java@temurin-17"*) echo "/fake/jdk17" ;;
   *) exit 0 ;;
 esac
 EOF
-  run zc_module_run neovim apply
+  run zzd_module_run neovim apply
   [ "$status" -eq 1 ]
-  zc_contains "$output" "ERROR: tree-sitter is not installed by mise" \
-    "fix: zconf apply mise"
-  [ "$(zc_calls nvim | grep -c treesitter_parsers)" -eq 0 ]
+  zzd_contains "$output" "ERROR: tree-sitter is not installed by mise" \
+    "fix: zzd apply mise"
+  [ "$(zzd_calls nvim | grep -c treesitter_parsers)" -eq 0 ]
 }
 
 @test "doctor checks parsers read-only and reports problems" {
-  zc_module_run neovim apply
+  zzd_module_run neovim apply
   lazy_at aaa111
   parsers_say 'outdated\tjsx\tstale-queries\tqueries\nchecked\t2\n'
-  run zc_module_run neovim doctor
+  run zzd_module_run neovim doctor
   [ "$status" -eq 1 ]
-  zc_contains "$output" "ERROR: treesitter queries for jsx are out of date" \
-    "fix: zconf apply neovim"
-  zc_calls nvim | grep -qx -- \
+  zzd_contains "$output" "ERROR: treesitter queries for jsx are out of date" \
+    "fix: zzd apply neovim"
+  zzd_calls nvim | grep -qx -- \
     "-l $N/scripts/treesitter_parsers.lua check $LAZY/nvim-treesitter"
-  [ "$(zc_calls nvim | grep -c 'treesitter_parsers.lua sync')" -eq 1 ]
+  [ "$(zzd_calls nvim | grep -c 'treesitter_parsers.lua sync')" -eq 1 ]
 }
 
 @test "doctor passes parsers that match nvim-treesitter" {
-  zc_module_run neovim apply
+  zzd_module_run neovim apply
   lazy_at aaa111
-  run zc_module_run neovim doctor
+  run zzd_module_run neovim doctor
   [ "$status" -eq 0 ]
-  zc_contains "$output" "OK: treesitter parsers match nvim-treesitter (2)"
+  zzd_contains "$output" "OK: treesitter parsers match nvim-treesitter (2)"
 }

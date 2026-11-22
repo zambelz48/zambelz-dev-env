@@ -6,7 +6,7 @@ PATH="${MISE_DATA_DIR:-$HOME/.local/share/mise}/shims:$PATH"
 export PATH
 
 if ! python="$(command -v python3)"; then
-  printf 'ERROR: python3 is not installed by mise\n  fix: zconf apply mise\n' >&2
+  printf 'ERROR: python3 is not installed by mise\n  fix: zzd apply mise\n' >&2
   exit 1
 fi
 

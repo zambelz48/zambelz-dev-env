@@ -1,5 +1,5 @@
 {
-  "name": "zconf-npm-tools",
+  "name": "zzd-npm-tools",
   "private": true,
   "packageManager": "pnpm@12.22.0",
   "dependencies": {

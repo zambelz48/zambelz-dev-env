@@ -48,7 +48,7 @@ dev-plan/
 /.opencode/plugins/zambelz-dev-env/
 /.agents/plugins/zambelz-dev-env/
 
-# installed by zconf apply tools
+# installed by zzd apply tools
 tools/npm/node_modules/
 tools/python/.venv/
 

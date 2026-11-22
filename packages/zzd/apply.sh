@@ -1,6 +1,6 @@
 # shellcheck shell=bash
 # shellcheck source=common.sh
-. "${ZC_ROOT:?}/packages/zconf/common.sh"
+. "${ZZD_ROOT:?}/packages/zzd/common.sh"
 
 _pkg_keep_present() {
   local names name keep=()
@@ -14,11 +14,11 @@ _pkg_keep_present() {
     return 0
   fi
   if ! pkg_keep "${keep[@]}"; then
-    zc_error "marking ${keep[*]} as explicitly installed failed" \
-      "zconf apply packages"
+    zzd_error "marking ${keep[*]} as explicitly installed failed" \
+      "zzd apply packages"
     return 1
   fi
-  zc_changed "marked ${keep[*]} as explicitly installed"
+  zzd_changed "marked ${keep[*]} as explicitly installed"
 }
 
 _pkg_apply_manager() {
@@ -29,9 +29,9 @@ _pkg_apply_manager() {
       continue
     fi
     if _pkg_provided "$command"; then
-      zc_ok "$name (provided by $command)"
+      zzd_ok "$name (provided by $command)"
     elif pkg_is_installed "$name"; then
-      zc_ok "$name"
+      zzd_ok "$name"
       present+=("$name")
     else
       missing+=("$name")
@@ -39,10 +39,10 @@ _pkg_apply_manager() {
   done <<<"$entries"
   if [ "${#missing[@]}" -gt 0 ]; then
     if ! pkg_install "${missing[@]}"; then
-      zc_error "installing ${missing[*]} failed" "zconf apply packages"
+      zzd_error "installing ${missing[*]} failed" "zzd apply packages"
       return 1
     fi
-    zc_changed "installed ${missing[*]}"
+    zzd_changed "installed ${missing[*]}"
   fi
   _pkg_keep_present ${present[@]+"${present[@]}"}
 }

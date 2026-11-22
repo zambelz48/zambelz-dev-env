@@ -18,7 +18,7 @@ setup() {
 @test "the repository's own source loads and renders for every agent" {
   ai_stub_agents
   rm -rf "$AI/commands" "$AI/skills" "$AI/hooks"
-  cp -R "$ZC_ROOT/ai/commands" "$ZC_ROOT/ai/skills" "$ZC_ROOT/ai/hooks" "$ZC_ROOT/ai/mcp.json" "$AI/"
+  cp -R "$ZZD_ROOT/ai/commands" "$ZZD_ROOT/ai/skills" "$ZZD_ROOT/ai/hooks" "$ZZD_ROOT/ai/mcp.json" "$AI/"
 
   run "$AI/sync-ai.sh" all
 
@@ -233,7 +233,7 @@ EOF
 @test "sync-ai fails without python3" {
   MISE_DATA_DIR="$BATS_TEST_TMPDIR/no-mise"
   export MISE_DATA_DIR
-  zc_hide_command python3
+  zzd_hide_command python3
 
   run "$AI/sync-ai.sh" claude
 
@@ -244,7 +244,7 @@ EOF
 @test "hook.sh fails closed without python3" {
   MISE_DATA_DIR="$BATS_TEST_TMPDIR/no-mise"
   export MISE_DATA_DIR
-  zc_hide_command python3
+  zzd_hide_command python3
 
   run "$AI/hook.sh" claude PreToolUse
 

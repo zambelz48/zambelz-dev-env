@@ -16,7 +16,7 @@ pkg_version() {
 }
 
 pkg_install() {
-  zc_do brew install --formula "$@"
+  zzd_do brew install --formula "$@"
 }
 
 # Optional hook pair: `brew autoremove` removes formulae not installed on
@@ -35,7 +35,7 @@ pkg_unrequested() {
 }
 
 pkg_keep() {
-  zc_do brew tab --installed-on-request "$@"
+  zzd_do brew tab --installed-on-request "$@"
 }
 
 _brew_parse_outdated() {
@@ -56,5 +56,5 @@ pkg_outdated() {
 }
 
 pkg_upgrade() {
-  zc_do brew upgrade --formula "$@"
+  zzd_do brew upgrade --formula "$@"
 }

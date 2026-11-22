@@ -4,9 +4,9 @@ bats_require_minimum_version 1.5.0
 
 setup() {
   load helpers
-  zc_test_setup
+  zzd_test_setup
   PY="$MISE_DATA_DIR/shims/python3"
-  V="$ZC_ROOT/zconf/lib/versions.py"
+  V="$ZZD_ROOT/zzd/lib/versions.py"
   CFG="$BATS_TEST_TMPDIR/mise.toml"
   cat >"$CFG" <<'EOF'
 [tool_config]
@@ -22,7 +22,7 @@ marksman = "2025-11-30"
 [tools."http:jdtls"]
 version = "1.63.0"
 EOF
-  zc_stub_script mise <<'EOF'
+  zzd_stub_script mise <<'EOF'
 case "$*" in
   "latest node@24") echo 24.12.0 ;;
   "latest node@22") echo 22.12.0 ;;
@@ -70,7 +70,7 @@ outdated() {
   run --separate-stderr "$PY" "$V" set "$CFG" node 22.12.0 24.11.0
   [ "$status" -eq 1 ]
   [[ "$stderr" == *"ERROR: node 24.11.0 is already pinned"* ]] || false
-  [ "$(zc_calls mise | grep -c '^config set')" -eq 0 ]
+  [ "$(zzd_calls mise | grep -c '^config set')" -eq 0 ]
 }
 
 @test "pins of one tool sharing a major keep their own minor line" {
@@ -113,40 +113,40 @@ outdated() {
 @test "set changes only the targeted list element" {
   run "$PY" "$V" set "$CFG" node 24.11.0 24.12.0
   [ "$status" -eq 0 ]
-  [ "$(zc_calls mise | grep '^config set')" = \
+  [ "$(zzd_calls mise | grep '^config set')" = \
     "config set -f $CFG tools.node 24.12.0,22.12.0 --type list" ]
 }
 
 @test "set on a scalar writes a string" {
   run "$PY" "$V" set "$CFG" java temurin-17.0.12+7 temurin-17.0.13+11
-  [ "$(zc_calls mise | grep '^config set')" = \
+  [ "$(zzd_calls mise | grep '^config set')" = \
     "config set -f $CFG tools.java temurin-17.0.13+11 --type string" ]
 }
 
 @test "set on a table-form tool writes its version key, quoted" {
   run "$PY" "$V" set "$CFG" github:cantino/mcfly 0.9.4 0.10.0
   expected="config set -f $CFG tools.\"github:cantino/mcfly\".version"
-  [ "$(zc_calls mise | grep '^config set')" = \
+  [ "$(zzd_calls mise | grep '^config set')" = \
     "$expected 0.10.0 --type string" ]
 }
 
 @test "set refuses a version that is not pinned" {
   run "$PY" "$V" set "$CFG" node 20.0.0 20.1.0
   [ "$status" -eq 1 ]
-  [ "$(zc_calls mise | grep -c '^config set')" -eq 0 ]
+  [ "$(zzd_calls mise | grep -c '^config set')" -eq 0 ]
 }
 
 @test "use moves an existing version to the front and keeps the other" {
   run "$PY" "$V" use "$CFG" node 22.12.0
   [ "$status" -eq 0 ]
-  [ "$(zc_calls mise | grep '^config set')" = \
+  [ "$(zzd_calls mise | grep '^config set')" = \
     "config set -f $CFG tools.node 22.12.0,24.11.0 --type list" ]
 }
 
 @test "use adds a new version in front of a scalar pin" {
   run "$PY" "$V" use "$CFG" java temurin-21.0.5+11
   expected="config set -f $CFG tools.java"
-  [ "$(zc_calls mise | grep '^config set')" = \
+  [ "$(zzd_calls mise | grep '^config set')" = \
     "$expected temurin-21.0.5+11,temurin-17.0.12+7 --type list" ]
 }
 
@@ -157,13 +157,13 @@ outdated() {
     [[ "$output" == *"ERROR: node $version is not an exact version"* ]] ||
       false
   done
-  [ "$(zc_calls mise | grep -c '^config set')" -eq 0 ]
+  [ "$(zzd_calls mise | grep -c '^config set')" -eq 0 ]
 }
 
 @test "use refuses a table-form tool" {
   run "$PY" "$V" use "$CFG" github:cantino/mcfly 0.9.5
   [ "$status" -eq 1 ]
-  [ "$(zc_calls mise | grep -c '^config set')" -eq 0 ]
+  [ "$(zzd_calls mise | grep -c '^config set')" -eq 0 ]
 }
 
 # Writes a lock entry; the third word lists platforms, or none for no
@@ -182,8 +182,8 @@ lock_entry() {
 
 locked() {
   local entry
-  mkdir -p "$BATS_TEST_TMPDIR/zconf"
-  printf 'macos-arm64,linux-x64\n' >"$BATS_TEST_TMPDIR/zconf/platforms"
+  mkdir -p "$BATS_TEST_TMPDIR/zzd"
+  printf 'macos-arm64,linux-x64\n' >"$BATS_TEST_TMPDIR/zzd/platforms"
   printf '%s\n' "$1" >"$BATS_TEST_TMPDIR/before.lock"
   shift
   for entry in "${@:3}"; do

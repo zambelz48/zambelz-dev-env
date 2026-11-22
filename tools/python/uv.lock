@@ -608,7 +608,7 @@ wheels = [
 ]
 
 [[package]]
-name = "zconf-python-tools"
+name = "zzd-python-tools"
 version = "0"
 source = { virtual = "." }
 dependencies = [

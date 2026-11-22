@@ -1,7 +1,7 @@
 local utils = require('utils')
 local jdtls_path = utils.mise_where('http:jdtls')
 if jdtls_path == nil then
-  vim.notify_once('jdtls is not installed (zconf apply mise)',
+  vim.notify_once('jdtls is not installed (zzd apply mise)',
     vim.log.levels.WARN)
   return
 end

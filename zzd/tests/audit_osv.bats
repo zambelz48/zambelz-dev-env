@@ -6,7 +6,7 @@ setup() {
 
   STUB_OSV="$BATS_TEST_TMPDIR/stubs/osv-scanner"
   export STUB_OSV
-  zc_stub_script mise <<EOF
+  zzd_stub_script mise <<EOF
 printf '%s\n' "$STUB_OSV"
 EOF
   cat >"$BATS_TEST_TMPDIR/scan.json" <<'EOF'

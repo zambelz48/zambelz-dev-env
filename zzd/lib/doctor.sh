@@ -3,7 +3,7 @@
 _zc_scan_rc() {
   local name file number line trimmed
   for name in .zshrc .zprofile .zshenv .profile.zsh; do
-    file="${ZC_HOME:?}/$name"
+    file="${ZZD_HOME:?}/$name"
     if [ ! -f "$file" ]; then
       continue
     fi
@@ -15,12 +15,12 @@ _zc_scan_rc() {
         '#'*) continue ;;
         *"mise activate"*"--shims"*) ;;
         *"mise activate"*)
-          zc_warn "$file:$number runs mise activate in hook mode" \
+          zzd_warn "$file:$number runs mise activate in hook mode" \
             "remove line $number from $file"
           ;;
         *"fnm env"* | *"pyenv init"* | *"rbenv init"* | *"jenv init"* | \
           *"gvm/scripts"* | *"version-managers.zsh"*)
-          zc_warn "$file:$number loads a retired version manager" \
+          zzd_warn "$file:$number loads a retired version manager" \
             "remove line $number from $file"
           ;;
         *) ;;
@@ -41,7 +41,7 @@ _zc_shadowed() {
 }
 
 _zc_check_path() {
-  local shims="$ZC_HOME/.local/share/mise/shims" output path_line entry
+  local shims="$ZZD_HOME/.local/share/mise/shims" output path_line entry
   local seen_shims=0 status=0 entries shadowed
   output="$(zsh -i -c 'print -r -- $PATH' 2>/dev/null)" || output=""
   path_line="${output##*$'\n'}"
@@ -52,67 +52,67 @@ _zc_check_path() {
       break
     fi
     case "$entry" in
-      "$ZC_HOME/.local/share/zconf/bin") ;;
+      "$ZZD_HOME/.local/share/zzd/bin") ;;
       */.pyenv/* | */.rbenv/* | */.jenv/* | */.gvm/* | *fnm*)
-        zc_error "$entry comes before the mise shims on PATH" \
-          "zconf doctor (remove the retired manager lines it reports)"
+        zzd_error "$entry comes before the mise shims on PATH" \
+          "zzd doctor (remove the retired manager lines it reports)"
         status=1
         ;;
       *)
         shadowed="$(_zc_shadowed "$entry" "$shims")"
         if [ -n "$shadowed" ]; then
-          zc_error "$entry shadows mise shims: $shadowed" "zconf apply zsh"
+          zzd_error "$entry shadows mise shims: $shadowed" "zzd apply zsh"
           status=1
         fi
         ;;
     esac
   done
   if [ "$seen_shims" -eq 0 ]; then
-    zc_error "mise shims are not on the interactive PATH" "zconf apply mise"
+    zzd_error "mise shims are not on the interactive PATH" "zzd apply mise"
     return 1
   fi
   case ":$path_line:" in
-    *":$ZC_HOME/.local/bin:"*) ;;
+    *":$ZZD_HOME/.local/bin:"*) ;;
     *)
-      zc_error "the mise command ($ZC_HOME/.local/bin) is not on PATH" \
-        "zconf apply mise"
+      zzd_error "the mise command ($ZZD_HOME/.local/bin) is not on PATH" \
+        "zzd apply mise"
       status=1
       ;;
   esac
   if [ "$status" -eq 0 ]; then
-    zc_ok "mise shims lead the tool locations on PATH"
+    zzd_ok "mise shims lead the tool locations on PATH"
   fi
   return "$status"
 }
 
-zc_doctor_core() {
+zzd_doctor_core() {
   local status=0 os dir note
-  os="$(zc_os)"
+  os="$(zzd_os)"
   if [ "$os" = "unsupported" ]; then
-    zc_error "unsupported OS" "use macOS, Fedora or Ubuntu"
+    zzd_error "unsupported OS" "use macOS, Fedora or Ubuntu"
     status=1
   else
-    zc_ok "os: $os"
+    zzd_ok "os: $os"
   fi
-  zc_github_token
+  zzd_github_token
   if [ -n "${GITHUB_TOKEN:-}" ]; then
-    zc_ok "GitHub token available"
+    zzd_ok "GitHub token available"
   else
-    zc_warn "no GitHub token (mise downloads may hit the API rate limit)" \
+    zzd_warn "no GitHub token (mise downloads may hit the API rate limit)" \
       "gh auth login"
   fi
   _zc_check_path || status=1
   _zc_scan_rc
   for dir in .pyenv .rbenv .jenv .gvm .local/share/fnm; do
-    if [ -d "$ZC_HOME/$dir" ]; then
+    if [ -d "$ZZD_HOME/$dir" ]; then
       note="(retired; remove it manually when ready)"
-      zc_info "$ZC_HOME/$dir is present $note"
+      zzd_info "$ZZD_HOME/$dir is present $note"
     fi
   done
   return "$status"
 }
 
-zc_doctor_perf() {
+zzd_doctor_perf() {
   local samples="" ms median="unknown" hooks sorted values
   for _ in 1 2 3 4 5; do
     ms="$(zsh -c 'zmodload zsh/datetime; s=$EPOCHREALTIME
@@ -132,13 +132,13 @@ printf "%.0f\n" $(( (EPOCHREALTIME - s) * 1000 ))' 2>/dev/null)" || ms=""
     done <<<"$sorted"
     median="${values[$(((${#values[@]} - 1) / 2))]}"
   fi
-  zc_info "zsh startup median $median ms (5 runs)"
+  zzd_info "zsh startup median $median ms (5 runs)"
   hooks="$(zsh -i -c 'print -r -- $precmd_functions $chpwd_functions' \
     2>/dev/null)" || hooks=""
   case "$hooks" in
     *_mise_hook*)
-      zc_warn "mise prompt hooks are active (hook mode)" "zconf doctor"
+      zzd_warn "mise prompt hooks are active (hook mode)" "zzd doctor"
       ;;
-    *) zc_ok "no mise prompt hooks" ;;
+    *) zzd_ok "no mise prompt hooks" ;;
   esac
 }

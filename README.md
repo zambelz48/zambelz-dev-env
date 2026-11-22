@@ -8,7 +8,7 @@ Personal development environment: [Kitty](https://github.com/kovidgoyal/kitty)
 Configs live in this repository and are **symlinked** into place, so editing a
 file here changes your live config. Language runtimes, language servers and
 CLI tools are installed by [mise](https://mise.jdx.dev) at exact versions from
-a committed, multi-platform lockfile. `zconf` installs what is missing, checks
+a committed, multi-platform lockfile. `zzd` installs what is missing, checks
 the machine, reports and applies updates, and scans for vulnerabilities.
 
 ## Table of contents
@@ -57,68 +57,68 @@ only when it is not already satisfied and prints `OK:`, `CHANGED:`, `WARN:` or
 1. GitHub token: `GITHUB_TOKEN` or `gh auth token`. Without one, mise
    downloads can hit GitHub's anonymous rate limit; the step warns and goes
    on.
-1. mise at `min_version` from `mise/mise.toml`, the same step `zconf apply
+1. mise at `min_version` from `mise/mise.toml`, the same step `zzd apply
    mise` runs (see [Keeping machines in sync](#keeping-machines-in-sync)).
-1. Hands over to `zconf apply` (all modules, or only the ones you name),
+1. Hands over to `zzd apply` (all modules, or only the ones you name),
    which also checks out the git submodules.
 
 Run on its own (outside a clone), `bootstrap.sh` makes sure git exists,
 clones into `--dir` (default `~/zambelz-dev-env`) and runs the cloned copy.
 
-After bootstrap, open a new terminal. `zconf`, `mise` (in `~/.local/bin`)
+After bootstrap, open a new terminal. `zzd`, `mise` (in `~/.local/bin`)
 and the mise shims are on `PATH` (from `~/.zshenv`), in every zsh,
 interactive or not.
 
 ### Keeping machines in sync
 
-On every machine, `git pull` then `zconf apply` brings the machine to what
+On every machine, `git pull` then `zzd apply` brings the machine to what
 the repository records, whichever machine made the change:
 
 - **mise itself.** `~/.config/mise/config.toml` is a symlink into the clone,
   so a pull that raises `min_version` takes effect at once: mise then
   refuses every command, the shims and `mise self-update` included.
-  `zconf apply mise` (part of a full `zconf apply`) runs first in the mise
+  `zzd apply mise` (part of a full `zzd apply`) runs first in the mise
   module and installs exactly `min_version` into `~/.local/bin` through the
   official installer (`https://mise.run`), which verifies the release
   checksum, without calling mise. A newer mise is kept. An older mise that
   comes before `~/.local/bin` on `PATH` is reported, not replaced. Every
-  other `zconf` command stops with `fix: zconf apply mise` while mise is too
+  other `zzd` command stops with `fix: zzd apply mise` while mise is too
   old.
 - **Git submodules** under a module's directory (`zsh/`, `neovim/`) are
   checked out at the recorded commit by that module's apply; `git pull`
   alone does not move them. A submodule at a commit the repository recorded
   before is moved; one with local changes is an error; one at a commit the
   repository never recorded is your work in progress and is left alone with
-  a warning. `zconf doctor` reports each of these.
+  a warning. `zzd doctor` reports each of these.
 
 ## Commands
 
 | Command | What it does |
 | --- | --- |
-| `zconf apply [--dry-run] [module...]` | Install and link whatever is missing; changes nothing that is already right |
-| `zconf doctor [--perf] [module...]` | Read-only health check; every problem prints a `fix:` command; exit 1 on errors |
-| `zconf update [module...]` | Read-only report of newer versions (mise tools, OS packages, oh-my-zsh, tmux plugins, Neovim plugins) |
-| `zconf upgrade [--yes] [--major] [--dry-run] [tool...]` | Pick newer mise versions (fzf, or all with `--yes`), re-lock, install, upgrade OS packages, run the audit |
-| `zconf use <tool> <version>` | Make a version the global default (first in its list), re-lock, install |
-| `zconf audit [--declared\|--installed\|--all] [--json]` | Audit every pinned and installed component for known vulnerabilities; fails closed (default `--all`) |
-| `zconf check-pins` | Fail on floating or unlocked pins and on global mise settings that would leak into other projects |
-| `zconf lint` | ShellCheck, `zsh -n` and lua-language-server |
-| `zconf <module>` | Same as `zconf apply <module>` |
-| `zconf neovim check-updates` | Interactive Neovim plugin pin updates |
+| `zzd apply [--dry-run] [module...]` | Install and link whatever is missing; changes nothing that is already right |
+| `zzd doctor [--perf] [module...]` | Read-only health check; every problem prints a `fix:` command; exit 1 on errors |
+| `zzd update [module...]` | Read-only report of newer versions (mise tools, OS packages, oh-my-zsh, tmux plugins, Neovim plugins) |
+| `zzd upgrade [--yes] [--major] [--dry-run] [tool...]` | Pick newer mise versions (fzf, or all with `--yes`), re-lock, install, upgrade OS packages, run the audit |
+| `zzd use <tool> <version>` | Make a version the global default (first in its list), re-lock, install |
+| `zzd audit [--declared\|--installed\|--all] [--json]` | Audit every pinned and installed component for known vulnerabilities; fails closed (default `--all`) |
+| `zzd check-pins` | Fail on floating or unlocked pins and on global mise settings that would leak into other projects |
+| `zzd lint` | ShellCheck, `zsh -n` and lua-language-server |
+| `zzd <module>` | Same as `zzd apply <module>` |
+| `zzd neovim check-updates` | Interactive Neovim plugin pin updates |
 
 Modules, applied in this order: `packages`, `mise`, `zsh`, `kitty`, `tmux`,
-`neovim`, `git` (listed in `zconf/modules`).
+`neovim`, `git` (listed in `zzd/modules`).
 
 ## How it works
 
-- **Modules.** Each module is a `<tool>/zconf/` directory: a `links` file
+- **Modules.** Each module is a `<tool>/zzd/` directory: a `links` file
   (`repo/path<TAB>home/path` per line) and optional `apply.sh`, `doctor.sh`,
   `update.sh` and `upgrade.sh`. Adding a module means adding that directory
-  and one line in `zconf/modules`. Submodules in `.gitmodules` whose path is
+  and one line in `zzd/modules`. Submodules in `.gitmodules` whose path is
   under `<tool>/` belong to that module; its apply checks them out before
   the links.
 - **Links.** `apply` creates each symlink. A real file already at the target
-  is moved to `~/.local/state/zconf/backup/<timestamp>-<pid>.<random>/` first;
+  is moved to `~/.local/state/zzd/backup/<timestamp>-<pid>.<random>/` first;
   nothing is deleted.
 - **Fonts.** An optional `fonts` file lists mise tools (one per line) whose
   `.ttf`/`.otf`/`.ttc` files `apply` copies into `~/Library/Fonts` (macOS)
@@ -139,7 +139,7 @@ Modules, applied in this order: `packages`, `mise`, `zsh`, `kitty`, `tmux`,
   `overrides` in `pnpm-workspace.yaml` force fixed versions of dependencies
   past the tools' own ranges; each entry names the advisory it fixes.
   `apply tools` writes a small launcher per command listed in
-  `tools/zconf/bins` into `~/.local/share/zconf/bin`, which `.zshenv` and
+  `tools/zzd/bins` into `~/.local/share/zzd/bin`, which `.zshenv` and
   `.zshrc` put first on `PATH`. npm commands run on the global node, so a
   project's node version cannot break them; Python commands run with their
   venv's `bin` on `PATH`. `check-pins` rejects `npm:`, `pipx:` and `pypi:`
@@ -147,16 +147,16 @@ Modules, applied in this order: `packages`, `mise`, `zsh`, `kitty`, `tmux`,
 - **Global tools are locked; projects stay independent.** The global config
   locks only its own tools with `[tool_config] locked = true`. A project with
   its own `mise.toml` (or `.nvmrc`, `.python-version`, ...) resolves and
-  installs its own pins with mise's defaults; zconf never writes into it.
+  installs its own pins with mise's defaults; zzd never writes into it.
   mise locks a version file into the nearest config whose root contains it,
   and the global config's root defaults to `$HOME`, so a `go.mod` anywhere
   under `$HOME` would land in `mise/mise.lock`. `.zshenv` sets
   `MISE_GLOBAL_CONFIG_ROOT="$HOME/.config/mise"` to keep it out.
-  `zconf doctor` run inside such a project reports its missing tools as
+  `zzd doctor` run inside such a project reports its missing tools as
   warnings. The only global mise setting is reading those version files.
 - **OS packages** come from `packages/<manager>.txt` (one package per line,
   optionally `<TAB>command` when an existing command already provides it),
-  through adapters in `zconf/adapters/pkg/`.
+  through adapters in `zzd/adapters/pkg/`.
 
 ## Pins and updates
 
@@ -166,8 +166,8 @@ Modules, applied in this order: `packages`, `mise`, `zsh`, `kitty`, `tmux`,
 | npm language servers | exact version; full dependency graph with integrity hashes | `tools/npm/package.json`, `tools/npm/pnpm-lock.yaml` |
 | Python tools | exact version; full dependency graph with hashes | `tools/python/pyproject.toml`, `tools/python/uv.lock` |
 | mise itself | minimum version | `min_version` in `mise/mise.toml` |
-| oh-my-zsh | commit | `zsh/zconf/pins` |
-| TPM and tmux plugins | commit | `tmux/zconf/pins` |
+| oh-my-zsh | commit | `zsh/zzd/pins` |
+| TPM and tmux plugins | commit | `tmux/zzd/pins` |
 | Neovim plugins | commit | `neovim/lazy-lock.json` |
 | Zsh themes and plugins, Gradle language server | git submodule | `.gitmodules` |
 | OS packages | not pinnable | `packages/*.txt` |
@@ -182,7 +182,7 @@ all four platforms, `upgrade` and `use` put that tool back in `mise.toml` and
 the lock, report an error, and keep the other upgrades.
 
 Version files in other projects use any version they like. To make one of
-them your global default, use `zconf use <tool> <version>` with the exact
+them your global default, use `zzd use <tool> <version>` with the exact
 version.
 
 For `tools/`, `update` reports newer versions of the listed tools, and
@@ -190,11 +190,11 @@ For `tools/`, `update` reports newer versions of the listed tools, and
 tools' ranges and the overrides allow, then installs them. A tool's own
 version changes by hand: edit `package.json` and run
 `pnpm install --lockfile-only` in `tools/npm`, or edit `pyproject.toml` and
-run `uv lock` in `tools/python`, then `zconf apply tools`.
+run `uv lock` in `tools/python`, then `zzd apply tools`.
 
 ## Security audit and pre-push hook
 
-- `zconf audit --declared` audits everything the repository pins: every
+- `zzd audit --declared` audits everything the repository pins: every
   mise tool and mise itself, the npm and Python tool trees, Neovim plugins,
   Tree-sitter parsers, the libraries Neovim's release bundles, tmux plugins,
   oh-my-zsh and the git submodules. For each tool it follows what the release
@@ -202,18 +202,18 @@ run `uv lock` in `tools/python`, then `zconf apply tools`.
   `package-lock.json`, `pom.xml`, central NuGet versions), vendored and
   bundled libraries (CMake's `Utilities/`, python-build-standalone's
   libraries), submodules and `DEPS` pins.
-- `zconf audit --installed` audits what is on this machine: every mise
+- `zzd audit --installed` audits what is on this machine: every mise
   install (binaries, jars, embedded `deps.json`, Haskell packages, the
   libraries the Python interpreter loads), the cloned plugins, and the OS
   packages (`dnf advisory list --security` on Fedora, OSV by source package
   on Ubuntu, catalog sources for Homebrew). Installs nothing selects and
   mise configs tracked inside tool installs are reported as leftovers.
-- `zconf audit` (or `--all`) runs both. `--json` prints the report as JSON.
+- `zzd audit` (or `--all`) runs both. `--json` prints the report as JSON.
 - Sources: OSV (osv-scanner and the API), GitHub repository advisories, NVD
   by exact CPE plus CVE.org records for CVEs NVD has not analysed yet, the
   Node.js, rubysec and .NET security feeds, endoflife.date, and dnf. Which
-  sources apply to which component is declared in `zconf/audit/catalog.toml`;
-  `python3 -E -s zconf/lib/audit catalog --verify` checks every catalog
+  sources apply to which component is declared in `zzd/audit/catalog.toml`;
+  `python3 -E -s zzd/lib/audit catalog --verify` checks every catalog
   entry against the live services.
 - It fails closed. A component with no source is `NOT COVERED`, a source
   that cannot answer is `COULD NOT RUN`, and nothing is skipped silently.
@@ -242,19 +242,19 @@ run `uv lock` in `tools/python`, then `zconf apply tools`.
   finding. Fix a finding by upgrading the
   tool, or by forcing the fixed version in `tools/npm/pnpm-workspace.yaml`
   `overrides` (or `tools/python/pyproject.toml`), then check the tool still
-  works with `node tools/zconf/smoke/overrides.mjs` and
-  `node tools/zconf/smoke/lsp-smoke.mjs`.
+  works with `node tools/zzd/smoke/overrides.mjs` and
+  `node tools/zzd/smoke/lsp-smoke.mjs`.
 - `--gate` is the mode the gates use: it prints the same report but exits 1
   only for findings that block (not for `waiting for upstream` ones),
   uncovered components and leftovers. Every run checks for new releases
   again, so a waiting finding blocks as soon as its tool ships a release.
 
-- `zconf apply git` sets `core.hooksPath` to `.githooks`. The pre-push hook
+- `zzd apply git` sets `core.hooksPath` to `.githooks`. The pre-push hook
   then runs `check-pins`, `lint` and `audit --declared --gate` on a temporary
   checkout of the commit each pushed branch or tag points to, so uncommitted
   changes do not affect the result, and blocks the push if any fails (an
   audit that cannot run also blocks). `git push --no-verify` skips it. CI
-  runs `zconf audit --all --gate` in each container, with `NVD_API_KEY` from
+  runs `zzd audit --all --gate` in each container, with `NVD_API_KEY` from
   the repository secret.
 
 ## AI agents
@@ -307,7 +307,7 @@ cannot read, a missing `python3`) blocks the call.
 
 | Hook | When | What it does |
 | --- | --- | --- |
-| `cve-guard` | before a shell command; after any file-changing tool | Blocks `git commit` and `git push` while `zconf audit --declared --gate` reports blocking findings or cannot run. After a change to any pin file the audit reads (`mise/mise.{toml,lock}`, `tools/npm/{package.json,pnpm-lock.yaml,pnpm-workspace.yaml}`, `tools/python/{pyproject.toml,uv.lock}`, `neovim/lazy-lock.json`, `neovim/lua/treesitter_parsers.lua`, `tmux/zconf/pins`, `zsh/zconf/pins`, `.gitmodules`, `zconf/audit/catalog.toml`), runs the full audit and shows the agent the result |
+| `cve-guard` | before a shell command; after any file-changing tool | Blocks `git commit` and `git push` while `zzd audit --declared --gate` reports blocking findings or cannot run. After a change to any pin file the audit reads (`mise/mise.{toml,lock}`, `tools/npm/{package.json,pnpm-lock.yaml,pnpm-workspace.yaml}`, `tools/python/{pyproject.toml,uv.lock}`, `neovim/lazy-lock.json`, `neovim/lua/treesitter_parsers.lua`, `tmux/zzd/pins`, `zsh/zzd/pins`, `.gitmodules`, `zzd/audit/catalog.toml`), runs the full audit and shows the agent the result |
 | `dev-plan` | before a write or edit | Blocks a `dev-plan/PLAN-*.md` that misses `## MANDATORY RULES`, `## Overview`, a `## Phase <n>` with checkbox tasks, the rule phrases "Adhere to AGENTS.md", "Mark completed tasks" and "Work phase by phase", or that has an invalid checkbox list item. Edits are checked on the whole new file |
 
 - The CVE guard reads the command text: a commit hidden behind `bash -c`,
@@ -336,7 +336,7 @@ written through the `create-dev-plan` skill; research reports go to
 `tmp/docs/deep-research/`. To add a hook, write `ai/hooks/<module>.py` with a
 `handle(event)` that returns `events.deny(...)`, `events.warn(...)` or `None`,
 list it in `hooks.toml` with its events (`tool.before`, `tool.after`), add a
-test in `zconf/tests/`, and run `ai/sync-ai.sh all`. The tool names each
+test in `zzd/tests/`, and run `ai/sync-ai.sh all`. The tool names each
 agent uses are in `ai/lib/tools.py`, the one table both the wiring and the
 decoding read.
 
@@ -344,14 +344,14 @@ decoding read.
 
 - `kitty/kitty.base.conf`: tracked, shared settings.
 - `kitty/kitty.conf`: git-ignored, per-machine overrides (`font_size`). It
-  `include`s the base file and is generated once by `zconf apply kitty`;
+  `include`s the base file and is generated once by `zzd apply kitty`;
   later runs never overwrite it.
 - Hack Nerd Font comes from the mise pin `github:ryanoasis/nerd-fonts`
-  (`Hack.tar.xz`), installed by `zconf apply kitty` on macOS and Linux.
+  (`Hack.tar.xz`), installed by `zzd apply kitty` on macOS and Linux.
 
 ## Zsh
 
-- oh-my-zsh is cloned and kept at the commit in `zsh/zconf/pins`.
+- oh-my-zsh is cloned and kept at the commit in `zsh/zzd/pins`.
 - `~/.profile.zsh` holds machine-local settings; `apply` adds
   `export ZAMBELZ_DEV_ENV_PATH="<repo>"` to it if missing.
 - Helper functions live in `zsh/helpers/*.zsh` (git, tmux sessions,
@@ -362,7 +362,7 @@ decoding read.
 
 ## Neovim
 
-- `zconf apply neovim` links `init.lua`, `lua`, `after`, `ftplugin` and
+- `zzd apply neovim` links `init.lua`, `lua`, `after`, `ftplugin` and
   `.luarc.json` into `~/.config/nvim`, restores plugins from
   `neovim/lazy-lock.json` (`nvim --headless "+Lazy! restore" +qa`), brings
   the treesitter parsers to the pinned nvim-treesitter and builds the Gradle
@@ -370,11 +370,11 @@ decoding read.
 - Treesitter parsers: `neovim/lua/treesitter_parsers.lua` lists them. Neovim
   installs missing ones in the background at start-up, and lazy.nvim runs
   `:TSUpdate` after an interactive plugin update. Neither finishes in a
-  headless restore, which exits first, so `zconf apply neovim` runs
+  headless restore, which exits first, so `zzd apply neovim` runs
   `neovim/scripts/treesitter_parsers.lua sync` under `nvim -l`: it installs
   the listed parsers and updates every installed one, waiting for both
   (nvim-treesitter's documented `install():wait()` and `update():wait()`),
-  with the pinned `tree-sitter` CLI on `PATH`. `zconf doctor` runs the same
+  with the pinned `tree-sitter` CLI on `PATH`. `zzd doctor` runs the same
   script with `check`, which loads no config and installs nothing, and
   reports parsers that are missing or older than the revision the pinned
   nvim-treesitter expects (the comparison its `:TSUpdate` uses).
@@ -394,14 +394,14 @@ decoding read.
   and withdraw with `intellij-server --reset-eula`.
 - The vscode-gradle submodule stays at `3.15.0`: 3.16 and later only accept a
   named pipe, not stdio.
-- Plugin updates: `zconf neovim check-updates [filter]` compares every `tag`
+- Plugin updates: `zzd neovim check-updates [filter]` compares every `tag`
   or `commit` pin with its upstream through `git ls-remote`, then offers an
   fzf multi-select that rewrites only the chosen pins.
 
 ## Tmux
 
-- `zconf apply tmux` links `~/.tmux.conf`, keeps TPM and every plugin at the
-  commit in `tmux/zconf/pins` and installs missing plugins through TPM.
+- `zzd apply tmux` links `~/.tmux.conf`, keeps TPM and every plugin at the
+  commit in `tmux/zzd/pins` and installs missing plugins through TPM.
 - tmux itself is an OS package. The config sets tmux 3.8's theme colours
   for menus and trees; older tmux, such as Ubuntu 26.04's 3.6a, loads the
   config without them.
@@ -414,18 +414,18 @@ decoding read.
 
 ```
 .
-├── bootstrap.sh          # fresh machine or clone: prerequisites, mise, zconf apply
-├── zconf/
-│   ├── bin/              # zconf, lint
+├── bootstrap.sh          # fresh machine or clone: prerequisites, mise, zzd apply
+├── zzd/
+│   ├── bin/              # zzd, lint
 │   ├── lib/              # core shell library and Python helpers
 │   ├── adapters/pkg/     # brew, brew-cask, dnf, apt
 │   ├── modules           # module order
-│   └── tests/            # bats suites; run with zconf/tests/run
+│   └── tests/            # bats suites; run with zzd/tests/run
 ├── packages/             # OS package lists per manager
 ├── mise/                 # mise.toml, mise.lock
 ├── tools/                # npm and Python tools: manifests, locks, overrides
-│   └── zconf/            # module, command list, smoke tests
-├── zsh/ kitty/ tmux/ neovim/ git/   # configs, each with a zconf/ module dir
+│   └── zzd/            # module, command list, smoke tests
+├── zsh/ kitty/ tmux/ neovim/ git/   # configs, each with a zzd/ module dir
 ├── ai/                   # agent setup: sync-ai.sh, hook.sh, commands, skills, hooks, MCP
 ├── .githooks/pre-push
 └── AGENTS.md             # rules for AI coding agents
@@ -433,17 +433,17 @@ decoding read.
 
 ## Development
 
-- Tests: `zconf/tests/run` (bats-core, pinned through mise, run under macOS's
+- Tests: `zzd/tests/run` (bats-core, pinned through mise, run under macOS's
   `/bin/bash` 3.2). Tests tagged `network` call the real osv-scanner.
-- AI agents, live: `ZC_AI_LIVE=1 zconf/tests/run zconf/tests/ai_live.bats`
+- AI agents, live: `ZZD_AI_LIVE=1 zzd/tests/run zzd/tests/ai_live.bats`
   clones the committed repository into a fresh temporary directory (kept for
   inspection only when a test fails), syncs every agent and drives
   Claude Code, OpenCode and Antigravity headless against the hooks, skills and
   MCP server. It needs the agents installed and signed in, and spends model
-  usage; `ZC_AI_LIVE_CLAUDE_MODEL` and `ZC_AI_LIVE_OPENCODE_MODEL` pick the
+  usage; `ZZD_AI_LIVE_CLAUDE_MODEL` and `ZZD_AI_LIVE_OPENCODE_MODEL` pick the
   models. Run it after an agent upgrade, then update `TESTED_VERSION`.
-- Lint: `zconf lint`.
-- Health: `zconf doctor`.
+- Lint: `zzd lint`.
+- Health: `zzd doctor`.
 - CI: `.github/workflows/ci.yml` bootstraps a fresh `fedora:44` and
   `ubuntu:26.04` container on every push to `main` and every pull request
   into it, then runs doctor, a second apply that must change nothing, the

@@ -57,7 +57,7 @@ setup() {
 }
 
 @test "a catalog without the repositories the inventory needs stops it" {
-  printf '' >"$REPO/zconf/audit/catalog.toml"
+  printf '' >"$REPO/zzd/audit/catalog.toml"
 
   run audit_engine inventory --declared
 
@@ -126,7 +126,7 @@ EOF
   ]
 }
 EOF
-  zc_stub_script mise <<EOF
+  zzd_stub_script mise <<EOF
 case "\$*" in
   *--prunable*)
     cat "$BATS_TEST_TMPDIR/prunable.json"
@@ -139,11 +139,11 @@ case "\$*" in
     ;;
 esac
 EOF
-  ZC_OS_RELEASE="$BATS_TEST_TMPDIR/os-release"
-  printf 'ID=fedora\n' >"$ZC_OS_RELEASE"
+  ZZD_OS_RELEASE="$BATS_TEST_TMPDIR/os-release"
+  printf 'ID=fedora\n' >"$ZZD_OS_RELEASE"
   printf 'git\nmissing-pkg\n# comment\n\n' >"$REPO/packages/dnf.txt"
-  zc_stub uname 0 "Linux"
-  zc_stub_script rpm <<'EOF'
+  zzd_stub uname 0 "Linux"
+  zzd_stub_script rpm <<'EOF'
 case "$*" in
   *git)
     printf '(none):2.56.1-1.fc45'
@@ -154,7 +154,7 @@ case "$*" in
     ;;
 esac
 EOF
-  export FAKE_MISE ZC_OS_RELEASE
+  export FAKE_MISE ZZD_OS_RELEASE
 }
 
 @test "the installed inventory classifies unpinned installs" {
@@ -178,7 +178,7 @@ EOF
   [ "$(grep -c "mise tracks" <<<"$output")" = "1" ]
 }
 
-@test "the installed inventory lists OS packages through zconf's own OS detection" {
+@test "the installed inventory lists OS packages through zzd's own OS detection" {
   installed_fixture
 
   MISE_DATA_DIR="$FAKE_MISE" run audit_engine inventory --installed
@@ -189,12 +189,12 @@ EOF
 
 @test "an unsupported OS stops the installed inventory" {
   installed_fixture
-  printf 'ID=arch\n' >"$ZC_OS_RELEASE"
+  printf 'ID=arch\n' >"$ZZD_OS_RELEASE"
 
   MISE_DATA_DIR="$FAKE_MISE" run audit_engine inventory --installed
 
   [ "$status" -eq 3 ]
-  [[ "$output" == *"not supported by zconf"* ]]
+  [[ "$output" == *"not supported by zzd"* ]]
 }
 
 @test "the inventory command rejects unknown arguments" {

@@ -1,6 +1,6 @@
 # shellcheck shell=bash
 # shellcheck source=common.sh
-. "${ZC_ROOT:?}/tmux/zconf/common.sh"
+. "${ZZD_ROOT:?}/tmux/zzd/common.sh"
 
 mod_doctor() {
   local status=0 plugins plugin commit head dir
@@ -15,11 +15,11 @@ mod_doctor() {
       continue
     fi
     dir="$(_tmux_dir "$plugin")"
-    head="$(zc_git_head "$dir")" || head=""
+    head="$(zzd_git_head "$dir")" || head=""
     if [ "$head" = "$commit" ]; then
-      zc_ok "$plugin at $commit"
+      zzd_ok "$plugin at $commit"
     else
-      zc_error "$plugin at ${head:-missing}, pinned $commit" "zconf apply tmux"
+      zzd_error "$plugin at ${head:-missing}, pinned $commit" "zzd apply tmux"
       status=1
     fi
   done <<<"$plugins"

@@ -18,7 +18,7 @@ pkg_version() {
 }
 
 pkg_install() {
-  zc_sudo dnf install -y "$@"
+  zzd_sudo dnf install -y "$@"
 }
 
 pkg_outdated() {
@@ -34,5 +34,5 @@ pkg_outdated() {
 }
 
 pkg_upgrade() {
-  zc_sudo dnf upgrade -y "$@"
+  zzd_sudo dnf upgrade -y "$@"
 }

@@ -5,9 +5,9 @@ argument-hint: "[declared|installed|all]"
 
 From the repository root, run one of these:
 
-- `zconf/bin/zconf audit --declared` when `$ARGUMENTS` says `declared`;
-- `zconf/bin/zconf audit --installed` when it says `installed`;
-- `zconf/bin/zconf audit --all` otherwise, including when it is empty.
+- `zzd/bin/zzd audit --declared` when `$ARGUMENTS` says `declared`;
+- `zzd/bin/zzd audit --installed` when it says `installed`;
+- `zzd/bin/zzd audit --all` otherwise, including when it is empty.
 
 Then report:
 

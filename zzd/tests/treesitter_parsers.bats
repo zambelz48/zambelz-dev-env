@@ -2,11 +2,11 @@
 
 setup() {
   load helpers
-  zc_test_setup
-  NVIM_BIN="$("$ZC_REAL_MISE" which nvim)"
+  zzd_test_setup
+  NVIM_BIN="$("$ZZD_REAL_MISE" which nvim)"
   R="$BATS_TEST_TMPDIR/repo/neovim"
   mkdir -p "$R/scripts" "$R/lua"
-  cp "$ZC_ROOT/neovim/scripts/treesitter_parsers.lua" "$R/scripts/"
+  cp "$ZZD_ROOT/neovim/scripts/treesitter_parsers.lua" "$R/scripts/"
   printf "return { 'lua', 'tsx' }\n" >"$R/lua/treesitter_parsers.lua"
   PLUGIN="$BATS_TEST_TMPDIR/nvim-treesitter"
   SITE="$BATS_TEST_TMPDIR/site"
@@ -176,7 +176,7 @@ parsers() {
   FAKE_TS_FAIL=install parsers sync
   [ "$status" -eq 0 ]
   [ "${lines[0]}" = "$(printf 'failed\tinstall\tboom')" ]
-  zc_contains "$output" "$(printf 'missing\tlua')"
+  zzd_contains "$output" "$(printf 'missing\tlua')"
 }
 
 @test "the parser list comes from the repository, not the runtimepath" {
@@ -185,11 +185,11 @@ parsers() {
   parsers check
   [ "$status" -eq 0 ]
   [[ "$output" != *"decoy"* ]] || false
-  zc_contains "$output" "$(printf 'missing\tlua')"
+  zzd_contains "$output" "$(printf 'missing\tlua')"
 }
 
 @test "an unknown mode is an error" {
   parsers frobnicate
   [ "$status" -ne 0 ]
-  zc_contains "$output" "usage: nvim -l treesitter_parsers.lua check|sync"
+  zzd_contains "$output" "usage: nvim -l treesitter_parsers.lua check|sync"
 }

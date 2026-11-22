@@ -55,19 +55,19 @@ jobs:
         run: bash "$HOME/zambelz-dev-env/bootstrap.sh"
 
       - name: Doctor
-        run: zsh -c 'zconf doctor'
+        run: zsh -c 'zzd doctor'
 
       - name: Second apply changes nothing
         run: |
-          out="$(zsh -c 'zconf apply' 2>&1)"
+          out="$(zsh -c 'zzd apply' 2>&1)"
           printf '%s\n' "$out"
           grep -q '^Summary: 0 changed,' <<<"$out"
 
       - name: Tests, lint, pins and audit
         run: |
           cd "$HOME/zambelz-dev-env"
-          zsh -c 'zconf/tests/run && zconf lint && zconf check-pins &&
-            zconf audit --all --gate'
+          zsh -c 'zzd/tests/run && zzd lint && zzd check-pins &&
+            zzd audit --all --gate'
 
       - name: AI agent setup renders and stays in sync
         run: |
@@ -77,8 +77,8 @@ jobs:
       - name: Language servers start and overrides hold
         run: |
           cd "$HOME/zambelz-dev-env"
-          zsh -c 'node tools/zconf/smoke/overrides.mjs &&
-            node tools/zconf/smoke/lsp-smoke.mjs'
+          zsh -c 'node tools/zzd/smoke/overrides.mjs &&
+            node tools/zzd/smoke/lsp-smoke.mjs'
 
       - name: Neovim loads its config
         run: zsh -c 'nvim --headless +qa'

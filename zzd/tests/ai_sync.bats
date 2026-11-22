@@ -66,12 +66,12 @@ print(json.dumps(data))
 }
 
 @test "a generated command keeps its description and body" {
-  ai_command audit "Audit: the pinned tools" "Run zconf audit \$ARGUMENTS."
+  ai_command audit "Audit: the pinned tools" "Run zzd audit \$ARGUMENTS."
 
   run "$AI/sync-ai.sh" claude
 
   [ "$status" -eq 0 ]
-  [ "$(cat "$REPO/.claude/commands/audit.md")" = "$(printf -- "---\ndescription: \"Audit: the pinned tools\"\n---\n\nRun zconf audit \$ARGUMENTS.")" ]
+  [ "$(cat "$REPO/.claude/commands/audit.md")" = "$(printf -- "---\ndescription: \"Audit: the pinned tools\"\n---\n\nRun zzd audit \$ARGUMENTS.")" ]
 }
 
 mtime_ns() {
@@ -226,7 +226,7 @@ mtime_ns() {
 }
 
 @test "sync warns when the installed agent differs from the tested version" {
-  zc_stub claude 0 "9.9.9 (Claude Code)"
+  zzd_stub claude 0 "9.9.9 (Claude Code)"
 
   run "$AI/sync-ai.sh" claude
 
@@ -236,7 +236,7 @@ mtime_ns() {
 
 @test "sync warns when the agent is not installed" {
   rm "$BATS_TEST_TMPDIR/stubs/claude"
-  zc_hide_command claude
+  zzd_hide_command claude
 
   run "$AI/sync-ai.sh" claude
 
@@ -472,7 +472,7 @@ EOF
 }
 
 @test "antigravity runs agy plugin validate after a sync" {
-  zc_stub_script agy <<'EOF'
+  zzd_stub_script agy <<'EOF'
 if [ "$1" = "--version" ]; then
   echo 1.5.14
   exit 0
@@ -488,7 +488,7 @@ EOF
 }
 
 @test "a failing agy plugin validate fails the sync" {
-  zc_stub_script agy <<'EOF'
+  zzd_stub_script agy <<'EOF'
 if [ "$1" = "--version" ]; then
   echo 1.5.14
   exit 0

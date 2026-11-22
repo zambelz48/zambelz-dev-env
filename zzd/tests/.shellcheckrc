@@ -6,7 +6,7 @@ enable=all
 disable=SC2250
 # Repo style is POSIX [ ] tests, as in every existing script.
 disable=SC2292
-# bats and helpers.bash assign status, output, lines, BATS_* and ZC_*.
+# bats and helpers.bash assign status, output, lines, BATS_* and ZZD_*.
 disable=SC2154
 # Substitutions inside bats assertions are checked by the assertion itself.
 disable=SC2312

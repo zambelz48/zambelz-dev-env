@@ -1,6 +1,6 @@
 # shellcheck shell=bash
 # shellcheck source=common.sh
-. "${ZC_ROOT:?}/packages/zconf/common.sh"
+. "${ZZD_ROOT:?}/packages/zzd/common.sh"
 
 _pkg_doctor_manager() {
   local manager="$1" entries name command version status=0 present=()
@@ -11,21 +11,21 @@ _pkg_doctor_manager() {
       continue
     fi
     if _pkg_provided "$command"; then
-      zc_ok "$name (provided by $command)"
+      zzd_ok "$name (provided by $command)"
     elif pkg_is_installed "$name"; then
       version="$(pkg_version "$name")"
-      zc_ok "$name $version (system-managed)"
+      zzd_ok "$name $version (system-managed)"
       present+=("$name")
     else
-      zc_error "$name is not installed" "zconf apply packages"
+      zzd_error "$name is not installed" "zzd apply packages"
       status=1
     fi
   done <<<"$entries"
   unrequested="$(_pkg_unrequested ${present[@]+"${present[@]}"})"
   while IFS= read -r name; do
     if [ -n "$name" ]; then
-      zc_warn "$name is installed only as a dependency; cleanup may remove it" \
-        "zconf apply packages"
+      zzd_warn "$name is installed only as a dependency; cleanup may remove it" \
+        "zzd apply packages"
     fi
   done <<<"$unrequested"
   return "$status"

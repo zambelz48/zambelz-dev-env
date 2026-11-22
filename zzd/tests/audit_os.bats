@@ -4,9 +4,9 @@ setup() {
   load audit_helpers
   audit_test_setup
 
-  ZC_OS_RELEASE="$BATS_TEST_TMPDIR/os-release"
-  export ZC_OS_RELEASE
-  printf 'ID=fedora\nVERSION_ID=45\n' >"$ZC_OS_RELEASE"
+  ZZD_OS_RELEASE="$BATS_TEST_TMPDIR/os-release"
+  export ZZD_OS_RELEASE
+  printf 'ID=fedora\nVERSION_ID=45\n' >"$ZZD_OS_RELEASE"
 }
 
 distro_py() {
@@ -22,7 +22,7 @@ $1
 }
 
 @test "each pending dnf security advisory is a finding on its package, or on the host for other packages" {
-  zc_stub_script dnf <<'EOF'
+  zzd_stub_script dnf <<'EOF'
 cat <<'JSON'
 [
   {
@@ -55,7 +55,7 @@ for f in distro.dnf([package("tmux", "0:3.6-1.fc45", manager="dnf")]):
 }
 
 @test "no pending dnf security advisories is clean" {
-  zc_stub dnf 0 "[]"
+  zzd_stub dnf 0 "[]"
 
   run distro_py 'print(distro.dnf([]))'
 
@@ -63,17 +63,17 @@ for f in distro.dnf([package("tmux", "0:3.6-1.fc45", manager="dnf")]):
 }
 
 @test "a dnf failure, invalid JSON or a changed format is an error" {
-  zc_stub dnf 1 "Failed to download metadata"
+  zzd_stub dnf 1 "Failed to download metadata"
   run distro_py 'distro.dnf([])'
   [ "$status" -ne 0 ]
   [[ "$output" == *"dnf advisory list exited 1"* ]]
 
-  zc_stub dnf 0 "not json"
+  zzd_stub dnf 0 "not json"
   run distro_py 'distro.dnf([])'
   [ "$status" -ne 0 ]
   [[ "$output" == *"returned invalid JSON"* ]]
 
-  zc_stub dnf 0 '[{"name": "FEDORA-1", "type": "security"}]'
+  zzd_stub dnf 0 '[{"name": "FEDORA-1", "type": "security"}]'
   run distro_py 'distro.dnf([])'
   [ "$status" -ne 0 ]
   [[ "$output" == *"missing severity, nevra; the dnf output format changed"* ]]
@@ -95,7 +95,7 @@ except distro.SourceError as error:
 }
 
 @test "Ubuntu packages are queried in OSV by source package name and source version" {
-  printf 'ID=ubuntu\nVERSION_ID="26.04"\nVERSION="26.04 LTS (Resolute Raccoon)"\n' >"$ZC_OS_RELEASE"
+  printf 'ID=ubuntu\nVERSION_ID="26.04"\nVERSION="26.04 LTS (Resolute Raccoon)"\n' >"$ZZD_OS_RELEASE"
 
   run distro_py '
 sent = []
@@ -114,7 +114,7 @@ print([(f.component.name, f.id) for f in found])
 }
 
 @test "an Ubuntu package without its source package is an error, never a clean query" {
-  printf 'ID=ubuntu\nVERSION_ID=26.04\nVERSION="26.04 LTS"\n' >"$ZC_OS_RELEASE"
+  printf 'ID=ubuntu\nVERSION_ID=26.04\nVERSION="26.04 LTS"\n' >"$ZZD_OS_RELEASE"
 
   run distro_py 'distro.apt([package("fd-find", "10.2.0-1", manager="apt")])'
 
@@ -123,7 +123,7 @@ print([(f.component.name, f.id) for f in found])
 }
 
 @test "the apt inventory records each package's source package" {
-  zc_stub_script dpkg-query <<'EOF'
+  zzd_stub_script dpkg-query <<'EOF'
 case "$*" in
   *source:Package*) printf 'rust-fd-find\t10.2.0-1' ;;
   *) printf '10.2.0-1' ;;
@@ -141,7 +141,7 @@ print(inventory._package_version('apt', 'fd-find'), inventory._package_details('
 }
 
 @test "an apt package whose source package cannot be read is an error" {
-  zc_stub dpkg-query 1 ""
+  zzd_stub dpkg-query 1 ""
 
   run "$PY" -E -s -c "
 import sys
@@ -160,7 +160,7 @@ inventory._package_details('apt', 'fd-find')
     skip "dnf is not installed on this machine"
   fi
 
-  run env HOME="$REAL_HOME" PATH="$REAL_PATH" ZC_OS_RELEASE=/etc/os-release "$PY" -E -s -c "
+  run env HOME="$REAL_HOME" PATH="$REAL_PATH" ZZD_OS_RELEASE=/etc/os-release "$PY" -E -s -c "
 import sys
 sys.path.insert(1, '$ENGINE')
 from sources import distro

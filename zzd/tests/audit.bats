@@ -2,21 +2,21 @@
 
 setup() {
   load helpers
-  zc_test_setup
-  REAL="$ZC_ROOT"
-  ZC_ROOT="$BATS_TEST_TMPDIR/repo"
-  export ZC_ROOT
-  mkdir -p "$ZC_ROOT/zconf/lib/audit"
+  zzd_test_setup
+  REAL="$ZZD_ROOT"
+  ZZD_ROOT="$BATS_TEST_TMPDIR/repo"
+  export ZZD_ROOT
+  mkdir -p "$ZZD_ROOT/zzd/lib/audit"
   for lib in log paths os exec audit; do
     # shellcheck source=/dev/null
-    . "$REAL/zconf/lib/$lib.sh"
+    . "$REAL/zzd/lib/$lib.sh"
   done
-  zc_log_init
-  zc_stub_mise_passthrough
+  zzd_log_init
+  zzd_stub_mise_passthrough
 }
 
 stub_engine() {
-  cat >"$ZC_ROOT/zconf/lib/audit/__main__.py" <<EOF
+  cat >"$ZZD_ROOT/zzd/lib/audit/__main__.py" <<EOF
 import sys
 open("$BATS_TEST_TMPDIR/engine-args", "w").write(" ".join(sys.argv[1:]))
 print("REPORT")
@@ -27,7 +27,7 @@ EOF
 @test "the audit runs every scope by default" {
   stub_engine 0
 
-  run zc_audit
+  run zzd_audit
 
   [ "$status" -eq 0 ]
   [ "$(cat "$BATS_TEST_TMPDIR/engine-args")" = "audit --all" ]
@@ -37,7 +37,7 @@ EOF
 @test "the scope and json flags are passed to the engine" {
   stub_engine 0
 
-  run zc_audit --declared --json
+  run zzd_audit --declared --json
 
   [ "$(cat "$BATS_TEST_TMPDIR/engine-args")" = "audit --declared --json" ]
 }
@@ -45,7 +45,7 @@ EOF
 @test "json output keeps the status line off stdout" {
   stub_engine 1
 
-  run --separate-stderr zc_audit --installed --json
+  run --separate-stderr zzd_audit --installed --json
 
   [ "$status" -eq 1 ]
   [ "$output" = "REPORT" ]
@@ -55,17 +55,17 @@ EOF
 @test "findings exit 1 with the fix route" {
   stub_engine 1
 
-  run zc_audit --declared
+  run zzd_audit --declared
 
   [ "$status" -eq 1 ]
-  zc_contains "$output" "ERROR: the audit found vulnerabilities, uncovered components or leftover installs" \
+  zzd_contains "$output" "ERROR: the audit found vulnerabilities, uncovered components or leftover installs" \
     "fix: follow each finding's Action line"
 }
 
 @test "an engine that could not run exits 3" {
   stub_engine 3
 
-  run zc_audit --declared
+  run zzd_audit --declared
 
   [ "$status" -eq 3 ]
   [[ "$output" == *"ERROR: the audit could not run (exit 3); nothing was proven clean"* ]]
@@ -74,39 +74,39 @@ EOF
 @test "an unexpected engine exit code is could-not-run, never findings or clean" {
   stub_engine 7
 
-  run zc_audit --declared
+  run zzd_audit --declared
 
   [ "$status" -eq 3 ]
 }
 
 @test "a missing python exits 3 with the apply fix" {
-  zc_stub_script mise <<EOF
+  zzd_stub_script mise <<EOF
 case "\$*" in
   *" which python3") exit 1 ;;
-  *) exec "$ZC_REAL_MISE" "\$@" ;;
+  *) exec "$ZZD_REAL_MISE" "\$@" ;;
 esac
 EOF
 
-  run zc_audit --declared
+  run zzd_audit --declared
 
   [ "$status" -eq 3 ]
-  zc_contains "$output" "python3 is not installed by mise" "fix: zconf apply mise"
+  zzd_contains "$output" "python3 is not installed by mise" "fix: zzd apply mise"
 }
 
 @test "an unknown argument exits 2" {
   stub_engine 0
 
-  run zc_audit --everything
+  run zzd_audit --everything
 
   [ "$status" -eq 2 ]
   [[ "$output" == *"ERROR: unknown audit argument: --everything"* ]]
 }
 
 @test "an engine crash is reported as could not run" {
-  cp -R "$REAL/zconf/lib/audit/." "$ZC_ROOT/zconf/lib/audit/"
-  printf 'raise RuntimeError("boom")\n' >"$ZC_ROOT/zconf/lib/audit/engine.py"
+  cp -R "$REAL/zzd/lib/audit/." "$ZZD_ROOT/zzd/lib/audit/"
+  printf 'raise RuntimeError("boom")\n' >"$ZZD_ROOT/zzd/lib/audit/engine.py"
 
-  run zc_audit --declared
+  run zzd_audit --declared
 
   [ "$status" -eq 3 ]
 }

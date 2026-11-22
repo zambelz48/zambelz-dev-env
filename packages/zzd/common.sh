@@ -6,16 +6,16 @@ _pkg_managers() {
     if [ "$line_os" = "$os" ]; then
       printf '%s\n' "$manager"
     fi
-  done <"${ZC_ROOT:?}/packages/zconf/managers"
+  done <"${ZZD_ROOT:?}/packages/zzd/managers"
 }
 
 _pkg_entries() {
   local line
   while IFS= read -r line || [ -n "$line" ]; do
-    if zc_is_data_line "$line"; then
+    if zzd_is_data_line "$line"; then
       printf '%s\n' "$line"
     fi
-  done <"${ZC_ROOT:?}/packages/$1.txt"
+  done <"${ZZD_ROOT:?}/packages/$1.txt"
 }
 
 _pkg_provided() {
@@ -43,9 +43,9 @@ _pkg_outdated_listed() {
 
 _pkg_for_each_manager() {
   local action="$1" os managers manager status=0
-  os="$(zc_os)"
+  os="$(zzd_os)"
   if [ "$os" = "unsupported" ]; then
-    zc_error "unsupported OS" "use macOS, Fedora or Ubuntu"
+    zzd_error "unsupported OS" "use macOS, Fedora or Ubuntu"
     return 1
   fi
   managers="$(_pkg_managers "$os")"
@@ -55,9 +55,9 @@ _pkg_for_each_manager() {
     fi
     (
       # shellcheck source=/dev/null
-      . "$ZC_ROOT/zconf/adapters/pkg/$manager.sh"
+      . "$ZZD_ROOT/zzd/adapters/pkg/$manager.sh"
       if ! pkg_available; then
-        zc_error "$manager is not available" "$ZC_ROOT/bootstrap.sh"
+        zzd_error "$manager is not available" "$ZZD_ROOT/bootstrap.sh"
         exit 1
       fi
       "$action" "$manager"

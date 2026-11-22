@@ -82,25 +82,25 @@ bs_raw() {
   exec bash "$BS_DIR/bootstrap.sh" ${BS_MODULES[@]+"${BS_MODULES[@]}"}
 }
 
-if [ ! -f "$bs_root/zconf/lib/log.sh" ]; then
+if [ ! -f "$bs_root/zzd/lib/log.sh" ]; then
   bs_raw
 fi
 
-ZC_ROOT="$bs_root"
-export ZC_ROOT
+ZZD_ROOT="$bs_root"
+export ZZD_ROOT
 for lib in log paths os exec version misebin; do
   # shellcheck source=/dev/null
-  . "$ZC_ROOT/zconf/lib/$lib.sh"
+  . "$ZZD_ROOT/zzd/lib/$lib.sh"
 done
-zc_log_init
+zzd_log_init
 
 bs_os() {
-  BS_OS="$(zc_os)"
+  BS_OS="$(zzd_os)"
   if [ "$BS_OS" = "unsupported" ]; then
-    zc_error "unsupported OS" "use macOS, Fedora or Ubuntu"
+    zzd_error "unsupported OS" "use macOS, Fedora or Ubuntu"
     return 1
   fi
-  zc_ok "os: $BS_OS"
+  zzd_ok "os: $BS_OS"
 }
 
 bs_brew_env() {
@@ -118,7 +118,7 @@ bs_brew_env() {
 bs_homebrew() {
   local installer
   if command -v brew >/dev/null 2>&1 || bs_brew_env; then
-    zc_ok "Homebrew"
+    zzd_ok "Homebrew"
     return 0
   fi
   if _zc_dry_run; then
@@ -127,23 +127,23 @@ bs_homebrew() {
   fi
   installer="$(curl -fsSL \
     https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)" || {
-    zc_error "cannot download the Homebrew installer" "https://brew.sh"
+    zzd_error "cannot download the Homebrew installer" "https://brew.sh"
     return 1
   }
   if ! /bin/bash -c "$installer" || ! bs_brew_env; then
-    zc_error "Homebrew install failed" "https://brew.sh"
+    zzd_error "Homebrew install failed" "https://brew.sh"
     return 1
   fi
-  zc_changed "installed Homebrew"
+  zzd_changed "installed Homebrew"
 }
 
 bs_darwin_tools() {
   if xcode-select -p >/dev/null 2>&1; then
-    zc_ok "Xcode Command Line Tools"
+    zzd_ok "Xcode Command Line Tools"
   else
-    zc_do xcode-select --install
-    zc_error "Xcode Command Line Tools are not installed" \
-      "finish the installer that just opened, then rerun $ZC_ROOT/bootstrap.sh"
+    zzd_do xcode-select --install
+    zzd_error "Xcode Command Line Tools are not installed" \
+      "finish the installer that just opened, then rerun $ZZD_ROOT/bootstrap.sh"
     return 1
   fi
   bs_homebrew
@@ -164,34 +164,34 @@ bs_linux_tools() {
     fi
   done
   if [ "${#missing[@]}" -eq 0 ]; then
-    zc_ok "zsh, git, curl and chsh"
+    zzd_ok "zsh, git, curl and chsh"
     return 0
   fi
   case "$BS_OS" in
-    fedora) zc_sudo dnf install -y "${missing[@]}" ;;
-    *) zc_sudo apt-get update && zc_sudo apt-get install -y "${missing[@]}" ;;
+    fedora) zzd_sudo dnf install -y "${missing[@]}" ;;
+    *) zzd_sudo apt-get update && zzd_sudo apt-get install -y "${missing[@]}" ;;
   esac || {
-    zc_error "could not install ${missing[*]}"
+    zzd_error "could not install ${missing[*]}"
     return 1
   }
-  zc_changed "installed ${missing[*]}"
+  zzd_changed "installed ${missing[*]}"
 }
 
 bs_login_shell() {
   local shell zsh
-  shell="$(zc_login_shell)"
+  shell="$(zzd_login_shell)"
   case "$shell" in
     */zsh)
-      zc_ok "login shell is $shell"
+      zzd_ok "login shell is $shell"
       return 0
       ;;
     *) ;;
   esac
   zsh="$(command -v zsh)"
-  if zc_do chsh -s "$zsh"; then
-    zc_changed "login shell ${shell:-unknown} -> $zsh"
+  if zzd_do chsh -s "$zsh"; then
+    zzd_changed "login shell ${shell:-unknown} -> $zsh"
   else
-    zc_error "could not change the login shell" "chsh -s $zsh"
+    zzd_error "could not change the login shell" "chsh -s $zsh"
     return 1
   fi
 }
@@ -206,11 +206,11 @@ bs_token() {
     fi
   fi
   if [ -n "${GITHUB_TOKEN:-}" ]; then
-    zc_ok "GitHub token available"
+    zzd_ok "GitHub token available"
     return 0
   fi
-  zc_warn "no GitHub token (mise downloads may hit the API rate limit)" \
-    "export GITHUB_TOKEN=<token>, or gh auth login after zconf apply"
+  zzd_warn "no GitHub token (mise downloads may hit the API rate limit)" \
+    "export GITHUB_TOKEN=<token>, or gh auth login after zzd apply"
 }
 
 bs_main() {
@@ -221,16 +221,16 @@ bs_main() {
   esac
   bs_login_shell || return 1
   bs_token
-  zc_mise_ensure || return 1
+  zzd_mise_ensure || return 1
 }
 
-# shellcheck disable=SC2154 # ZC_RUN_LOG is set by zc_log_init (log.sh)
-trap 'rm -f "${ZC_RUN_LOG:-}"' EXIT
+# shellcheck disable=SC2154 # ZZD_RUN_LOG is set by zzd_log_init (log.sh)
+trap 'rm -f "${ZZD_RUN_LOG:-}"' EXIT
 if ! bs_main; then
-  zc_summary
+  zzd_summary
   exit 1
 fi
-zc_summary
-rm -f "${ZC_RUN_LOG:-}"
-unset ZC_RUN_LOG
-exec "$ZC_ROOT/zconf/bin/zconf" apply ${BS_MODULES[@]+"${BS_MODULES[@]}"}
+zzd_summary
+rm -f "${ZZD_RUN_LOG:-}"
+unset ZZD_RUN_LOG
+exec "$ZZD_ROOT/zzd/bin/zzd" apply ${BS_MODULES[@]+"${BS_MODULES[@]}"}

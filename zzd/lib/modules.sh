@@ -1,24 +1,24 @@
 # shellcheck shell=bash
 # shellcheck source=submodules.sh
-. "${ZC_ROOT:?}/zconf/lib/submodules.sh"
+. "${ZZD_ROOT:?}/zzd/lib/submodules.sh"
 
-zc_modules_list() {
+zzd_modules_list() {
   local name status=0
   while IFS= read -r name || [ -n "$name" ]; do
-    zc_is_data_line "$name" || continue
-    if [ -d "$ZC_ROOT/$name/zconf" ]; then
+    zzd_is_data_line "$name" || continue
+    if [ -d "$ZZD_ROOT/$name/zzd" ]; then
       printf '%s\n' "$name"
     else
-      zc_error "module $name has no $name/zconf"
+      zzd_error "module $name has no $name/zzd"
       status=1
     fi
-  done <"${ZC_ROOT:?}/zconf/modules"
+  done <"${ZZD_ROOT:?}/zzd/modules"
   return "$status"
 }
 
-zc_module_known() {
+zzd_module_known() {
   local name list
-  list="$(zc_modules_list)" || return 1
+  list="$(zzd_modules_list)" || return 1
   while IFS= read -r name; do
     if [ "$name" = "$1" ]; then
       return 0
@@ -31,12 +31,12 @@ _zc_has_function() {
   declare -F "$1" >/dev/null
 }
 
-zc_module_run() {
+zzd_module_run() {
   local module="$1" phase="$2"
   (
-    local dir="${ZC_ROOT:?}/$module/zconf" status=0
-    ZC_MODULE="$module"
-    export ZC_MODULE
+    local dir="${ZZD_ROOT:?}/$module/zzd" status=0
+    ZZD_MODULE="$module"
+    export ZZD_MODULE
     if [ -f "$dir/$phase.sh" ]; then
       # shellcheck source=/dev/null
       . "$dir/$phase.sh"
@@ -45,21 +45,21 @@ zc_module_run() {
       mod_pre_apply || exit 1
     fi
     case "$phase" in
-      apply) zc_submodules_apply "$module" || status=1 ;;
-      doctor) zc_submodules_check "$module" || status=1 ;;
+      apply) zzd_submodules_apply "$module" || status=1 ;;
+      doctor) zzd_submodules_check "$module" || status=1 ;;
       *) ;;
     esac
     if [ -f "$dir/links" ]; then
       case "$phase" in
-        apply) zc_links_apply "$dir/links" || status=1 ;;
-        doctor) zc_links_check "$dir/links" || status=1 ;;
+        apply) zzd_links_apply "$dir/links" || status=1 ;;
+        doctor) zzd_links_check "$dir/links" || status=1 ;;
         *) ;;
       esac
     fi
     if [ -f "$dir/fonts" ]; then
       case "$phase" in
-        apply) zc_fonts_apply "$dir/fonts" || status=1 ;;
-        doctor) zc_fonts_check "$dir/fonts" || status=1 ;;
+        apply) zzd_fonts_apply "$dir/fonts" || status=1 ;;
+        doctor) zzd_fonts_check "$dir/fonts" || status=1 ;;
         *) ;;
       esac
     fi
@@ -70,11 +70,11 @@ zc_module_run() {
   )
 }
 
-zc_modules_run() {
+zzd_modules_run() {
   local phase="$1" module list status=0
   shift
   if [ "$#" -eq 0 ]; then
-    list="$(zc_modules_list)" || status=1
+    list="$(zzd_modules_list)" || status=1
     while IFS= read -r module; do
       if [ -n "$module" ]; then
         set -- "$@" "$module"
@@ -82,8 +82,8 @@ zc_modules_run() {
     done <<<"$list"
   fi
   for module in "$@"; do
-    zc_info "$module: $phase"
-    zc_module_run "$module" "$phase" || status=1
+    zzd_info "$module: $phase"
+    zzd_module_run "$module" "$phase" || status=1
   done
   return "$status"
 }

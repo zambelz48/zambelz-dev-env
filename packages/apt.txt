@@ -16,7 +16,7 @@ libgmp-dev
 chafa
 kitty
 clangd
-# fc-cache, run after zconf installs the mise-pinned fonts.
+# fc-cache, run after zzd installs the mise-pinned fonts.
 fontconfig
 # mise's prebuilt tmux stops at 3.7c, before the 3.8 theme colours the
 # config sets; older tmux loads the config without them.

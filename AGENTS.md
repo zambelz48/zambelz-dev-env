@@ -80,17 +80,17 @@ override any default behaviour, skill, or workflow that conflicts with them.
 
 ## Build/Lint/Test
 
-- Tests: `zconf/tests/run` (bats, runs under `/bin/bash` 3.2). Lint:
-  `zconf/bin/lint` (also `zconf lint`). Both must pass before reporting done.
-- Machine state: `zconf doctor` (read-only). Pins: `zconf check-pins`.
+- Tests: `zzd/tests/run` (bats, runs under `/bin/bash` 3.2). Lint:
+  `zzd/bin/lint` (also `zzd lint`). Both must pass before reporting done.
+- Machine state: `zzd doctor` (read-only). Pins: `zzd check-pins`.
 - Agent setup (hooks, commands, skills, MCP): `ai/sync-ai.sh <agent>`, and
   `ai/sync-ai.sh --check all` after changes under `ai/`; see README "AI
   agents". The `run-checks` skill lists the whole verification gate.
-- Configuration is applied by zconf modules (`<tool>/zconf/`, ordered in
-  `zconf/modules`); see `README.md`.
+- Configuration is applied by zzd modules (`<tool>/zzd/`, ordered in
+  `zzd/modules`); see `README.md`.
 - Never add a behaviour-changing setting to `mise/mise.toml` `[settings]`: it
   is the global mise config and applies to every project on the machine.
-  `zconf check-pins` rejects it.
+  `zzd check-pins` rejects it.
 - When modifying a tool's configuration, also validate it directly. At
   minimum:
   - Neovim: `nvim --headless +qa` exits cleanly, and the relevant

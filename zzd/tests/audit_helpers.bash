@@ -4,18 +4,18 @@ audit_test_setup() {
   export REAL_HOME REAL_PATH
 
   load helpers
-  zc_test_setup
+  zzd_test_setup
 
-  REAL_ROOT="$ZC_ROOT"
+  REAL_ROOT="$ZZD_ROOT"
   PY="$("$MISE_DATA_DIR/shims/python3" -c 'import sys; print(sys.executable)')"
-  ENGINE="$REAL_ROOT/zconf/lib/audit"
+  ENGINE="$REAL_ROOT/zzd/lib/audit"
   REPO="$BATS_TEST_TMPDIR/repo"
   export REAL_ROOT PY ENGINE REPO
 
-  mkdir -p "$REPO/zconf/lib" "$REPO/zconf/audit" "$REPO/packages/zconf" "$REPO/mise" "$REPO/neovim/lua" \
-    "$REPO/tmux/zconf" "$REPO/zsh/zconf" "$REPO/tools/npm" "$REPO/tools/python"
-  cp "$REAL_ROOT/zconf/lib/os.sh" "$REPO/zconf/lib/"
-  cp "$REAL_ROOT/packages/zconf/managers" "$REPO/packages/zconf/"
+  mkdir -p "$REPO/zzd/lib" "$REPO/zzd/audit" "$REPO/packages/zzd" "$REPO/mise" "$REPO/neovim/lua" \
+    "$REPO/tmux/zzd" "$REPO/zsh/zzd" "$REPO/tools/npm" "$REPO/tools/python"
+  cp "$REAL_ROOT/zzd/lib/os.sh" "$REPO/zzd/lib/"
+  cp "$REAL_ROOT/packages/zzd/managers" "$REPO/packages/zzd/"
 }
 
 audit_fixture_repo() {
@@ -71,10 +71,10 @@ return {
   'jsx',
 }
 EOF
-  printf 'tmux-plugins/tpm\t3333333333333333333333333333333333333333\n' >"$REPO/tmux/zconf/pins"
+  printf 'tmux-plugins/tpm\t3333333333333333333333333333333333333333\n' >"$REPO/tmux/zzd/pins"
   printf 'OHMYZSH_URL=https://github.com/ohmyzsh/ohmyzsh.git\nOHMYZSH_COMMIT=4444444444444444444444444444444444444444\n' \
-    >"$REPO/zsh/zconf/pins"
-  cat >"$REPO/zconf/audit/catalog.toml" <<'EOF'
+    >"$REPO/zsh/zzd/pins"
+  cat >"$REPO/zzd/audit/catalog.toml" <<'EOF'
 [mise-tool.neovim]
 repo = "neovim/neovim"
 
@@ -105,7 +105,7 @@ LPEG_URL https://github.com/neovim/deps/raw/d495ee6f79e7962a53ad79670cb92488abe0
 WIN32YANK_X86_64_URL https://github.com/equalsraf/win32yank/releases/download/v0.1.1/win32yank-x64.zip
 NEWDEP_URL https://github.com/example/newdep/archive/v9.9.9.tar.gz
 EOF
-  zc_stub_script gh <<EOF
+  zzd_stub_script gh <<EOF
 case "\$*" in
   *parsers.lua*)
     cat "$BATS_TEST_TMPDIR/parsers.lua"
@@ -127,5 +127,5 @@ EOF
 }
 
 audit_engine() {
-  ZC_ROOT="$REPO" "$PY" -E -s "$ENGINE" "$@"
+  ZZD_ROOT="$REPO" "$PY" -E -s "$ENGINE" "$@"
 }

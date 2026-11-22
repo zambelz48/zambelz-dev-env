@@ -2,15 +2,15 @@
 
 setup() {
   load helpers
-  zc_test_setup
+  zzd_test_setup
   FIX="$BATS_TEST_TMPDIR/repo"
-  mkdir -p "$FIX/.githooks" "$FIX/zconf/bin"
-  cp "$ZC_ROOT/.githooks/pre-push" "$FIX/.githooks/pre-push"
+  mkdir -p "$FIX/.githooks" "$FIX/zzd/bin"
+  cp "$ZZD_ROOT/.githooks/pre-push" "$FIX/.githooks/pre-push"
   TRACE="$BATS_TEST_TMPDIR/trace"
   export TRACE
-  # Fake zconf: records each step, the commit it sees, the tools it can see,
+  # Fake zzd: records each step, the commit it sees, the tools it can see,
   # and fails on demand or when the checked-out marker says broken.
-  cat >"$FIX/zconf/bin/zconf" <<'EOF'
+  cat >"$FIX/zzd/bin/zzd" <<'EOF'
 #!/usr/bin/env bash
 marker="$(cat "$(dirname "$0")/../../marker")"
 echo "step $* on $marker" >>"$TRACE"
@@ -27,7 +27,7 @@ case " ${FAIL_STEP:-} " in
   *) exit 0 ;;
 esac
 EOF
-  chmod +x "$FIX/zconf/bin/zconf"
+  chmod +x "$FIX/zzd/bin/zzd"
   git -C "$FIX" init -q
   HOOK="$FIX/.githooks/pre-push"
   ZERO=0000000000000000000000000000000000000000
@@ -80,7 +80,7 @@ worktrees() {
   printf 'good\n' >"$FIX/marker"
   run push "$sha"
   [ "$status" -eq 1 ]
-  [[ "$output" == *"ERROR: push blocked: zconf check-pins failed for"* ]] ||
+  [[ "$output" == *"ERROR: push blocked: zzd check-pins failed for"* ]] ||
     false
 }
 
@@ -88,7 +88,7 @@ worktrees() {
   sha="$(commit_marker good)"
   FAIL_STEP=check-pins run push "$sha"
   [ "$status" -eq 1 ]
-  [[ "$output" == *"ERROR: push blocked: zconf check-pins failed"* ]] ||
+  [[ "$output" == *"ERROR: push blocked: zzd check-pins failed"* ]] ||
     false
   [ "$(grep -c '^step' "$TRACE")" -eq 1 ]
 }
@@ -97,14 +97,14 @@ worktrees() {
   sha="$(commit_marker good)"
   FAIL_STEP=lint run push "$sha"
   [ "$status" -eq 1 ]
-  [[ "$output" == *"ERROR: push blocked: zconf lint failed"* ]] || false
+  [[ "$output" == *"ERROR: push blocked: zzd lint failed"* ]] || false
 }
 
 @test "the hook blocks when the audit cannot run" {
   sha="$(commit_marker good)"
   FAIL_STEP=audit FAIL_CODE=3 run push "$sha"
   [ "$status" -eq 1 ]
-  [[ "$output" == *"ERROR: push blocked: zconf audit --declared --gate failed"* ]] ||
+  [[ "$output" == *"ERROR: push blocked: zzd audit --declared --gate failed"* ]] ||
     false
 }
 

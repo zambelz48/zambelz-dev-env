@@ -16,7 +16,7 @@ if [ "$#" -eq 0 ]; then
 fi
 
 if ! bats="$(mise -C "$HOME" which bats 2>/dev/null)"; then
-  printf 'ERROR: bats is not installed by mise\n  fix: zconf apply mise\n' >&2
+  printf 'ERROR: bats is not installed by mise\n  fix: zzd apply mise\n' >&2
   exit 1
 fi
 "$bats" "$@"

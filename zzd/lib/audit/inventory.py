@@ -166,23 +166,23 @@ def treesitter_parsers(
 def tmux_plugins(repo: Path) -> list[Component]:
     components: list[Component] = []
 
-    for line in (repo / "tmux/zconf/pins").read_text().splitlines():
+    for line in (repo / "tmux/zzd/pins").read_text().splitlines():
         if not line.strip():
             continue
 
         name, commit = line.split("\t")
-        components.append(_declared(Kind.TMUX_PLUGIN, name, commit, "tmux/zconf/pins", repo=name))
+        components.append(_declared(Kind.TMUX_PLUGIN, name, commit, "tmux/zzd/pins", repo=name))
 
     return components
 
 
 def ohmyzsh(repo: Path) -> list[Component]:
     values = dict(
-        line.split("=", 1) for line in (repo / "zsh/zconf/pins").read_text().splitlines() if "=" in line
+        line.split("=", 1) for line in (repo / "zsh/zzd/pins").read_text().splitlines() if "=" in line
     )
     url = values["OHMYZSH_URL"]
 
-    return [_declared(Kind.OHMYZSH, "oh-my-zsh", values["OHMYZSH_COMMIT"], "zsh/zconf/pins", url=url)]
+    return [_declared(Kind.OHMYZSH, "oh-my-zsh", values["OHMYZSH_COMMIT"], "zsh/zzd/pins", url=url)]
 
 
 def submodules(repo: Path) -> list[Component]:
@@ -402,15 +402,15 @@ def installed_git(paths: Paths) -> list[Component]:
 
 
 def os_managers(repo: Path) -> list[str]:
-    script = f'. "{repo}/zconf/lib/os.sh"; zc_os'
+    script = f'. "{repo}/zzd/lib/os.sh"; zzd_os'
     name = procs.checked(["bash", "-c", script]).strip()
 
     if name == "unsupported":
-        raise LookupError("this operating system is not supported by zconf (zc_os)")
+        raise LookupError("this operating system is not supported by zzd (zzd_os)")
 
     managers: list[str] = []
 
-    for line in (repo / "packages/zconf/managers").read_text().splitlines():
+    for line in (repo / "packages/zzd/managers").read_text().splitlines():
         parts = line.split("\t")
 
         if len(parts) == 2 and parts[0] == name:

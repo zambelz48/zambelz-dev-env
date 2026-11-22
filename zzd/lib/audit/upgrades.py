@@ -102,11 +102,11 @@ def action(newest: Newest) -> str:
     target = available(newest)
 
     if target is not None:
-        return f"upgrade {newest.tool} {newest.pinned} -> {target} (zconf upgrade {newest.tool}), then run the audit again"
+        return f"upgrade {newest.tool} {newest.pinned} -> {target} (zzd upgrade {newest.tool}), then run the audit again"
 
     message = f"none possible yet; {newest.tool} {newest.pinned} is the newest release in its pinned line"
 
     if _newer(newest.any_line, newest.pinned) and newest.any_line != newest.in_line:
-        message += f" (a newer line exists: {newest.any_line}, not taken without zconf upgrade --major)"
+        message += f" (a newer line exists: {newest.any_line}, not taken without zzd upgrade --major)"
 
     return message

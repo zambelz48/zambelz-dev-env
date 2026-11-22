@@ -151,7 +151,7 @@ Papering over it to keep momentum is the worst outcome.
 
 ## Overview
 
-Add `--json` to `zconf doctor`, so scripts can read the result without parsing text. The text output stays
+Add `--json` to `zzd doctor`, so scripts can read the result without parsing text. The text output stays
 the default and does not change.
 
 This plan is written for AI agents executing the implementation.
@@ -169,11 +169,11 @@ The JSON encoder is Python's standard library; Python is the version `mise/mise.
 
 ## Phase 1: JSON output
 
-**Goal**: `zconf doctor --json` prints the result as one JSON object.
+**Goal**: `zzd doctor --json` prints the result as one JSON object.
 
 ### Tasks
 
-- [ ] Write a failing bats test: `zconf doctor --json` prints an object with the fields of the text output.
+- [ ] Write a failing bats test: `zzd doctor --json` prints an object with the fields of the text output.
 - [ ] Add the `--json` flag; any other unknown flag stays a usage error.
 - [ ] Encode the result with the standard library encoder.
 
@@ -184,7 +184,7 @@ The JSON encoder is Python's standard library; Python is the version `mise/mise.
 ### Verification
 
 - [ ] `run-checks` skill passes.
-- [ ] `zconf doctor --json` output parses as JSON; `zconf doctor` output is unchanged.
+- [ ] `zzd doctor --json` output parses as JSON; `zzd doctor` output is unchanged.
 
 ## Phase 2: Docs
 
@@ -197,11 +197,11 @@ The JSON encoder is Python's standard library; Python is the version `mise/mise.
 ### Verification
 
 - [ ] `run-checks` skill passes.
-- [ ] The README and `zconf help` name the same flag.
+- [ ] The README and `zzd help` name the same flag.
 
 ## Success Criteria
 
-- [ ] `zconf doctor --json` prints the result as JSON.
+- [ ] `zzd doctor --json` prints the result as JSON.
 - [ ] The text output and its tests are unchanged.
 - [ ] The docs and the help agree.
 

@@ -1,10 +1,10 @@
 # shellcheck shell=bash
 # shellcheck source=common.sh
-. "${ZC_ROOT:?}/tools/zconf/common.sh"
+. "${ZZD_ROOT:?}/tools/zzd/common.sh"
 
 _tools_write() {
   if ! printf '%s\n' "$2" >"$1" || ! chmod +x "$1"; then
-    zc_error "cannot write $1"
+    zzd_error "cannot write $1"
     return 1
   fi
 }
@@ -23,8 +23,8 @@ _tools_link() {
     fi
     wanted="$wanted$cmd"$'\n'
     if ! content="$(_tools_wrapper "$cmd" "$kind")"; then
-      zc_error "cannot write $cmd: node is not installed by mise" \
-        "zconf apply mise"
+      zzd_error "cannot write $cmd: node is not installed by mise" \
+        "zzd apply mise"
       status=1
       continue
     fi
@@ -49,18 +49,18 @@ _tools_link() {
       *$'\n'"${file##*/}"$'\n'*) continue ;;
       *) ;;
     esac
-    zc_do rm -f "$file" || status=1
+    zzd_do rm -f "$file" || status=1
     removed+=("${file##*/}")
   done
   if [ "${#written[@]}" -gt 0 ]; then
-    zc_changed "wrote commands: ${written[*]}"
+    zzd_changed "wrote commands: ${written[*]}"
   fi
   if [ "${#removed[@]}" -gt 0 ]; then
-    zc_changed "removed commands: ${removed[*]}"
+    zzd_changed "removed commands: ${removed[*]}"
   fi
   if [ "$status" -eq 0 ] && [ "${#written[@]}" -eq 0 ] &&
     [ "${#removed[@]}" -eq 0 ]; then
-    zc_ok "commands in $bin"
+    zzd_ok "commands in $bin"
   fi
   return "$status"
 }
@@ -68,7 +68,7 @@ _tools_link() {
 mod_apply() {
   local status=0 line
   line="$(_tools_path_line)"
-  zc_ensure_line "${ZC_HOME:?}/.zshenv" "$line" || status=1
+  zzd_ensure_line "${ZZD_HOME:?}/.zshenv" "$line" || status=1
   _tools_install_npm || status=1
   _tools_install_python || status=1
   _tools_link || status=1

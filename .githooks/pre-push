@@ -19,8 +19,8 @@ remove_tree() {
 run_step() {
   local short="$1"
   shift
-  if ! "$tree/zconf/bin/zconf" "$@"; then
-    printf 'ERROR: push blocked: zconf %s failed for %s\n' "$*" "$short" >&2
+  if ! "$tree/zzd/bin/zzd" "$@"; then
+    printf 'ERROR: push blocked: zzd %s failed for %s\n' "$*" "$short" >&2
     exit 1
   fi
 }

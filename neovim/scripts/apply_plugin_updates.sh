@@ -4,7 +4,7 @@
 # (SPACE to toggle, ENTER to apply, ESC/Ctrl-C to cancel with no changes).
 #
 # Usage: neovim/scripts/apply_plugin_updates.sh [repo-slug-filter ...]
-# Wired up as: zconf neovim check-updates [filter ...]
+# Wired up as: zzd neovim check-updates [filter ...]
 
 set -euo pipefail
 

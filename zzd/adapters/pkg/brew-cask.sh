@@ -14,7 +14,7 @@ pkg_version() {
 }
 
 pkg_install() {
-  zc_do brew install --cask "$@"
+  zzd_do brew install --cask "$@"
 }
 
 pkg_outdated() {
@@ -24,5 +24,5 @@ pkg_outdated() {
 }
 
 pkg_upgrade() {
-  zc_do brew upgrade --cask "$@"
+  zzd_do brew upgrade --cask "$@"
 }

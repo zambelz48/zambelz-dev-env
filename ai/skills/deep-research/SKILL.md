@@ -42,7 +42,7 @@ Collect facts from both sides, and record where each one came from as you go.
   Never test by changing tracked files.
 - Take versions from this repository's lockfiles and version files
   (`mise/mise.lock`, `tools/npm/pnpm-lock.yaml`, `tools/python/uv.lock`,
-  `neovim/lazy-lock.json`, the `zconf/pins` files), never from memory. For
+  `neovim/lazy-lock.json`, the `zzd/pins` files), never from memory. For
   installed tools, check the installed version (`nvim --version`, `tmux -V`,
   `kitty --version`, plugin `git log`).
 
@@ -82,7 +82,7 @@ The report gives **one** recommendation, not a menu:
    override, shim, wrapper, custom code) is recommended only when none of those
    works, and the report says what was checked.
 2. **One source of truth.** Prefer changing the mechanism that already owns the
-   concern (a zconf module, `mise/mise.toml`, `tools/`, `ai/`) over adding a
+   concern (a zzd module, `mise/mise.toml`, `tools/`, `ai/`) over adding a
    file, command, check or list beside it. If the recommendation adds something
    new, say why nothing existing can carry it.
 3. **No dead ends.** Walk each candidate path to its end. Drop any that leaves

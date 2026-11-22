@@ -4,24 +4,24 @@ setup() {
   load ai_helpers
   ai_test_setup
 
-  cp "$ZC_ROOT/ai/hooks/cve_guard.py" "$AI/hooks/"
+  cp "$ZZD_ROOT/ai/hooks/cve_guard.py" "$AI/hooks/"
   cat >"$AI/hooks/hooks.toml" <<'EOF'
 [[hook]]
 name = "cve-guard"
 module = "cve_guard"
 events = ["tool.before", "tool.after"]
-summary = "Blocks git commit and push while zconf audit --declared fails"
+summary = "Blocks git commit and push while zzd audit --declared fails"
 EOF
 
-  AUDIT_CALLS="$BATS_TEST_TMPDIR/calls/zconf"
+  AUDIT_CALLS="$BATS_TEST_TMPDIR/calls/zzd"
   AUDIT_CODE="$BATS_TEST_TMPDIR/audit-code"
   AUDIT_SLEEP="$BATS_TEST_TMPDIR/audit-sleep"
   export AUDIT_CALLS AUDIT_CODE AUDIT_SLEEP
   printf '0\n' >"$AUDIT_CODE"
   printf '0\n' >"$AUDIT_SLEEP"
 
-  mkdir -p "$REPO/zconf/bin" "$REPO/tools/npm"
-  cat >"$REPO/zconf/bin/zconf" <<'EOF'
+  mkdir -p "$REPO/zzd/bin" "$REPO/tools/npm"
+  cat >"$REPO/zzd/bin/zzd" <<'EOF'
 #!/usr/bin/env bash
 printf '%s\n' "$*" >>"$AUDIT_CALLS"
 sleep "$(cat "$AUDIT_SLEEP")"
@@ -45,7 +45,7 @@ esac
 
 exit "$code"
 EOF
-  chmod +x "$REPO/zconf/bin/zconf"
+  chmod +x "$REPO/zzd/bin/zzd"
   printf 'lockfileVersion: 9\n' >"$REPO/tools/npm/pnpm-lock.yaml"
 }
 

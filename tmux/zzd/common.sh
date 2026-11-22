@@ -1,13 +1,13 @@
 # shellcheck shell=bash
-# shellcheck source=../../zconf/lib/gitpin.sh
-. "${ZC_ROOT:?}/zconf/lib/gitpin.sh"
+# shellcheck source=../../zzd/lib/gitpin.sh
+. "${ZZD_ROOT:?}/zzd/lib/gitpin.sh"
 
 _tmux_url() {
   printf 'https://github.com/%s.git' "$1"
 }
 
 _tmux_dir() {
-  printf '%s/.tmux/plugins/%s' "${ZC_HOME:?}" "${1##*/}"
+  printf '%s/.tmux/plugins/%s' "${ZZD_HOME:?}" "${1##*/}"
 }
 
 _tmux_plugins() {
@@ -21,7 +21,7 @@ _tmux_plugins() {
     value="${value//\'/}"
     value="${value//\"/}"
     printf '%s\n' "${value%%#*}"
-  done <"$ZC_ROOT/tmux/.tmux.conf"
+  done <"$ZZD_ROOT/tmux/.tmux.conf"
 }
 
 _tmux_pin() {
@@ -31,11 +31,11 @@ _tmux_pin() {
       printf '%s' "$commit"
       return 0
     fi
-  done <"$ZC_ROOT/tmux/zconf/pins"
+  done <"$ZZD_ROOT/tmux/zzd/pins"
   return 1
 }
 
 _tmux_unpinned() {
-  zc_error "$1 is not pinned" \
-    "add $1 and its commit to $ZC_ROOT/tmux/zconf/pins"
+  zzd_error "$1 is not pinned" \
+    "add $1 and its commit to $ZZD_ROOT/tmux/zzd/pins"
 }

@@ -20,10 +20,10 @@ WATCHED = (
     "tools/python/uv.lock",
     "neovim/lazy-lock.json",
     "neovim/lua/treesitter_parsers.lua",
-    "tmux/zconf/pins",
-    "zsh/zconf/pins",
+    "tmux/zzd/pins",
+    "zsh/zzd/pins",
     ".gitmodules",
-    "zconf/audit/catalog.toml",
+    "zzd/audit/catalog.toml",
 )
 AUDIT_TIMEOUT_SECONDS = 600
 GATED_SUBCOMMANDS = ("commit", "push")
@@ -159,14 +159,14 @@ def _detail(output: str) -> str:
     text = "\n".join(keep) or output.strip()
 
     if len(text) > DETAIL_LIMIT:
-        return text[:DETAIL_LIMIT] + "\n(truncated; run zconf audit --declared for the full report)"
+        return text[:DETAIL_LIMIT] + "\n(truncated; run zzd audit --declared for the full report)"
 
     return text
 
 
 def run_audit(repo_root: Path, gate: bool = False) -> Audit:
-    zconf = repo_root / "zconf" / "bin" / "zconf"
-    argv = [str(zconf), "audit", "--declared"]
+    zzd = repo_root / "zzd" / "bin" / "zzd"
+    argv = [str(zzd), "audit", "--declared"]
 
     if gate:
         argv.append("--gate")
@@ -182,7 +182,7 @@ def run_audit(repo_root: Path, gate: bool = False) -> Audit:
     except subprocess.TimeoutExpired:
         return Audit(code=3, detail=f"the scan did not finish within {AUDIT_TIMEOUT_SECONDS} seconds")
     except OSError as error:
-        return Audit(code=3, detail=f"cannot run {zconf}: {error}")
+        return Audit(code=3, detail=f"cannot run {zzd}: {error}")
 
     return Audit(code=run.returncode, detail=_detail(run.stdout + run.stderr))
 
@@ -195,19 +195,19 @@ def _gate(repo_root: Path) -> Decision | None:
             return None
         case 1:
             return events.deny(
-                "Blocked: zconf audit --declared --gate reports findings that block, so commits and pushes are "
+                "Blocked: zzd audit --declared --gate reports findings that block, so commits and pushes are "
                 "blocked: a fix is available (a newer release in the pinned line), the fix cannot be checked, or "
                 "components are uncovered or left over. Follow each blocking finding's Action line (the fix-cve "
                 "skill), then run the audit again. There is no bypass.\n\n" + audit.detail
             )
         case 3:
             return events.deny(
-                "Blocked: zconf audit --declared could not run, so commits and pushes are blocked. "
+                "Blocked: zzd audit --declared could not run, so commits and pushes are blocked. "
                 "Tell the user what failed; do not work around it.\n\n" + audit.detail
             )
         case other:
             return events.deny(
-                f"Blocked: zconf audit --declared exited {other}, so commits and pushes are blocked. "
+                f"Blocked: zzd audit --declared exited {other}, so commits and pushes are blocked. "
                 "Tell the user what failed.\n\n" + audit.detail
             )
 
@@ -256,15 +256,15 @@ def _after(repo_root: Path) -> Decision | None:
         case 0 if previous is None:
             return None
         case 0:
-            return events.warn(f"OK: zconf audit --declared reports no known vulnerabilities after changes to {', '.join(changed)}.")
+            return events.warn(f"OK: zzd audit --declared reports no known vulnerabilities after changes to {', '.join(changed)}.")
         case 1:
             return events.warn(
-                f"WARN: zconf audit --declared reports known vulnerabilities after changes to {', '.join(changed)}. "
+                f"WARN: zzd audit --declared reports known vulnerabilities after changes to {', '.join(changed)}. "
                 "Follow each finding's Action line now (the fix-cve skill); findings marked 'fix available' or "
                 "'blocks push' keep commits and pushes blocked.\n\n" + audit.detail
             )
         case _:
-            return events.warn("WARN: zconf audit --declared could not run after a dependency change.\n\n" + audit.detail)
+            return events.warn("WARN: zzd audit --declared could not run after a dependency change.\n\n" + audit.detail)
 
 
 def handle(event: Event) -> Decision | None:

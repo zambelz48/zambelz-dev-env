@@ -1,15 +1,15 @@
 #!/usr/bin/env bash
 set -u
 
-root="${ZC_ROOT:-$(cd "$(dirname "$0")/../.." && pwd -P)}"
+root="${ZZD_ROOT:-$(cd "$(dirname "$0")/../.." && pwd -P)}"
 failed=0
 
 tool_path() {
-  mise -C "${ZC_HOME:-$HOME}" which "$1" 2>/dev/null
+  mise -C "${ZZD_HOME:-$HOME}" which "$1" 2>/dev/null
 }
 
 missing_tool() {
-  printf 'ERROR: %s is not installed by mise\n  fix: zconf apply mise\n' "$1"
+  printf 'ERROR: %s is not installed by mise\n  fix: zzd apply mise\n' "$1"
 }
 
 repo_files() {
@@ -32,7 +32,7 @@ lint_shell() {
   list="$(repo_files)" || return 1
   while IFS= read -r file; do
     case "$file" in
-      *.sh | *.bats | *.bash | zconf/bin/* | zconf/tests/run | .githooks/*)
+      *.sh | *.bats | *.bash | zzd/bin/* | zzd/tests/run | .githooks/*)
         files+=("$file")
         ;;
       *) ;;

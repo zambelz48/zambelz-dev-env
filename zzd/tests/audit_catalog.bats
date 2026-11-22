@@ -5,16 +5,16 @@ setup() {
   audit_test_setup
   audit_fixture_repo
 
-  zc_stub_script mise <<'EOF'
+  zzd_stub_script mise <<'EOF'
 printf '{}\n'
 EOF
-  ZC_OS_RELEASE="$BATS_TEST_TMPDIR/os-release"
-  export ZC_OS_RELEASE
-  printf 'ID=fedora\n' >"$ZC_OS_RELEASE"
+  ZZD_OS_RELEASE="$BATS_TEST_TMPDIR/os-release"
+  export ZZD_OS_RELEASE
+  printf 'ID=fedora\n' >"$ZZD_OS_RELEASE"
   printf '' >"$REPO/packages/dnf.txt"
-  zc_stub uname 0 "Linux"
+  zzd_stub uname 0 "Linux"
 
-  cat >"$REPO/zconf/audit/catalog.toml" <<'EOF'
+  cat >"$REPO/zzd/audit/catalog.toml" <<'EOF'
 [mise.mise]
 repo = "jdx/mise"
 
@@ -42,7 +42,7 @@ EOF
 }
 
 sources() {
-  ZC_ROOT="$REPO" "$PY" -E -s -c '
+  ZZD_ROOT="$REPO" "$PY" -E -s -c '
 import json, sys
 sys.path.insert(0, sys.argv[1])
 from catalog import Catalog, sources_for
@@ -51,7 +51,7 @@ catalog = Catalog(__import__("pathlib").Path(sys.argv[2]))
 component = Component(Kind(sys.argv[3]), sys.argv[4], sys.argv[5], "test", Scope.DECLARED, {})
 for source in sources_for(catalog, component):
     print(source.kind, json.dumps(source.params, sort_keys=True))
-' "$ENGINE" "$REPO/zconf/audit/catalog.toml" "$@"
+' "$ENGINE" "$REPO/zzd/audit/catalog.toml" "$@"
 }
 
 @test "every component of the fixture is covered" {
@@ -63,7 +63,7 @@ for source in sources_for(catalog, component):
 
 @test "a component without a catalog entry is not covered" {
   printf '[mise-tool.neovim]\nrepo = "neovim/neovim"\n\n[nvim-plugin.nvim-treesitter]\nrepo = "nvim-treesitter/nvim-treesitter"\n' \
-    >"$REPO/zconf/audit/catalog.toml"
+    >"$REPO/zzd/audit/catalog.toml"
 
   run audit_engine catalog
 
@@ -73,7 +73,7 @@ for source in sources_for(catalog, component):
 }
 
 @test "an unknown key in the catalog is an error" {
-  printf '\n[mise-tool.extra]\nrepo = "x/y"\nseverity = "high"\n' >>"$REPO/zconf/audit/catalog.toml"
+  printf '\n[mise-tool.extra]\nrepo = "x/y"\nseverity = "high"\n' >>"$REPO/zzd/audit/catalog.toml"
 
   run audit_engine catalog
 
@@ -82,7 +82,7 @@ for source in sources_for(catalog, component):
 }
 
 @test "an unused catalog entry is reported" {
-  printf '\n[mise-tool.removed-tool]\nrepo = "x/y"\n' >>"$REPO/zconf/audit/catalog.toml"
+  printf '\n[mise-tool.removed-tool]\nrepo = "x/y"\n' >>"$REPO/zzd/audit/catalog.toml"
 
   run audit_engine catalog
 
@@ -90,7 +90,7 @@ for source in sources_for(catalog, component):
 }
 
 @test "an entry for another platform's package manager is not reported as unused" {
-  printf '\n[os-package."brew:tmux"]\nrepo = "tmux/tmux"\n' >>"$REPO/zconf/audit/catalog.toml"
+  printf '\n[os-package."brew:tmux"]\nrepo = "tmux/tmux"\n' >>"$REPO/zzd/audit/catalog.toml"
 
   run audit_engine catalog
 
@@ -106,7 +106,7 @@ for source in sources_for(catalog, component):
 }
 
 @test "the upstream tag template and version pattern are applied" {
-  cat >>"$REPO/zconf/audit/catalog.toml" <<'EOF'
+  cat >>"$REPO/zzd/audit/catalog.toml" <<'EOF'
 
 [mise-tool.biome]
 repo = "biomejs/biome"
@@ -148,7 +148,7 @@ for url in ('https://github.com/mroth/evalcache', 'git@github.com:dracula/zsh.gi
 
 # bats test_tags=network
 @test "the repository's own catalog verifies against the live services" {
-  run env HOME="$REAL_HOME" PATH="$REAL_PATH" ZC_ROOT="$REAL_ROOT" "$PY" -E -s "$ENGINE" catalog --verify
+  run env HOME="$REAL_HOME" PATH="$REAL_PATH" ZZD_ROOT="$REAL_ROOT" "$PY" -E -s "$ENGINE" catalog --verify
 
   echo "$output"
   [ "$status" -eq 0 ]

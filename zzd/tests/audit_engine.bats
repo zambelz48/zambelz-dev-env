@@ -182,8 +182,8 @@ print(sorted(f.id for f in result.blocking_findings()), int(result.exit_code()),
 '
 
   [ "${lines[0]}" = "RUSTSEC-2026-0341 | waiting for upstream | none possible yet; biome 2.6.8 is the newest release in its pinned line | https://rustsec.org/advisories/RUSTSEC-2026-0341.html" ]
-  [ "${lines[1]}" = "GO-2026-5024 | fix available | upgrade fzf 0.74.5 -> 0.75.0 (zconf upgrade fzf), then run the audit again | https://pkg.go.dev/vuln/GO-2026-5024" ]
-  [ "${lines[2]}" = "CVE-2026-114938 | waiting for upstream | none possible yet; java temurin-17.0.21.1+2 is the newest release in its pinned line (a newer line exists: temurin-27.0.1.1+4, not taken without zconf upgrade --major) | https://nvd.nist.gov/vuln/detail/CVE-2026-114938" ]
+  [ "${lines[1]}" = "GO-2026-5024 | fix available | upgrade fzf 0.74.5 -> 0.75.0 (zzd upgrade fzf), then run the audit again | https://pkg.go.dev/vuln/GO-2026-5024" ]
+  [ "${lines[2]}" = "CVE-2026-114938 | waiting for upstream | none possible yet; java temurin-17.0.21.1+2 is the newest release in its pinned line (a newer line exists: temurin-27.0.1.1+4, not taken without zzd upgrade --major) | https://nvd.nist.gov/vuln/detail/CVE-2026-114938" ]
   [ "${lines[3]}" = "GHSA-9 |  |  | https://github.com/advisories/GHSA-9" ]
   [ "${lines[4]}" = "['GHSA-9', 'GO-2026-5024'] 1 1" ]
 }

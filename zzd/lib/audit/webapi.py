@@ -6,7 +6,7 @@ import urllib.error
 import urllib.parse
 import urllib.request
 
-USER_AGENT = "zconf-audit"
+USER_AGENT = "zzd-audit"
 TIMEOUT_SECONDS = 60
 RETRIES = 5
 NVD_HOST = "services.nvd.nist.gov"

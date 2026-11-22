@@ -16,7 +16,7 @@ class SourceError(Exception):
 
 
 def os_release() -> dict[str, str]:
-    path = Path(os.environ.get("ZC_OS_RELEASE") or "/etc/os-release")
+    path = Path(os.environ.get("ZZD_OS_RELEASE") or "/etc/os-release")
     values: dict[str, str] = {}
 
     for line in path.read_text().splitlines():

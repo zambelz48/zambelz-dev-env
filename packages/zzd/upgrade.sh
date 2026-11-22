@@ -1,6 +1,6 @@
 # shellcheck shell=bash
 # shellcheck source=common.sh
-. "${ZC_ROOT:?}/packages/zconf/common.sh"
+. "${ZZD_ROOT:?}/packages/zzd/common.sh"
 
 _pkg_upgrade_manager() {
   local manager="$1" outdated name current latest names=() lines=()
@@ -12,15 +12,15 @@ _pkg_upgrade_manager() {
     fi
   done <<<"$outdated"
   if [ "${#names[@]}" -eq 0 ]; then
-    zc_ok "$manager packages up to date"
+    zzd_ok "$manager packages up to date"
     return 0
   fi
   if ! pkg_upgrade "${names[@]}"; then
-    zc_error "$manager upgrade failed" "zconf upgrade"
+    zzd_error "$manager upgrade failed" "zzd upgrade"
     return 1
   fi
   for name in "${lines[@]}"; do
-    zc_changed "upgraded $name"
+    zzd_changed "upgraded $name"
   done
 }
 

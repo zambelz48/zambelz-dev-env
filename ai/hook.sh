@@ -29,7 +29,7 @@ find_python() {
 }
 
 if ! python="$(find_python)"; then
-  printf 'ERROR: zambelz-dev-env hook: no python 3.11 or newer is installed by mise; run zconf apply mise\n' >&2
+  printf 'ERROR: zambelz-dev-env hook: no python 3.11 or newer is installed by mise; run zzd apply mise\n' >&2
   exit 2
 fi
 

@@ -2,13 +2,13 @@
 
 setup() {
   load helpers
-  zc_test_setup
+  zzd_test_setup
   PY="$MISE_DATA_DIR/shims/python3"
-  SCRIPT="$ZC_ROOT/zconf/lib/check_pins.py"
+  SCRIPT="$ZZD_ROOT/zzd/lib/check_pins.py"
   F="$BATS_TEST_TMPDIR/fixture"
-  mkdir -p "$F/zconf"
+  mkdir -p "$F/zzd"
   printf 'macos-arm64,macos-x64,linux-x64,linux-arm64\n' \
-    >"$F/zconf/platforms"
+    >"$F/zzd/platforms"
   SHA_A="e261deb1b47614eed3400089ce7197dc68acc4eb"
   SHA_B="50b5fdfcbece52124c1ecfd5687469d163e05bf3"
   cat >"$F/mise.toml" <<'EOF'
@@ -107,7 +107,7 @@ EOF
   npm_manifest '"bash-language-server": "^5.8.1"' 'pnpm@12.16.1'
   check
   [ "$status" -eq 1 ]
-  zc_contains "$output" \
+  zzd_contains "$output" \
     "ERROR: bash-language-server \"^5.8.1\" in $F/npm/package.json" \
     "is not an exact version"
 }
@@ -122,7 +122,7 @@ EOF
   npm_manifest '"bash-language-server": "5.8.1"' 'pnpm@12.0.0'
   check
   [ "$status" -eq 1 ]
-  zc_contains "$output" \
+  zzd_contains "$output" \
     "ERROR: packageManager in $F/npm/package.json is not \"pnpm@12.16.1\""
 }
 
@@ -130,7 +130,7 @@ EOF
   python_manifest '"ansible-lint>=26"'
   check
   [ "$status" -eq 1 ]
-  zc_contains "$output" \
+  zzd_contains "$output" \
     "ERROR: \"ansible-lint>=26\" in $F/python/pyproject.toml" \
     "is not pinned with =="
 }
@@ -139,7 +139,7 @@ EOF
   rm "$F/npm/pnpm-lock.yaml" "$F/python/uv.lock"
   check
   [ "$status" -eq 1 ]
-  zc_contains "$output" "ERROR: $F/npm/pnpm-lock.yaml is missing" \
+  zzd_contains "$output" "ERROR: $F/npm/pnpm-lock.yaml is missing" \
     "ERROR: $F/python/uv.lock is missing"
 }
 
@@ -148,7 +148,7 @@ EOF
   set_tool '"pipx:pyrefly" = "1.4.0"'
   check
   [ "$status" -eq 1 ]
-  zc_contains "$output" \
+  zzd_contains "$output" \
     "ERROR: pipx:pyrefly belongs in tools/npm or tools/python, not mise" \
     "ERROR: npm:typescript belongs in tools/npm or tools/python, not mise"
 }
@@ -168,7 +168,7 @@ EOF
     $'[settings]\nlocked = true\ndotnet.isolated = true'
   check
   [ "$status" -eq 1 ]
-  zc_contains "$output" \
+  zzd_contains "$output" \
     "ERROR: global setting locked applies to every project" \
     "ERROR: global setting dotnet.isolated applies to every project"
 }
@@ -178,7 +178,7 @@ EOF
     >>"$F/mise.toml"
   check
   [ "$status" -eq 1 ]
-  zc_contains "$output" \
+  zzd_contains "$output" \
     "ERROR: global [env] applies to every project" \
     "ERROR: global [hooks] applies to every project"
 }
@@ -204,7 +204,7 @@ lock_fd() {
   lock_fd macos-arm64
   check
   [ "$status" -eq 1 ]
-  zc_contains "$output" \
+  zzd_contains "$output" \
     "ERROR: fd 10.5.0 is not locked for macos-x64, linux-x64, linux-arm64"
 }
 
@@ -269,7 +269,7 @@ lock_fd() {
   printf "set -g @plugin 'tmux-plugins/tmux-yank'\n" >>"$F/tmux.conf"
   check
   [ "$status" -eq 1 ]
-  zc_contains "$output" \
+  zzd_contains "$output" \
     "ERROR: tmux plugin tmux-plugins/tmux-yank is not pinned"
 }
 
@@ -278,6 +278,6 @@ lock_fd() {
     >"$F/tmux-pins"
   check
   [ "$status" -eq 1 ]
-  zc_contains "$output" \
+  zzd_contains "$output" \
     "ERROR: tmux plugin tmux-plugins/tpm pin v3.1.0 is not a full commit sha"
 }

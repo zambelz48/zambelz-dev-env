@@ -1,6 +1,6 @@
 # shellcheck shell=bash
 # shellcheck source=common.sh
-. "${ZC_ROOT:?}/tools/zconf/common.sh"
+. "${ZZD_ROOT:?}/tools/zzd/common.sh"
 
 _tools_relock() {
   local kind="$1" lock backup
@@ -15,13 +15,13 @@ _tools_relock() {
   if ! "$@" >/dev/null 2>&1; then
     cp "$backup" "$lock"
     rm -f "$backup"
-    zc_error "re-resolving ${lock##*/} failed; it was restored"
+    zzd_error "re-resolving ${lock##*/} failed; it was restored"
     return 1
   fi
   if cmp -s "$backup" "$lock"; then
-    zc_ok "${lock##*/} dependencies are current"
+    zzd_ok "${lock##*/} dependencies are current"
   else
-    zc_changed "re-resolved ${lock##*/}"
+    zzd_changed "re-resolved ${lock##*/}"
   fi
   rm -f "$backup"
 }

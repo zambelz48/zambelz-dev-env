@@ -4,7 +4,7 @@ setup() {
   load ai_helpers
   ai_test_setup
 
-  cp "$ZC_ROOT/ai/hooks/dev_plan.py" "$AI/hooks/"
+  cp "$ZZD_ROOT/ai/hooks/dev_plan.py" "$AI/hooks/"
   cat >"$AI/hooks/hooks.toml" <<'EOF'
 [[hook]]
 name = "dev-plan"
@@ -14,7 +14,7 @@ summary = "Plans in dev-plan/ that miss the required format"
 EOF
 
   mkdir -p "$REPO/dev-plan"
-  VALID="$ZC_ROOT/zconf/tests/fixtures/ai/plan_valid.md"
+  VALID="$ZZD_ROOT/zzd/tests/fixtures/ai/plan_valid.md"
   PLAN="dev-plan/PLAN-001-REPORT.md"
 }
 
