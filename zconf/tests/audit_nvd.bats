@@ -155,6 +155,31 @@ print(vendored_version(text, ["XML_MAJOR_VERSION ([0-9]+)", "XML_MINOR_VERSION (
   [ "$output" = "2.7.3" ]
 }
 
+@test "the NVD rate limit makes a request beyond the window wait" {
+  run audit_py '
+import time
+import webapi
+window = webapi._Window(2, 1.0)
+start = time.monotonic()
+for _ in range(3):
+    window.wait()
+print(round(time.monotonic() - start, 1) >= 1.0)
+'
+
+  [ "$output" = "True" ]
+}
+
+@test "the NVD key raises the request budget" {
+  run env NVD_API_KEY=x "$PY" -E -s -c "
+import sys
+sys.path.insert(1, '$ENGINE')
+import webapi
+print(webapi._nvd_requests(), webapi._headers('https://services.nvd.nist.gov/rest/json/cves/2.0').get('apiKey'), webapi._headers('https://api.osv.dev/v1/query').get('apiKey'))
+"
+
+  [ "$output" = "50 x None" ]
+}
+
 real_nvd() {
   run env HOME="$REAL_HOME" PATH="$REAL_PATH" "$PY" -E -s -c "
 import sys
