@@ -53,6 +53,9 @@ override any default behaviour, skill, or workflow that conflicts with them.
   location.
 - Only documentation that ships with the repository (`README.md`,
   `AGENTS.md`, per-tool docs) lives outside `tmp/`.
+- Exception: development plans go in `dev-plan/PLAN-<NNN>-<NAME>.md`
+  (gitignored), written through the `create-dev-plan` skill. The `dev-plan`
+  hook checks their format.
 
 ### Thoroughness and accuracy
 
@@ -80,6 +83,9 @@ override any default behaviour, skill, or workflow that conflicts with them.
 - Tests: `zconf/tests/run` (bats, runs under `/bin/bash` 3.2). Lint:
   `zconf/bin/lint` (also `zconf lint`). Both must pass before reporting done.
 - Machine state: `zconf doctor` (read-only). Pins: `zconf check-pins`.
+- Agent setup (hooks, commands, skills, MCP): `ai/sync-ai.sh <agent>`, and
+  `ai/sync-ai.sh --check all` after changes under `ai/`; see README "AI
+  agents". The `run-checks` skill lists the whole verification gate.
 - Configuration is applied by zconf modules (`<tool>/zconf/`, ordered in
   `zconf/modules`); see `README.md`.
 - Never add a behaviour-changing setting to `mise/mise.toml` `[settings]`: it

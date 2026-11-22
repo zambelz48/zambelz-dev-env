@@ -20,6 +20,7 @@ the machine, reports and applies updates, and scans for vulnerabilities.
 1. [How it works](#how-it-works)
 1. [Pins and updates](#pins-and-updates)
 1. [Security audit and pre-push hook](#security-audit-and-pre-push-hook)
+1. [AI agents](#ai-agents)
 1. [Kitty](#kitty)
 1. [Zsh](#zsh)
 1. [Neovim](#neovim)
@@ -214,6 +215,89 @@ run `uv lock` in `tools/python`, then `zconf apply tools`.
   changes do not affect the result, and blocks the push if any fails (a scan
   that cannot run also blocks). `git push --no-verify` skips it.
 
+## AI agents
+
+Claude Code, OpenCode and Antigravity get the same project setup when they
+work on this repository: guard hooks, slash commands, skills and MCP servers.
+The rules stay in `AGENTS.md`, which all three read on their own.
+
+### Use
+
+```sh
+ai/sync-ai.sh claude                 # or opencode, antigravity, all; several at once
+ai/sync-ai.sh --check all            # exit 1 when a synced agent's files are out of date
+ai/sync-ai.sh --clean antigravity    # remove what the sync wrote for that agent
+```
+
+Run `ai/sync-ai.sh <agent>` once per machine, and again after a pull that
+changes `ai/`. After syncing OpenCode, run `opencode service restart`: the
+background service caches plugins. The generated files are gitignored and
+belong to the script; edit the source under `ai/` instead.
+
+| Agent | Generated files |
+| --- | --- |
+| Claude Code | `.claude/settings.json` (hooks, MCP servers to enable), `.claude/commands/`, `.claude/skills/`, `.mcp.json` |
+| OpenCode | `.opencode/opencode.json` (MCP), `.opencode/plugins/zambelz-dev-env/`, `.opencode/commands/`, `.opencode/skills/` |
+| Antigravity | `.agents/plugins/zambelz-dev-env/` (`hooks.json`, `mcp_config.json`, `skills/`; commands become skills) |
+
+- `.claude/settings.local.json`, the tracked root `opencode.json` and any
+  other file in those folders are never touched. A file the sync did not
+  write is reported with `WARN:` and left alone; a generated file edited by
+  hand is moved to `tmp/ai/backup/<timestamp>/` before it is rewritten.
+- The sync warns when an installed agent's version differs from the one this
+  setup was tested with (`TESTED_VERSION` in `ai/lib/agents/<agent>.py`:
+  Claude Code 2.1.330, OpenCode 2.2.7, Antigravity CLI 1.5.14), and runs
+  `agy plugin validate --strict` on the Antigravity plugin.
+- Antigravity prefixes the plugin's MCP servers with its name
+  (`zambelz-dev-env_context7`).
+- OpenCode also loads `.opencode/plugins/` from every parent directory, so do
+  not sync a clone that sits inside another synced checkout: both plugins
+  share the id `zambelz-dev-env`, and the outer one can win.
+
+### Hooks
+
+Every agent calls one entry point, `ai/hook.sh <agent> <event>`. It turns the
+agent's payload into one normalized event, runs the hooks listed in
+`ai/hooks/hooks.toml` in order (the first deny wins), and replies in that
+agent's own format. A hook never approves a call; with no objection, the
+agent's own permission rules decide. Every failure (a crash, a payload it
+cannot read, a missing `python3`) blocks the call.
+
+| Hook | When | What it does |
+| --- | --- | --- |
+| `cve-guard` | before a shell command; after any file-changing tool | Blocks `git commit` and `git push` while `zconf audit --declared` reports findings or cannot run. After a change to `mise/mise.toml`, `mise/mise.lock`, `tools/npm/{package.json,pnpm-lock.yaml,pnpm-workspace.yaml}` or `tools/python/{pyproject.toml,uv.lock}`, runs the audit and shows the agent the result |
+| `dev-plan` | before a write or edit | Blocks a `dev-plan/PLAN-*.md` that misses `## MANDATORY RULES`, `## Overview`, a `## Phase <n>` with checkbox tasks, the rule phrases "Adhere to AGENTS.md", "Mark completed tasks" and "Work phase by phase", or that has an invalid checkbox list item. Edits are checked on the whole new file |
+
+- The CVE guard reads the command text: a commit hidden behind `bash -c`,
+  `eval`, a variable or an alias is not detected, and the audit reads the
+  working tree, not the staged files. The pre-push hook still audits the
+  exact pushed commit. There is no ignore list and no bypass.
+- On Antigravity, findings after a tool reach the agent at its next model
+  call (its `PostToolUse` hook has no reply channel), through `PreInvocation`.
+
+### Content
+
+| Kind | Source | Items |
+| --- | --- | --- |
+| Commands | `ai/commands/<name>.md` (`description`, optional `argument-hint`) | `check`, `audit`, `make-plan`, `resume-plan`, `deep-research` |
+| Skills | `ai/skills/<name>/SKILL.md` (`name` equal to the folder, `description`) | `run-checks`, `fix-cve`, `create-dev-plan`, `deep-research` |
+| MCP servers | `ai/mcp.json` (Claude Code's `mcpServers` shape; a block named after an agent overrides keys for that agent) | `context7` |
+| Hooks | `ai/hooks/hooks.toml` plus `ai/hooks/<module>.py` with `handle(event)` | `cve-guard`, `dev-plan` |
+
+Antigravity has no commands, so each command becomes a skill there; both run
+as `/<name>`. A command named like a skill (`deep-research`) is that skill's
+entry point: OpenCode gets both, Claude Code and Antigravity get only the
+skill, which their `/` menu already runs.
+
+Development plans live in `dev-plan/PLAN-<NNN>-<NAME>.md` (gitignored),
+written through the `create-dev-plan` skill; research reports go to
+`tmp/docs/deep-research/`. To add a hook, write `ai/hooks/<module>.py` with a
+`handle(event)` that returns `events.deny(...)`, `events.warn(...)` or `None`,
+list it in `hooks.toml` with its events (`tool.before`, `tool.after`), add a
+test in `zconf/tests/`, and run `ai/sync-ai.sh all`. The tool names each
+agent uses are in `ai/lib/tools.py`, the one table both the wiring and the
+decoding read.
+
 ## Kitty
 
 - `kitty/kitty.base.conf`: tracked, shared settings.
@@ -300,6 +384,7 @@ run `uv lock` in `tools/python`, then `zconf apply tools`.
 ├── tools/                # npm and Python tools: manifests, locks, overrides
 │   └── zconf/            # module, command list, smoke tests
 ├── zsh/ kitty/ tmux/ neovim/ git/   # configs, each with a zconf/ module dir
+├── ai/                   # agent setup: sync-ai.sh, hook.sh, commands, skills, hooks, MCP
 ├── .githooks/pre-push
 └── AGENTS.md             # rules for AI coding agents
 ```
@@ -308,6 +393,13 @@ run `uv lock` in `tools/python`, then `zconf apply tools`.
 
 - Tests: `zconf/tests/run` (bats-core, pinned through mise, run under macOS's
   `/bin/bash` 3.2). Tests tagged `network` call the real osv-scanner.
+- AI agents, live: `ZC_AI_LIVE=1 zconf/tests/run zconf/tests/ai_live.bats`
+  clones the committed repository into a fresh temporary directory (kept for
+  inspection only when a test fails), syncs every agent and drives
+  Claude Code, OpenCode and Antigravity headless against the hooks, skills and
+  MCP server. It needs the agents installed and signed in, and spends model
+  usage; `ZC_AI_LIVE_CLAUDE_MODEL` and `ZC_AI_LIVE_OPENCODE_MODEL` pick the
+  models. Run it after an agent upgrade, then update `TESTED_VERSION`.
 - Lint: `zconf lint`.
 - Health: `zconf doctor`.
 - CI: `.github/workflows/ci.yml` bootstraps a fresh `fedora:44` and

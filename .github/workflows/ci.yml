@@ -68,6 +68,11 @@ jobs:
           zsh -c 'zconf/tests/run && zconf lint && zconf check-pins &&
             zconf audit'
 
+      - name: AI agent setup renders and stays in sync
+        run: |
+          cd "$HOME/zambelz-dev-env"
+          zsh -c 'ai/sync-ai.sh all && ai/sync-ai.sh --check all'
+
       - name: Language servers start and overrides hold
         run: |
           cd "$HOME/zambelz-dev-env"
