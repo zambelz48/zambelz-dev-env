@@ -146,7 +146,13 @@ def verify(catalog: Catalog, components: list[Component], managers: list[str]) -
                 repo_source = Source("github-advisories", {"repo": entry["repo"]})
                 unique[(repo_source.kind, entry["repo"])] = repo_source
 
-            for cpe in entry.get("cpe", []):
+            nested = [
+                *entry.get("cpe", []),
+                *[vendored["cpe"] for vendored in entry.get("vendored", [])],
+                *[cpe for ship in entry.get("bundled_from_lock_url", {}).get("ships", []) for cpe in ship.get("cpe", [])],
+            ]
+
+            for cpe in nested:
                 unique[("nvd", cpe)] = Source("nvd", {"cpe": cpe})
 
     with ThreadPoolExecutor(max_workers=PARALLEL) as pool:

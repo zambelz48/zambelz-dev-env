@@ -131,6 +131,7 @@ repo = "Kotlin/kotlin-lsp"
 [mise-tool.java]
 repo = "adoptium/temurin-build"
 cpe = ["cpe:2.3:a:oracle:openjdk", "cpe:2.3:a:eclipse:temurin"]
+cna = [{ source = "secalert_us@oracle.com", keyword = "Java SE", vendor = "Oracle Corporation", product = "Oracle Java SE", product_match = "contains", version_prefix = "Oracle Java SE:", listed_means = "up-to-in-line" }]
 version_pattern = '^temurin-([0-9]+\.[0-9]+\.[0-9]+)'
 eol = "eclipse-temurin"
 
@@ -153,6 +154,7 @@ cpe = ["cpe:2.3:a:neovim:neovim"]
 [mise-tool.node]
 repo = "nodejs/node"
 cpe = ["cpe:2.3:a:nodejs:node.js"]
+cna = [{ source = "support@hackerone.com", keyword = "Node.js", vendor = "nodejs", product = "node" }]
 feeds = ["node"]
 eol = "nodejs"
 
@@ -169,8 +171,31 @@ upstream_files = ["pnpm-lock.yaml"]
 [mise-tool.python]
 repo = "python/cpython"
 cpe = ["cpe:2.3:a:python:python"]
+cna = [{ source = "cna@python.org", vendor = "Python Software Foundation", product = "CPython" }]
 eol = "python"
-bundled_from_lock_url = { repo = "astral-sh/python-build-standalone", url_regex = 'python-build-standalone/releases/download/([0-9]+)/', path = "pythonbuild/downloads.py" }
+
+[mise-tool.python.bundled_from_lock_url]
+repo = "astral-sh/python-build-standalone"
+url_regex = 'python-build-standalone/releases/download/([0-9]+)/'
+path = "pythonbuild/downloads.py"
+ships = [
+  { key = "openssl-3.5", cpe = ["cpe:2.3:a:openssl:openssl"], cna = [{ source = "openssl-security@openssl.org", vendor = "OpenSSL", product = "OpenSSL" }] },
+  { key = "sqlite", version_regex = '^([0-9])([0-9]{2})([0-9]{2})[0-9]{2}$', cpe = ["cpe:2.3:a:sqlite:sqlite"], cna = [{ keyword = "SQLite", vendor = "SQLite", product = "SQLite" }] },
+  { key = "zlib", cpe = ["cpe:2.3:a:zlib:zlib"], cna = [{ keyword = "zlib", vendor = "zlib", product = "zlib" }] },
+  { key = "expat", cpe = ["cpe:2.3:a:libexpat_project:libexpat"], cna = [{ keyword = "libexpat", vendor = "libexpat", product = "libexpat" }, { keyword = "libexpat", vendor = "libexpat project", product = "libexpat" }] },
+  { key = "xz", cpe = ["cpe:2.3:a:tukaani:xz"] },
+  { key = "bzip2", cpe = ["cpe:2.3:a:bzip:bzip2"] },
+  { key = "libffi", cpe = ["cpe:2.3:a:libffi_project:libffi"] },
+  { key = "mpdecimal", shipped_by = "python-build-standalone" },
+  { key = "ncurses", cpe = ["cpe:2.3:a:gnu:ncurses"] },
+  { key = "readline", cpe = ["cpe:2.3:a:gnu:readline"] },
+  { key = "uuid", shipped_by = "python-build-standalone" },
+  { key = "zstd", cpe = ["cpe:2.3:a:facebook:zstandard"] },
+  { key = "tcl", cpe = ["cpe:2.3:a:tcl:tcl"] },
+  { key = "tk", cpe = ['cpe:2.3:a:tcl:tcl\/tk'] },
+  { key = "pip", osv = ["PyPI:pip"] },
+  { key = "setuptools", osv = ["PyPI:setuptools"] },
+]
 installed = [
   { reader = "python-runtime" },
 ]

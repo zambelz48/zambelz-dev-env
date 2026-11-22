@@ -9,6 +9,7 @@ GITHUB_URL = re.compile(r"^https://github\.com/([^/]+/[^/.]+?)(?:\.git)?/?$")
 KNOWN_KEYS = {
     "repo",
     "cpe",
+    "cna",
     "osv",
     "upstream_tag",
     "upstream_files",
