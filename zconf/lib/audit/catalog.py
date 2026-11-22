@@ -5,7 +5,7 @@ from pathlib import Path
 
 from model import Component, Kind, Scope
 
-GITHUB_URL = re.compile(r"^https://github\.com/([^/]+/[^/.]+?)(?:\.git)?/?$")
+GITHUB_URL = re.compile(r"^(?:https://github\.com/|git@github\.com:|ssh://git@github\.com/)([^/]+/[^/]+?)(?:\.git)?/?$")
 KNOWN_KEYS = {
     "repo",
     "cpe",

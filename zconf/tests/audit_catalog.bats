@@ -134,6 +134,18 @@ EOF
   [[ "$output" == *'osv-commit {"commit": "1111111111111111111111111111111111111111"}'* ]]
 }
 
+@test "GitHub repositories are read from HTTPS and SSH URLs, including dotted names" {
+  run "$PY" -E -s -c "
+import sys
+sys.path.insert(1, '$ENGINE')
+from catalog import github_repo
+for url in ('https://github.com/mroth/evalcache', 'git@github.com:dracula/zsh.git', 'ssh://git@github.com/a/b.git', 'https://github.com/catgoose/nvim-colorizer.lua', 'https://github.com/x/y.git/', 'https://gitlab.com/x/y'):
+    print(github_repo(url))
+"
+
+  [ "$output" = $'mroth/evalcache\ndracula/zsh\na/b\ncatgoose/nvim-colorizer.lua\nx/y\nNone' ]
+}
+
 # bats test_tags=network
 @test "the repository's own catalog verifies against the live services" {
   run env HOME="$REAL_HOME" PATH="$REAL_PATH" ZC_ROOT="$REAL_ROOT" "$PY" -E -s "$ENGINE" catalog --verify
