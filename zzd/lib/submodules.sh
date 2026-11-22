@@ -1,0 +1,172 @@
+# shellcheck shell=bash
+
+_zzd_sub_paths() {
+  local config path
+  config="$(git config --file "${ZZD_ROOT:?}/.gitmodules" \
+    --get-regexp '^submodule\..*\.path$' 2>/dev/null)" || config=""
+  while read -r _ path; do
+    case "$path" in
+      "$1"/*) printf '%s\n' "$path" ;;
+      *) ;;
+    esac
+  done <<<"$config"
+}
+
+_zzd_sub_entries() {
+  local paths path lines line state sha list=()
+  paths="$(_zzd_sub_paths "$1")"
+  while IFS= read -r path; do
+    if [ -n "$path" ]; then
+      list+=("$path")
+    fi
+  done <<<"$paths"
+  if [ "${#list[@]}" -eq 0 ]; then
+    return 0
+  fi
+  lines="$(git -C "$ZZD_ROOT" submodule status -- "${list[@]}" \
+    2>/dev/null)" || return 1
+  while IFS= read -r line; do
+    if [ -z "$line" ]; then
+      continue
+    fi
+    case "${line:0:1}" in
+      ' ') state=ok ;;
+      -) state=missing ;;
+      +) state=moved ;;
+      *) state=conflict ;;
+    esac
+    read -r sha path _ <<<"${line:1}"
+    printf '%s\t%s\t%s\n' "$state" "$path" "$sha"
+  done <<<"$lines"
+}
+
+_zzd_sub_recorded() {
+  local line sha=""
+  line="$(git -C "${ZZD_ROOT:?}" ls-files --stage -- "$1" 2>/dev/null)" ||
+    line=""
+  read -r _ sha _ <<<"$line"
+  printf '%s' "$sha"
+}
+
+_zzd_sub_was_recorded() {
+  local log old new
+  log="$(git -C "${ZZD_ROOT:?}" log --format= --raw --no-abbrev -- "$1" \
+    2>/dev/null)" || return 1
+  while read -r _ _ old new _; do
+    if [ "$old" = "$2" ] || [ "$new" = "$2" ]; then
+      return 0
+    fi
+  done <<<"$log"
+  return 1
+}
+
+_zzd_sub_update() {
+  zzd_do git -C "${ZZD_ROOT:?}" \
+    -c "url.https://github.com/.insteadOf=git@github.com:" \
+    submodule update --quiet --init --recursive -- "$1"
+}
+
+_zzd_sub_left_alone() {
+  zzd_warn "submodule $1 is at $2, not the recorded $3; left as is" \
+    "git -C ${ZZD_ROOT:?} submodule update -- $1"
+}
+
+_zzd_sub_apply_one() {
+  local module="$1" state="$2" path="$3" head="$4" dir recorded changes
+  dir="${ZZD_ROOT:?}/$path"
+  case "$state" in
+    ok)
+      zzd_ok "submodule $path at $head"
+      return 0
+      ;;
+    missing)
+      if _zzd_sub_update "$path"; then
+        zzd_changed "submodule $path checked out at $head"
+        return 0
+      fi
+      zzd_error "submodule $path checkout failed" \
+        "git -C $ZZD_ROOT submodule update --init --recursive -- $path"
+      return 1
+      ;;
+    moved) ;;
+    *)
+      zzd_error "submodule $path has a merge conflict" "git -C $ZZD_ROOT status"
+      return 1
+      ;;
+  esac
+  recorded="$(_zzd_sub_recorded "$path")"
+  if ! _zzd_sub_was_recorded "$path" "$head"; then
+    _zzd_sub_left_alone "$path" "$head" "$recorded"
+    return 0
+  fi
+  changes="$(git -C "$dir" status --porcelain --untracked-files=no \
+    2>/dev/null)" || changes=""
+  if [ -n "$changes" ]; then
+    zzd_error "$dir has local changes" \
+      "git -C $dir stash, then zzd apply $module"
+    return 1
+  fi
+  if _zzd_sub_update "$path"; then
+    zzd_changed "submodule $path $head -> $recorded"
+    return 0
+  fi
+  zzd_error "submodule $path checkout of $recorded failed" \
+    "zzd apply $module"
+  return 1
+}
+
+_zzd_sub_check_one() {
+  local module="$1" state="$2" path="$3" head="$4" recorded
+  case "$state" in
+    ok)
+      zzd_ok "submodule $path at $head"
+      return 0
+      ;;
+    missing)
+      zzd_error "submodule $path is not checked out" "zzd apply $module"
+      return 1
+      ;;
+    moved) ;;
+    *)
+      zzd_error "submodule $path has a merge conflict" \
+        "git -C ${ZZD_ROOT:?} status"
+      return 1
+      ;;
+  esac
+  recorded="$(_zzd_sub_recorded "$path")"
+  if ! _zzd_sub_was_recorded "$path" "$head"; then
+    _zzd_sub_left_alone "$path" "$head" "$recorded"
+    return 0
+  fi
+  zzd_error "submodule $path at $head, recorded $recorded" \
+    "zzd apply $module"
+  return 1
+}
+
+_zzd_submodules_each() {
+  local each="$1" module="$2" entries state path head status=0
+  if [ ! -f "${ZZD_ROOT:?}/.gitmodules" ]; then
+    return 0
+  fi
+  if ! entries="$(_zzd_sub_entries "$module")"; then
+    zzd_error "cannot read the submodules under $module" \
+      "git -C $ZZD_ROOT submodule status -- $module"
+    return 1
+  fi
+  while IFS=$'\t' read -r state path head; do
+    if [ -n "$path" ]; then
+      "$each" "$module" "$state" "$path" "$head" || status=1
+    fi
+  done <<<"$entries"
+  return "$status"
+}
+
+# Moves a stale checkout (a commit the repository recorded before) to the
+# recorded commit; any other commit is the owner's work and is left alone.
+zzd_submodules_apply() {
+  _zzd_submodules_each _zzd_sub_apply_one "$1"
+}
+
+zzd_submodules_check() {
+  _zzd_submodules_each _zzd_sub_check_one "$1"
+}

@@ -1,0 +1,180 @@
+#!/usr/bin/env bash
+set -u
+
+ZZD_EXIT_USAGE=2
+
+self="$0"
+while [ -L "$self" ]; do
+  link="$(readlink "$self")"
+  case "$link" in
+    /*) self="$link" ;;
+    *) self="$(dirname "$self")/$link" ;;
+  esac
+done
+ZZD_ROOT="$(cd "$(dirname "$self")/../.." && pwd -P)"
+export ZZD_ROOT
+
+for lib in log paths os exec version misebin links fonts modules doctor \
+  audit upgrade; do
+  # shellcheck source=/dev/null
+  . "$ZZD_ROOT/zzd/lib/$lib.sh"
+done
+owned_log=""
+if [ -z "${ZZD_RUN_LOG:-}" ]; then
+  owned_log=1
+fi
+zzd_log_init
+
+remove_owned_log() {
+  if [ -n "$owned_log" ]; then
+    rm -f "$ZZD_RUN_LOG"
+  fi
+}
+trap remove_owned_log EXIT
+
+usage() {
+  cat <<'EOF'
+usage: zzd <command> [args]
+
+  apply [--dry-run] [module...]   install and link what is missing
+  doctor [--perf] [module...]     read-only health check
+  update [module...]              report newer versions (read-only)
+  upgrade [--yes] [--major] [--dry-run] [tool...]
+                                  apply newer versions, re-lock, install
+  use <tool> <version>            make a version the global default
+  lint                            run the shell, zsh and Lua linters
+  check-pins                      fail on floating or unlocked pins
+  audit [--declared|--installed|--all] [--json]
+                                  audit every pinned and installed component
+                                  for known vulnerabilities (default --all)
+  help                            show this help
+
+  zzd <module>                  same as: zzd apply <module>
+  zzd neovim check-updates      interactive neovim plugin pin updates
+EOF
+}
+
+usage_error() {
+  printf '%s\n' "$1" >&2
+  usage >&2
+  exit "$ZZD_EXIT_USAGE"
+}
+
+need_mise() {
+  if zzd_mise_ready; then
+    return 0
+  fi
+  zzd_mise_check
+  zzd_summary
+  exit 1
+}
+
+applies_mise() {
+  local module
+  if [ "$#" -eq 0 ]; then
+    return 0
+  fi
+  for module in "$@"; do
+    if [ "$module" = "mise" ]; then
+      return 0
+    fi
+  done
+  return 1
+}
+
+run_phase() {
+  local phase="$1" module failed=0
+  shift
+  for module in "$@"; do
+    zzd_module_known "$module" || usage_error "zzd: unknown module: $module"
+  done
+  if [ "$phase" != "apply" ] || ! applies_mise "$@"; then
+    need_mise
+  fi
+  zzd_modules_run "$phase" "$@" || failed=1
+  zzd_summary || failed=1
+  return "$failed"
+}
+
+command="${1:-help}"
+if [ "$#" -gt 0 ]; then
+  shift
+fi
+
+# Reporting commands must never install; mise's documented per-process switch.
+case "$command" in
+  doctor | update | check-pins | audit)
+    MISE_AUTO_INSTALL=0
+    export MISE_AUTO_INSTALL
+    ;;
+  *) ;;
+esac
+
+case "$command" in
+  help | -h | --help)
+    usage
+    ;;
+  apply)
+    if [ "${1:-}" = "--dry-run" ]; then
+      ZZD_DRY_RUN=1
+      export ZZD_DRY_RUN
+      shift
+    fi
+    run_phase apply "$@"
+    ;;
+  doctor)
+    core_failed=0
+    if [ "${1:-}" = "--perf" ]; then
+      shift
+      zzd_doctor_perf
+    fi
+    need_mise
+    if [ "$#" -eq 0 ]; then
+      zzd_info "core: doctor"
+      zzd_doctor_core || core_failed=1
+    fi
+    run_phase doctor "$@" || core_failed=1
+    exit "$core_failed"
+    ;;
+  update)
+    run_phase update "$@"
+    ;;
+  lint)
+    need_mise
+    remove_owned_log
+    exec "$ZZD_ROOT/zzd/bin/lint"
+    ;;
+  check-pins)
+    need_mise
+    zzd_python "$ZZD_ROOT/zzd/lib/check_pins.py" \
+      "$ZZD_ROOT/mise/mise.toml" "$ZZD_ROOT/mise/mise.lock" \
+      "$ZZD_ROOT/zsh/zzd/pins" "$ZZD_ROOT/tmux/.tmux.conf" \
+      "$ZZD_ROOT/tmux/zzd/pins" "$ZZD_ROOT/tools/npm/package.json" \
+      "$ZZD_ROOT/tools/python/pyproject.toml"
+    ;;
+  audit)
+    need_mise
+    zzd_audit "$@"
+    ;;
+  upgrade)
+    need_mise
+    zzd_upgrade "$@"
+    ;;
+  use)
+    need_mise
+    zzd_use "$@"
+    ;;
+  *)
+    if [ "$command" = "neovim" ] && [ "${1:-}" = "check-updates" ]; then
+      shift
+      need_mise
+      remove_owned_log
+      exec bash "$ZZD_ROOT/neovim/scripts/apply_plugin_updates.sh" "$@"
+    fi
+    if zzd_module_known "$command" 2>/dev/null; then
+      run_phase apply "$command"
+    else
+      usage_error "zzd: unknown command: $command"
+    fi
+    ;;
+esac

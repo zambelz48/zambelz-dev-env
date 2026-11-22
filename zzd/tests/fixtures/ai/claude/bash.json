@@ -1,0 +1,11 @@
+{
+  "session_id": "session-1",
+  "transcript_path": "/tmp/transcript.jsonl",
+  "cwd": "@REPO@",
+  "hook_event_name": "PreToolUse",
+  "tool_name": "Bash",
+  "tool_input": {
+    "command": "@COMMAND@",
+    "description": "Run a command"
+  }
+}

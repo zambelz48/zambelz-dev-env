@@ -1,0 +1,406 @@
+[mise.mise]
+repo = "jdx/mise"
+cpe = ["cpe:2.3:a:jdx:mise"]
+osv = ["crates.io:mise"]
+upstream_files = ["Cargo.lock"]
+
+[mise-tool."aqua:bats-core/bats-core"]
+repo = "bats-core/bats-core"
+osv = ["npm:bats"]
+
+[mise-tool.biome]
+repo = "biomejs/biome"
+osv = ["npm:@biomejs/biome"]
+upstream_tag = "@biomejs/biome@{version}"
+upstream_files = ["Cargo.lock"]
+shipped_crates = ["biome_cli"]
+
+[mise-tool."cargo:neocmakelsp"]
+repo = "neocmakelsp/neocmakelsp"
+osv = ["crates.io:neocmakelsp"]
+upstream_files = ["Cargo.lock"]
+shipped_crates = ["neocmakelsp"]
+
+[mise-tool.cmake]
+repo = "Kitware/CMake"
+cpe = ["cpe:2.3:a:cmake_project:cmake"]
+vendored = [
+  { name = "curl", path = "Utilities/cmcurl/include/curl/curlver.h", regex = 'LIBCURL_VERSION "([0-9.]+)', cpe = "cpe:2.3:a:haxx:libcurl" },
+  { name = "zlib", path = "Utilities/cmzlib/zlib.h", regex = 'ZLIB_VERSION "([0-9.]+)', cpe = "cpe:2.3:a:zlib:zlib" },
+  { name = "libarchive", path = "Utilities/cmlibarchive/libarchive/archive.h", regex = 'ARCHIVE_VERSION_ONLY_STRING "([0-9.]+)', cpe = "cpe:2.3:a:libarchive:libarchive" },
+  { name = "expat", path = "Utilities/cmexpat/lib/expat.h", regex = ['XML_MAJOR_VERSION ([0-9]+)', 'XML_MINOR_VERSION ([0-9]+)', 'XML_MICRO_VERSION ([0-9]+)'], cpe = "cpe:2.3:a:libexpat_project:libexpat" },
+  { name = "nghttp2", path = "Utilities/cmnghttp2/lib/includes/nghttp2/nghttp2ver.h", regex = 'NGHTTP2_VERSION "([0-9.]+)', cpe = "cpe:2.3:a:nghttp2:nghttp2" },
+  { name = "libuv", path = "Utilities/cmlibuv/include/uv/version.h", regex = ['UV_VERSION_MAJOR ([0-9]+)', 'UV_VERSION_MINOR ([0-9]+)', 'UV_VERSION_PATCH ([0-9]+)'], cpe = "cpe:2.3:a:libuv:libuv" },
+  { name = "zstd", path = "Utilities/cmzstd/lib/zstd.h", regex = ['ZSTD_VERSION_MAJOR\s+([0-9]+)', 'ZSTD_VERSION_MINOR\s+([0-9]+)', 'ZSTD_VERSION_RELEASE\s+([0-9]+)'], cpe = "cpe:2.3:a:facebook:zstandard" },
+  { name = "liblzma", path = "Utilities/cmliblzma/liblzma/api/lzma/version.h", regex = ['LZMA_VERSION_MAJOR ([0-9]+)', 'LZMA_VERSION_MINOR ([0-9]+)', 'LZMA_VERSION_PATCH ([0-9]+)'], cpe = "cpe:2.3:a:tukaani:xz" },
+  { name = "bzip2", path = "Utilities/cmbzip2/bzlib_private.h", regex = 'BZ_VERSION\s+"([0-9.]+)', cpe = "cpe:2.3:a:bzip:bzip2" },
+]
+
+[mise-tool.dart]
+repo = "dart-lang/sdk"
+advisory_product = "Dart"
+cpe = ["cpe:2.3:a:dart:dart_software_development_kit"]
+upstream_tag = "{version}"
+upstream_deps = "DEPS"
+
+[mise-tool.dotnet]
+repo = "dotnet/runtime"
+advisory_version = "dotnet-runtime"
+cpe = ["cpe:2.3:a:microsoft:.net_sdk"]
+feeds = ["dotnet"]
+eol = "dotnet"
+
+[mise-tool.fd]
+repo = "sharkdp/fd"
+osv = ["crates.io:fd-find"]
+upstream_files = ["Cargo.lock"]
+
+[mise-tool.flutter]
+repo = "flutter/flutter"
+cpe = ["cpe:2.3:a:flutter:flutter"]
+upstream_tag = "{version}"
+upstream_files = ["pubspec.lock"]
+upstream_deps = "DEPS"
+
+[mise-tool.fzf]
+repo = "junegunn/fzf"
+cpe = ["cpe:2.3:a:junegunn:fzf"]
+upstream_files = ["go.mod"]
+
+[mise-tool."gem:solargraph"]
+repo = "castwide/solargraph"
+osv = ["RubyGems:solargraph"]
+
+[mise-tool.gh]
+repo = "cli/cli"
+cpe = ["cpe:2.3:a:github:cli"]
+upstream_files = ["go.mod"]
+
+[mise-tool."github:OmniSharp/omnisharp-roslyn"]
+repo = "OmniSharp/omnisharp-roslyn"
+upstream_nuget_central = "Directory.Packages.props"
+
+[mise-tool."github:cantino/mcfly"]
+repo = "cantino/mcfly"
+osv = ["crates.io:mcfly"]
+upstream_files = ["Cargo.lock"]
+shipped_crates = ["mcfly"]
+
+[mise-tool."github:microsoft/vscode-js-debug"]
+repo = "microsoft/vscode-js-debug"
+upstream_files = ["package-lock.json"]
+
+[mise-tool."github:redhat-developer/vscode-xml"]
+repo = "redhat-developer/vscode-xml"
+upstream_tag = "{version}"
+bundles = [
+  { name = "lemminx", repo = "eclipse-lemminx/lemminx", version_from = "package.json:xmlServer.version", osv = ["Maven:org.eclipse.lemminx:org.eclipse.lemminx"], upstream_tag = "{version}", upstream_files = ["org.eclipse.lemminx/pom.xml"], upstream_context = ["pom.xml"] },
+]
+
+[mise-tool."github:ryanoasis/nerd-fonts"]
+repo = "ryanoasis/nerd-fonts"
+
+[mise-tool."github:vadimcn/codelldb"]
+repo = "vadimcn/codelldb"
+upstream_files = ["Cargo.lock", "package-lock.json"]
+shipped_crates = ["codelldb", "codelldb-launch"]
+installed = [
+  { reader = "command-version", path = "extension/lldb/bin/lldb", args = ["--version"], regex = 'lldb version ([0-9.]+)', cpe = "cpe:2.3:a:llvm:llvm" },
+]
+
+[mise-tool.glow]
+repo = "charmbracelet/glow"
+upstream_files = ["go.mod"]
+
+[mise-tool.go]
+repo = "golang/go"
+cpe = ["cpe:2.3:a:golang:go"]
+osv = ["Go:stdlib"]
+eol = "go"
+
+[mise-tool."go:github.com/go-delve/delve/cmd/dlv"]
+repo = "go-delve/delve"
+upstream_files = ["go.mod"]
+
+[mise-tool."go:golang.org/x/tools/gopls"]
+repo = "golang/tools"
+cpe = ["cpe:2.3:a:golang:gopls"]
+upstream_tag = "gopls/v{version}"
+upstream_files = ["gopls/go.mod"]
+
+[mise-tool."http:jdtls"]
+repo = "eclipse-jdtls/eclipse.jdt.ls"
+
+[mise-tool."http:kotlin-lsp"]
+repo = "Kotlin/kotlin-lsp"
+
+[mise-tool.java]
+repo = "adoptium/temurin-build"
+cpe = ["cpe:2.3:a:oracle:openjdk", "cpe:2.3:a:eclipse:temurin"]
+cna = [{ source = "secalert_us@oracle.com", keyword = "Java SE", vendor = "Oracle Corporation", product = "Oracle Java SE", product_match = "contains", version_prefix = "Oracle Java SE:", listed_means = "up-to-in-line" }]
+version_pattern = '^temurin-([0-9]+\.[0-9]+\.[0-9]+)'
+eol = "eclipse-temurin"
+
+[mise-tool.lua-language-server]
+repo = "LuaLS/lua-language-server"
+upstream_tag = "{version}"
+upstream_submodules = true
+
+[mise-tool.marksman]
+repo = "artempyanykh/marksman"
+upstream_tag = "{version}"
+installed = [
+  { reader = "dotnet-single-file", path = "marksman" },
+]
+
+[mise-tool.neovim]
+repo = "neovim/neovim"
+cpe = ["cpe:2.3:a:neovim:neovim"]
+
+[mise-tool.node]
+repo = "nodejs/node"
+cpe = ["cpe:2.3:a:nodejs:node.js"]
+cna = [{ source = "support@hackerone.com", keyword = "Node.js", vendor = "nodejs", product = "node" }]
+feeds = ["node"]
+eol = "nodejs"
+
+[mise-tool.osv-scanner]
+repo = "google/osv-scanner"
+upstream_files = ["go.mod"]
+
+[mise-tool.pnpm]
+repo = "pnpm/pnpm"
+cpe = ["cpe:2.3:a:pnpm:pnpm"]
+osv = ["npm:pnpm"]
+upstream_files = ["pnpm-lock.yaml"]
+
+[mise-tool.python]
+repo = "python/cpython"
+cpe = ["cpe:2.3:a:python:python"]
+cna = [{ source = "cna@python.org", vendor = "Python Software Foundation", product = "CPython" }]
+eol = "python"
+
+[mise-tool.python.bundled_from_lock_url]
+repo = "astral-sh/python-build-standalone"
+url_regex = 'python-build-standalone/releases/download/([0-9]+)/'
+path = "pythonbuild/downloads.json"
+ships = [
+  { key = "openssl-3.5", cpe = ["cpe:2.3:a:openssl:openssl"], cna = [{ source = "openssl-security@openssl.org", vendor = "OpenSSL", product = "OpenSSL" }] },
+  { key = "sqlite", version_regex = '^([0-9])([0-9]{2})([0-9]{2})[0-9]{2}$', cpe = ["cpe:2.3:a:sqlite:sqlite"], cna = [{ keyword = "SQLite", vendor = "SQLite", product = "SQLite" }] },
+  { key = "zlib", cpe = ["cpe:2.3:a:zlib:zlib"], cna = [{ keyword = "zlib", vendor = "zlib", product = "zlib" }] },
+  { key = "expat", cpe = ["cpe:2.3:a:libexpat_project:libexpat"], cna = [{ keyword = "libexpat", vendor = "libexpat", product = "libexpat" }, { keyword = "libexpat", vendor = "libexpat project", product = "libexpat" }] },
+  { key = "xz", cpe = ["cpe:2.3:a:tukaani:xz"] },
+  { key = "bzip2", cpe = ["cpe:2.3:a:bzip:bzip2"] },
+  { key = "libffi", cpe = ["cpe:2.3:a:libffi_project:libffi"] },
+  { key = "mpdecimal", shipped_by = "python-build-standalone" },
+  { key = "ncurses", cpe = ["cpe:2.3:a:gnu:ncurses"] },
+  { key = "libedit", version_regex = '^[0-9]{8}-([0-9]+)\.([0-9]+)$', cpe = ["cpe:2.3:a:libedit_project:libedit"] },
+  { key = "uuid", shipped_by = "python-build-standalone" },
+  { key = "zstd", cpe = ["cpe:2.3:a:facebook:zstandard"] },
+  { key = "tcl", cpe = ["cpe:2.3:a:tcl:tcl"] },
+  { key = "tk", cpe = ['cpe:2.3:a:tcl:tcl\/tk'] },
+  { key = "pip", osv = ["PyPI:pip"] },
+  { key = "setuptools", osv = ["PyPI:setuptools"] },
+]
+installed = [
+  { reader = "python-runtime" },
+]
+
+[mise-tool.ripgrep]
+repo = "BurntSushi/ripgrep"
+cpe = ["cpe:2.3:a:ripgrep_project:ripgrep"]
+osv = ["crates.io:ripgrep"]
+upstream_tag = "{version}"
+upstream_files = ["Cargo.lock"]
+
+[mise-tool.ruby]
+repo = "ruby/ruby"
+cpe = ["cpe:2.3:a:ruby-lang:ruby"]
+feeds = ["rubysec"]
+eol = "ruby"
+
+[mise-tool.rust]
+repo = "rust-lang/rust"
+cpe = ["cpe:2.3:a:rust-lang:rust"]
+eol = "rust"
+
+[mise-tool.rust-analyzer]
+repo = "rust-lang/rust-analyzer"
+upstream_tag = "{version}"
+upstream_files = ["Cargo.lock"]
+shipped_crates = ["rust-analyzer"]
+
+[mise-tool.shellcheck]
+repo = "koalaman/shellcheck"
+cpe = ["cpe:2.3:a:vidarholen:shellcheck"]
+installed = [
+  { reader = "haskell-binary", path = "shellcheck-v{version}/shellcheck" },
+]
+
+[mise-tool.terraform-ls]
+repo = "hashicorp/terraform-ls"
+upstream_files = ["go.mod"]
+
+[mise-tool.tree-sitter]
+repo = "tree-sitter/tree-sitter"
+osv = ["crates.io:tree-sitter-cli"]
+upstream_files = ["Cargo.lock"]
+shipped_crates = ["tree-sitter-cli"]
+
+[mise-tool.uv]
+repo = "astral-sh/uv"
+cpe = ["cpe:2.3:a:astral:uv"]
+osv = ["PyPI:uv"]
+upstream_tag = "{version}"
+upstream_files = ["Cargo.lock"]
+
+[nvim-plugin."cmp-buffer"]
+repo = "hrsh7th/cmp-buffer"
+
+[nvim-plugin.cmp_luasnip]
+repo = "saadparwaiz1/cmp_luasnip"
+
+[nvim-plugin."cmp-nvim-lsp"]
+repo = "hrsh7th/cmp-nvim-lsp"
+
+[nvim-plugin."copilot.lua"]
+repo = "zbirenbaum/copilot.lua"
+
+[nvim-plugin."copilot-lualine"]
+repo = "AndreM222/copilot-lualine"
+
+[nvim-plugin."dracula.nvim"]
+repo = "Mofiqul/dracula.nvim"
+
+[nvim-plugin."fidget.nvim"]
+repo = "j-hui/fidget.nvim"
+
+[nvim-plugin."gitsigns.nvim"]
+repo = "lewis6991/gitsigns.nvim"
+
+[nvim-plugin."indent-blankline.nvim"]
+repo = "lukas-reineke/indent-blankline.nvim"
+
+[nvim-plugin."lazy.nvim"]
+repo = "folke/lazy.nvim"
+
+[nvim-plugin."lualine.nvim"]
+repo = "nvim-lualine/lualine.nvim"
+
+[nvim-plugin.LuaSnip]
+repo = "L3MON4D3/LuaSnip"
+
+[nvim-plugin."markdown-preview.nvim"]
+repo = "iamcco/markdown-preview.nvim"
+
+[nvim-plugin.nvim-cmp]
+repo = "hrsh7th/nvim-cmp"
+
+[nvim-plugin."nvim-colorizer.lua"]
+repo = "catgoose/nvim-colorizer.lua"
+
+[nvim-plugin.nvim-dap]
+repo = "mfussenegger/nvim-dap"
+
+[nvim-plugin.nvim-dap-ui]
+repo = "rcarriga/nvim-dap-ui"
+
+[nvim-plugin.nvim-dap-virtual-text]
+repo = "theHamsta/nvim-dap-virtual-text"
+
+[nvim-plugin.nvim-jdtls]
+repo = "mfussenegger/nvim-jdtls"
+
+[nvim-plugin.nvim-lspconfig]
+repo = "neovim/nvim-lspconfig"
+
+[nvim-plugin.nvim-nio]
+repo = "nvim-neotest/nvim-nio"
+
+[nvim-plugin."nvim-tree.lua"]
+repo = "nvim-tree/nvim-tree.lua"
+
+[nvim-plugin.nvim-treesitter]
+repo = "nvim-treesitter/nvim-treesitter"
+
+[nvim-plugin.nvim-ts-context-commentstring]
+repo = "JoosepAlviste/nvim-ts-context-commentstring"
+
+[nvim-plugin.nvim-web-devicons]
+repo = "nvim-tree/nvim-web-devicons"
+
+[nvim-plugin."plenary.nvim"]
+repo = "nvim-lua/plenary.nvim"
+
+[nvim-plugin."telescope-fzf-native.nvim"]
+repo = "nvim-telescope/telescope-fzf-native.nvim"
+
+[nvim-plugin."telescope.nvim"]
+repo = "nvim-telescope/telescope.nvim"
+
+[nvim-plugin."telescope-ui-select.nvim"]
+repo = "nvim-telescope/telescope-ui-select.nvim"
+
+[nvim-plugin."todo-comments.nvim"]
+repo = "folke/todo-comments.nvim"
+
+[nvim-plugin."toggleterm.nvim"]
+repo = "akinsho/toggleterm.nvim"
+
+[nvim-plugin.vim-fugitive]
+repo = "tpope/vim-fugitive"
+
+[oh-my-zsh.oh-my-zsh]
+repo = "ohmyzsh/ohmyzsh"
+cpe = ["cpe:2.3:a:planetargon:oh_my_zsh"]
+
+[nvim-bundled.libuv]
+cpe = ["cpe:2.3:a:libuv:libuv", "cpe:2.3:a:libuv_project:libuv"]
+
+[nvim-bundled.luajit]
+cpe = ["cpe:2.3:a:luajit:luajit"]
+
+[nvim-bundled.lpeg]
+repo = "neovim/neovim"
+shipped_by = "neovim"
+
+[os-package."brew:zsh"]
+repo = "zsh-users/zsh"
+cpe = ["cpe:2.3:a:zsh:zsh"]
+
+[os-package."brew:git"]
+repo = "git/git"
+cpe = ["cpe:2.3:a:git-scm:git"]
+
+[os-package."brew:curl"]
+repo = "curl/curl"
+cpe = ["cpe:2.3:a:haxx:curl"]
+
+[os-package."brew:openssl@3"]
+repo = "openssl/openssl"
+cpe = ["cpe:2.3:a:openssl:openssl"]
+
+[os-package."brew:readline"]
+cpe = ["cpe:2.3:a:gnu:readline"]
+
+[os-package."brew:libyaml"]
+repo = "yaml/libyaml"
+cpe = ["cpe:2.3:a:pyyaml:libyaml"]
+
+[os-package."brew:gmp"]
+cpe = ["cpe:2.3:a:gmplib:gmp"]
+
+[os-package."brew:chafa"]
+repo = "hpjansson/chafa"
+
+[os-package."brew:tmux"]
+repo = "tmux/tmux"
+cpe = ["cpe:2.3:a:tmux_project:tmux"]
+
+[os-package."brew:mcfly"]
+repo = "cantino/mcfly"
+osv = ["crates.io:mcfly"]
+
+[os-package."brew-cask:kitty"]
+repo = "kovidgoyal/kitty"
+cpe = ["cpe:2.3:a:kovidgoyal:kitty"]

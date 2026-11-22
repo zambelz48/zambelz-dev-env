@@ -1,5 +1,5 @@
 [project]
-name = "zconf-python-tools"
+name = "zzd-python-tools"
 version = "0"
 # Matches the global python; older-python branches would pull in unfixed
 # dependency versions.

@@ -19,8 +19,8 @@ remove_tree() {
 run_step() {
   local short="$1"
   shift
-  if ! "$tree/zconf/bin/zconf" "$@"; then
-    printf 'ERROR: push blocked: zconf %s failed for %s\n' "$*" "$short" >&2
+  if ! "$tree/zzd/bin/zzd" "$@"; then
+    printf 'ERROR: push blocked: zzd %s failed for %s\n' "$*" "$short" >&2
     exit 1
   fi
 }
@@ -38,7 +38,7 @@ check_commit() {
   fi
   run_step "$short" check-pins
   run_step "$short" lint
-  run_step "$short" audit --declared
+  run_step "$short" audit --declared --gate
   remove_tree
 }
 

@@ -4,7 +4,7 @@ curl
 tar
 xz
 unzip
-# cmp, which zconf uses to compare installed fonts; absent from minimal images.
+# cmp, which zzd uses to compare installed fonts; absent from minimal images.
 diffutils
 gcc
 make
@@ -20,7 +20,7 @@ gmp-devel
 chafa
 kitty
 clang-tools-extra
-# fc-cache, run after zconf installs the mise-pinned fonts.
+# fc-cache, run after zzd installs the mise-pinned fonts.
 fontconfig
 # mise's prebuilt tmux stops at 3.7c, before the 3.8 theme colours the
 # config sets; older tmux loads the config without them.

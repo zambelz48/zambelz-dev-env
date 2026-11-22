@@ -1,0 +1,11 @@
+[[hook]]
+name = "cve-guard"
+module = "cve_guard"
+events = ["tool.before", "tool.after"]
+summary = "Blocks git commit and git push while zzd audit --declared --gate reports blocking findings, and reports audit results after a lockfile or manifest changes"
+
+[[hook]]
+name = "dev-plan"
+module = "dev_plan"
+events = ["tool.before"]
+summary = "Blocks writes and edits of dev-plan/PLAN-*.md that miss the required plan format"

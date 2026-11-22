@@ -1,0 +1,15 @@
+{
+  "directory": "@REPO@",
+  "event": {
+    "tool": "edit",
+    "sessionID": "ses_1",
+    "agent": "build",
+    "messageID": "msg_1",
+    "id": "call_1",
+    "input": {
+      "oldString": "@OLD@",
+      "newString": "@NEW@",
+      "path": "@FILE@"
+    }
+  }
+}

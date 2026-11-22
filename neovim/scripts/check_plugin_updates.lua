@@ -13,7 +13,7 @@
 --
 -- neovim/scripts/apply_plugin_updates.sh ties --candidates-file and --apply
 -- together into an interactive fzf multi-select flow — that's the one you
--- actually want to run day-to-day (wired up as `zconf neovim check-updates`).
+-- actually want to run day-to-day (wired up as `zzd neovim check-updates`).
 
 local script_path = debug.getinfo(1, 'S').source:sub(2) -- strip leading '@'
 local script_dir = vim.fn.fnamemodify(script_path, ':p:h')

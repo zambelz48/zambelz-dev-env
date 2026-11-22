@@ -1,0 +1,17 @@
+{
+  "session_id": "session-1",
+  "transcript_path": "/tmp/transcript.jsonl",
+  "cwd": "@REPO@",
+  "hook_event_name": "PreToolUse",
+  "tool_name": "MultiEdit",
+  "tool_input": {
+    "file_path": "@REPO@/@FILE@",
+    "edits": [
+      {
+        "old_string": "@OLD@",
+        "new_string": "@NEW@",
+        "replace_all": true
+      }
+    ]
+  }
+}

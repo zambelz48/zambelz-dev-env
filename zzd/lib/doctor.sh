@@ -1,0 +1,144 @@
+# shellcheck shell=bash
+
+_zzd_scan_rc() {
+  local name file number line trimmed
+  for name in .zshrc .zprofile .zshenv .profile.zsh; do
+    file="${ZZD_HOME:?}/$name"
+    if [ ! -f "$file" ]; then
+      continue
+    fi
+    number=0
+    while IFS= read -r line || [ -n "$line" ]; do
+      number=$((number + 1))
+      trimmed="${line#"${line%%[![:space:]]*}"}"
+      case "$trimmed" in
+        '#'*) continue ;;
+        *"mise activate"*"--shims"*) ;;
+        *"mise activate"*)
+          zzd_warn "$file:$number runs mise activate in hook mode" \
+            "remove line $number from $file"
+          ;;
+        *"fnm env"* | *"pyenv init"* | *"rbenv init"* | *"jenv init"* | \
+          *"gvm/scripts"* | *"version-managers.zsh"*)
+          zzd_warn "$file:$number loads a retired version manager" \
+            "remove line $number from $file"
+          ;;
+        *) ;;
+      esac
+    done <"$file"
+  done
+}
+
+_zzd_shadowed() {
+  local dir="$1" shims="$2" shim name names=""
+  for shim in "$shims"/*; do
+    name="${shim##*/}"
+    if [ -f "$dir/$name" ] && [ -x "$dir/$name" ]; then
+      names="$names $name"
+    fi
+  done
+  printf '%s' "${names# }"
+}
+
+_zzd_check_path() {
+  local shims="$ZZD_HOME/.local/share/mise/shims" output path_line entry
+  local seen_shims=0 status=0 entries shadowed
+  output="$(zsh -i -c 'print -r -- $PATH' 2>/dev/null)" || output=""
+  path_line="${output##*$'\n'}"
+  IFS=: read -r -a entries <<<"$path_line"
+  for entry in "${entries[@]}"; do
+    if [ "$entry" = "$shims" ]; then
+      seen_shims=1
+      break
+    fi
+    case "$entry" in
+      "$ZZD_HOME/.local/share/zzd/bin") ;;
+      */.pyenv/* | */.rbenv/* | */.jenv/* | */.gvm/* | *fnm*)
+        zzd_error "$entry comes before the mise shims on PATH" \
+          "zzd doctor (remove the retired manager lines it reports)"
+        status=1
+        ;;
+      *)
+        shadowed="$(_zzd_shadowed "$entry" "$shims")"
+        if [ -n "$shadowed" ]; then
+          zzd_error "$entry shadows mise shims: $shadowed" "zzd apply zsh"
+          status=1
+        fi
+        ;;
+    esac
+  done
+  if [ "$seen_shims" -eq 0 ]; then
+    zzd_error "mise shims are not on the interactive PATH" "zzd apply mise"
+    return 1
+  fi
+  case ":$path_line:" in
+    *":$ZZD_HOME/.local/bin:"*) ;;
+    *)
+      zzd_error "the mise command ($ZZD_HOME/.local/bin) is not on PATH" \
+        "zzd apply mise"
+      status=1
+      ;;
+  esac
+  if [ "$status" -eq 0 ]; then
+    zzd_ok "mise shims lead the tool locations on PATH"
+  fi
+  return "$status"
+}
+
+zzd_doctor_core() {
+  local status=0 os dir note
+  os="$(zzd_os)"
+  if [ "$os" = "unsupported" ]; then
+    zzd_error "unsupported OS" "use macOS, Fedora or Ubuntu"
+    status=1
+  else
+    zzd_ok "os: $os"
+  fi
+  zzd_github_token
+  if [ -n "${GITHUB_TOKEN:-}" ]; then
+    zzd_ok "GitHub token available"
+  else
+    zzd_warn "no GitHub token (mise downloads may hit the API rate limit)" \
+      "gh auth login"
+  fi
+  _zzd_check_path || status=1
+  _zzd_scan_rc
+  for dir in .pyenv .rbenv .jenv .gvm .local/share/fnm; do
+    if [ -d "$ZZD_HOME/$dir" ]; then
+      note="(retired; remove it manually when ready)"
+      zzd_info "$ZZD_HOME/$dir is present $note"
+    fi
+  done
+  return "$status"
+}
+
+zzd_doctor_perf() {
+  local samples="" ms median="unknown" hooks sorted values
+  for _ in 1 2 3 4 5; do
+    ms="$(zsh -c 'zmodload zsh/datetime; s=$EPOCHREALTIME
+zsh -i -c exit >/dev/null 2>&1
+printf "%.0f\n" $(( (EPOCHREALTIME - s) * 1000 ))' 2>/dev/null)" || ms=""
+    if [ -n "$ms" ]; then
+      samples="$samples$ms"$'\n'
+    fi
+  done
+  if [ -n "$samples" ]; then
+    sorted="$(sort -n <<<"$samples")"
+    values=()
+    while IFS= read -r ms; do
+      if [ -n "$ms" ]; then
+        values+=("$ms")
+      fi
+    done <<<"$sorted"
+    median="${values[$(((${#values[@]} - 1) / 2))]}"
+  fi
+  zzd_info "zsh startup median $median ms (5 runs)"
+  hooks="$(zsh -i -c 'print -r -- $precmd_functions $chpwd_functions' \
+    2>/dev/null)" || hooks=""
+  case "$hooks" in
+    *_mise_hook*)
+      zzd_warn "mise prompt hooks are active (hook mode)" "zzd doctor"
+      ;;
+    *) zzd_ok "no mise prompt hooks" ;;
+  esac
+}

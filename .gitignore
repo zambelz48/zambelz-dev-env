@@ -36,8 +36,19 @@ Temporary Items
 kitty/kitty.conf
 
 tmp/
+dev-plan/
 
-# installed by zconf apply tools
+/.claude/settings.json
+/.claude/commands/
+/.claude/skills/
+/.mcp.json
+/.opencode/opencode.json
+/.opencode/commands/
+/.opencode/skills/
+/.opencode/plugins/zambelz-dev-env/
+/.agents/plugins/zambelz-dev-env/
+
+# installed by zzd apply tools
 tools/npm/node_modules/
 tools/python/.venv/
 

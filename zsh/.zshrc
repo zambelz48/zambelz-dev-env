@@ -109,7 +109,7 @@ source "$ZAMBELZ_DEV_ENV_PATH/zsh/.themes/zsh-syntax-highlighting/zsh-syntax-hig
 
 # path_helper and the brew line above push the .zshenv entries back; pinned
 # tools must win, and the tools/ commands win over any same-named shim.
-path=("$HOME/.local/share/zconf/bin" "$HOME/.local/share/mise/shims" $path)
+path=("$HOME/.local/share/zzd/bin" "$HOME/.local/share/mise/shims" $path)
 
 # Cleanup PATH (de-duplicate)
 typeset -U path PATH
