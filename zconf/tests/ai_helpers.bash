@@ -1,0 +1,32 @@
+ai_test_setup() {
+  load helpers
+  zc_test_setup
+
+  REPO="$BATS_TEST_TMPDIR/repo"
+  AI="$REPO/ai"
+  export REPO AI
+
+  mkdir -p "$AI/commands" "$AI/skills" "$AI/hooks"
+  cp "$ZC_ROOT/ai/sync-ai.sh" "$ZC_ROOT/ai/hook.sh" "$AI/"
+  cp -R "$ZC_ROOT/ai/lib" "$AI/lib"
+  find "$AI/lib" -name __pycache__ -prune -exec rm -rf {} +
+}
+
+ai_command() {
+  local name="$1" description="$2" body="${3:-Run it.}"
+
+  printf -- '---\ndescription: %s\n---\n\n%s\n' "$description" "$body" >"$AI/commands/$name.md"
+}
+
+ai_skill() {
+  local name="$1" description="$2"
+
+  mkdir -p "$AI/skills/$name"
+  printf -- '---\nname: %s\ndescription: %s\n---\n\nDo it.\n' "$name" "$description" >"$AI/skills/$name/SKILL.md"
+}
+
+ai_hook_module() {
+  local module="$1" body="$2"
+
+  printf '%s\n' "$body" >"$AI/hooks/$module.py"
+}
