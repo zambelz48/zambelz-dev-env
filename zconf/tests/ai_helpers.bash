@@ -12,6 +12,12 @@ ai_test_setup() {
   find "$AI/lib" -name __pycache__ -prune -exec rm -rf {} +
 }
 
+ai_stub_agents() {
+  zc_stub claude 0 "2.1.330 (Claude Code)"
+  zc_stub opencode 0 "opencode v2.2.7"
+  zc_stub agy 0 "1.5.14"
+}
+
 ai_command() {
   local name="$1" description="$2" body="${3:-Run it.}"
 

@@ -38,6 +38,11 @@ kitty/kitty.conf
 tmp/
 dev-plan/
 
+/.claude/settings.json
+/.claude/commands/
+/.claude/skills/
+/.mcp.json
+
 # installed by zconf apply tools
 tools/npm/node_modules/
 tools/python/.venv/
