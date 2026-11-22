@@ -36,6 +36,7 @@ Temporary Items
 kitty/kitty.conf
 
 tmp/
+dev-plan/
 
 # installed by zconf apply tools
 tools/npm/node_modules/
