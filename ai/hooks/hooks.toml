@@ -2,7 +2,7 @@
 name = "cve-guard"
 module = "cve_guard"
 events = ["tool.before", "tool.after"]
-summary = "Blocks git commit and git push while zconf audit --declared reports findings, and reports audit results after a lockfile or manifest changes"
+summary = "Blocks git commit and git push while zconf audit --declared --gate reports blocking findings, and reports audit results after a lockfile or manifest changes"
 
 [[hook]]
 name = "dev-plan"

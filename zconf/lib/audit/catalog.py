@@ -13,6 +13,11 @@ KNOWN_KEYS = {
     "osv",
     "upstream_tag",
     "upstream_files",
+    "upstream_context",
+    "shipped_crates",
+    "advisory_version",
+    "advisory_product",
+    "upstream_nuget_central",
     "upstream_submodules",
     "upstream_deps",
     "vendored",
@@ -179,17 +184,38 @@ def _repo_sources(repo: str | None, version: str, commit: bool) -> list[Source]:
 def _entry_sources(entry: dict, component: Component) -> list[Source]:
     version = _version(entry, component.version)
     sources = _repo_sources(entry.get("repo"), version, False)
+
+    if sources and entry.get("advisory_version"):
+        sources[0].params["version_from"] = entry["advisory_version"]
+
+    if sources and entry.get("advisory_product"):
+        sources[0].params["product"] = entry["advisory_product"]
     tag = _tag(entry, version)
 
     for cpe in entry.get("cpe", []):
         sources.append(Source("nvd", {"cpe": cpe, "version": version}))
+
+    if entry.get("cna"):
+        sources.append(Source("cna", {"specs": entry["cna"], "version": version}))
 
     for package in entry.get("osv", []):
         ecosystem, _, name = package.partition(":")
         sources.append(Source("osv-package", {"ecosystem": ecosystem, "name": name, "version": version}))
 
     if entry.get("upstream_files"):
-        sources.append(Source("upstream-files", {"repo": entry["repo"], "tag": tag, "paths": entry["upstream_files"]}))
+        params = {"repo": entry["repo"], "tag": tag, "paths": entry["upstream_files"]}
+
+        if entry.get("upstream_context"):
+            params["context"] = entry["upstream_context"]
+
+        if entry.get("shipped_crates"):
+            params["roots"] = entry["shipped_crates"]
+
+        sources.append(Source("upstream-files", params))
+
+    if entry.get("upstream_nuget_central"):
+        params = {"repo": entry["repo"], "tag": tag, "path": entry["upstream_nuget_central"]}
+        sources.append(Source("upstream-nuget-central", params))
 
     if entry.get("upstream_submodules"):
         sources.append(Source("upstream-submodules", {"repo": entry["repo"], "tag": tag}))
@@ -249,7 +275,8 @@ def sources_for(catalog: Catalog, component: Component) -> list[Source]:
             return [Source("osv-artifact", {"path": component.locator.get("path", "")})]
         case Kind.TREESITTER_PARSER, _:
             repo = github_repo(component.locator.get("url", ""))
-            return [*_repo_sources(repo, component.version, True), Source("osv-commit", {"commit": component.version})]
+            commit = {"commit": component.version, "repo": repo}
+            return [*_repo_sources(repo, component.version, True), Source("osv-commit", commit)]
         case Kind.TMUX_PLUGIN, _:
             return [*_repo_sources(component.name, component.version, True), Source("osv-commit", {"commit": component.version})]
         case Kind.SUBMODULE, _:

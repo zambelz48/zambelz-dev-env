@@ -8,7 +8,7 @@ import urllib.request
 
 USER_AGENT = "zconf-audit"
 TIMEOUT_SECONDS = 60
-RETRIES = 3
+RETRIES = 5
 NVD_HOST = "services.nvd.nist.gov"
 NVD_WINDOW_SECONDS = 30
 NVD_REQUESTS_WITH_KEY = 50

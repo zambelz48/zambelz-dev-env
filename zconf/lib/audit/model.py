@@ -2,6 +2,13 @@ from dataclasses import dataclass, field
 from enum import IntEnum, StrEnum
 
 
+NOT_COMPILED_IN = "not compiled into the installed binary"
+NOT_SHIPPED = "only used by crates the release does not ship"
+NOT_FAILING = ("unmaintained", NOT_COMPILED_IN, NOT_SHIPPED)
+FIX_AVAILABLE = "fix available"
+WAITING = "waiting for upstream"
+
+
 class Exit(IntEnum):
     CLEAN = 0
     FINDINGS = 1
@@ -21,6 +28,8 @@ class Kind(StrEnum):
     SUBMODULE = "submodule"
     INSTALL = "install"
     OS_PACKAGE = "os-package"
+    BUNDLED = "bundled"
+    UPSTREAM_PIN = "upstream-pin"
 
 
 class Scope(StrEnum):
@@ -52,6 +61,10 @@ class Finding:
     severity: str = "unknown"
     dev_only: bool = False
     package: str = ""
+    notice: str = ""
+    status: str = ""
+    action: str = ""
+    url: str = ""
 
 
 @dataclass(frozen=True)
@@ -72,13 +85,21 @@ class Result:
     could_not_run: list[Problem] = field(default_factory=list)
 
     def failing_findings(self) -> list[Finding]:
-        return [finding for finding in self.findings if not finding.dev_only]
+        return [finding for finding in self.findings if not finding.dev_only and finding.notice not in NOT_FAILING]
 
-    def exit_code(self) -> Exit:
+    def blocking_findings(self) -> list[Finding]:
+        return [finding for finding in self.failing_findings() if finding.status != WAITING]
+
+    def exit_code(self, gate: bool = False) -> Exit:
         if self.could_not_run:
             return Exit.COULD_NOT_RUN
 
-        if self.failing_findings() or self.not_covered or self.leftovers:
+        findings = self.failing_findings()
+
+        if gate:
+            findings = self.blocking_findings()
+
+        if findings or self.not_covered or self.leftovers:
             return Exit.FINDINGS
 
         return Exit.CLEAN

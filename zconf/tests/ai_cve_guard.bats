@@ -106,17 +106,33 @@ audits() {
   [ "$(audits)" = "1" ]
 }
 
-@test "a commit is denied while the audit reports vulnerabilities" {
+@test "a commit is denied while the audit reports blocking findings" {
   printf '1\n' >"$AUDIT_CODE"
 
   bash_hook PreToolUse "git commit -m x"
 
   [ "$status" -eq 0 ]
   [[ "$output" == *'"permissionDecision": "deny"'* ]]
-  [[ "$output" == *"reports known vulnerabilities"* ]]
+  [[ "$output" == *"reports findings that block"* ]]
   [[ "$output" == *"GHSA-test"* ]]
   [[ "$output" == *"no bypass"* ]]
   [[ "$output" != *"Scanned 3 files"* ]]
+}
+
+@test "the commit gate runs the audit in gate mode, the change report runs it in full" {
+  bash_hook PreToolUse "git commit -m x"
+
+  [ "$(head -1 "$AUDIT_CALLS")" = "audit --declared --gate" ]
+
+  run "$MISE_DATA_DIR/shims/python3" -E -s -c '
+import sys
+from pathlib import Path
+sys.path[:0] = [sys.argv[1], sys.argv[2]]
+import cve_guard
+cve_guard.run_audit(Path(sys.argv[3]))
+' "$AI/lib" "$AI/hooks" "$REPO"
+
+  [ "$(tail -1 "$AUDIT_CALLS")" = "audit --declared" ]
 }
 
 @test "a push is denied when the audit cannot run" {

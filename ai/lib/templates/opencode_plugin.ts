@@ -5,7 +5,7 @@ const hookScript = @@HOOK_SCRIPT@@
 const watchedTools: readonly string[] = @@TOOLS@@
 const checkBefore = @@BEFORE@@
 const checkAfter = @@AFTER@@
-const timeoutMs = 90000
+const timeoutMs = 480000
 const maxOutputBytes = 16 * 1024 * 1024
 
 type Reply = {

@@ -14,7 +14,10 @@ because the change looks unrelated.
 1. `zconf/tests/run`
 2. `zconf/bin/lint`
 3. `zconf/bin/zconf check-pins`
-4. `zconf/bin/zconf audit --declared`
+4. `zconf/bin/zconf audit --declared --gate`: exit 0 means nothing blocks.
+   Report the summary line, and list every finding marked
+   `waiting for upstream` with its Action line; they are open vulnerabilities,
+   not a pass.
 5. `ai/sync-ai.sh --check all`, when anything under `ai/` changed; run
    `ai/sync-ai.sh all` first if the agents were never synced on this machine.
 

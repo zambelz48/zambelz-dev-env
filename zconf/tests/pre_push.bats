@@ -50,12 +50,12 @@ worktrees() {
   git -C "$FIX" worktree list | wc -l | tr -d ' '
 }
 
-@test "the hook runs check-pins, lint, then the declared audit" {
+@test "the hook runs check-pins, lint, then the declared audit in gate mode" {
   sha="$(commit_marker good)"
   run push "$sha"
   [ "$status" -eq 0 ]
   [ "$(grep '^step' "$TRACE")" = "$(printf '%s\n' 'step check-pins on good' \
-    'step lint on good' 'step audit --declared on good')" ]
+    'step lint on good' 'step audit --declared --gate on good')" ]
 }
 
 @test "the hook finds the pinned tools with a bare PATH" {
@@ -104,7 +104,7 @@ worktrees() {
   sha="$(commit_marker good)"
   FAIL_STEP=audit FAIL_CODE=3 run push "$sha"
   [ "$status" -eq 1 ]
-  [[ "$output" == *"ERROR: push blocked: zconf audit --declared failed"* ]] ||
+  [[ "$output" == *"ERROR: push blocked: zconf audit --declared --gate failed"* ]] ||
     false
 }
 

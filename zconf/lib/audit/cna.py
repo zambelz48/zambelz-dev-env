@@ -61,6 +61,20 @@ def _versions(entry: dict, spec: dict) -> list[dict]:
     return items
 
 
+def fixed_versions(record: dict, specs: list[dict], version: str) -> tuple[str, ...]:
+    found: set[str] = set()
+
+    for spec in specs:
+        for entry in _entries(record, spec):
+            for item in _versions(entry, spec):
+                bound = item.get("lessThan")
+
+                if item.get("status") == "affected" and bound and bound != "*" and _covers(item, version):
+                    found.add(str(bound))
+
+    return tuple(sorted(found, key=version_key))
+
+
 def is_affected(record: dict, specs: list[dict], version: str) -> bool:
     for spec in specs:
         covers = _covers

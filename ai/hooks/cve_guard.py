@@ -19,7 +19,7 @@ WATCHED = (
     "tools/python/pyproject.toml",
     "tools/python/uv.lock",
 )
-AUDIT_TIMEOUT_SECONDS = 60
+AUDIT_TIMEOUT_SECONDS = 420
 GATED_SUBCOMMANDS = ("commit", "push")
 WRAPPERS = ("command", "exec", "env", "nohup", "time")
 ASSIGNMENT = re.compile(r"[A-Za-z_][A-Za-z0-9_]*=.*")
@@ -158,12 +158,16 @@ def _detail(output: str) -> str:
     return text
 
 
-def run_audit(repo_root: Path) -> Audit:
+def run_audit(repo_root: Path, gate: bool = False) -> Audit:
     zconf = repo_root / "zconf" / "bin" / "zconf"
+    argv = [str(zconf), "audit", "--declared"]
+
+    if gate:
+        argv.append("--gate")
 
     try:
         run = subprocess.run(
-            [str(zconf), "audit", "--declared"],
+            argv,
             capture_output=True,
             text=True,
             timeout=AUDIT_TIMEOUT_SECONDS,
@@ -178,16 +182,17 @@ def run_audit(repo_root: Path) -> Audit:
 
 
 def _gate(repo_root: Path) -> Decision | None:
-    audit = run_audit(repo_root)
+    audit = run_audit(repo_root, gate=True)
 
     match audit.code:
         case 0:
             return None
         case 1:
             return events.deny(
-                "Blocked: zconf audit --declared reports known vulnerabilities, so commits and pushes are blocked. "
-                "Fix every finding first (the fix-cve skill), then run zconf audit --declared again. "
-                "Findings are never accepted and there is no bypass.\n\n" + audit.detail
+                "Blocked: zconf audit --declared --gate reports findings that block, so commits and pushes are "
+                "blocked: a fix is available (a newer release in the pinned line), the fix cannot be checked, or "
+                "components are uncovered or left over. Follow each blocking finding's Action line (the fix-cve "
+                "skill), then run the audit again. There is no bypass.\n\n" + audit.detail
             )
         case 3:
             return events.deny(
@@ -249,7 +254,8 @@ def _after(repo_root: Path) -> Decision | None:
         case 1:
             return events.warn(
                 f"WARN: zconf audit --declared reports known vulnerabilities after changes to {', '.join(changed)}. "
-                "Fix them now (the fix-cve skill); commits and pushes stay blocked until the audit is clean.\n\n" + audit.detail
+                "Follow each finding's Action line now (the fix-cve skill); findings marked 'fix available' or "
+                "'blocks push' keep commits and pushes blocked.\n\n" + audit.detail
             )
         case _:
             return events.warn("WARN: zconf audit --declared could not run after a dependency change.\n\n" + audit.detail)

@@ -136,6 +136,20 @@ def _node_matches(node: dict, component: Cpe, version: str, system: str) -> tupl
     return ours, met
 
 
+def fixed_versions(cve: dict, component: Cpe, version: str) -> tuple[str, ...]:
+    found: set[str] = set()
+
+    for configuration in cve.get("configurations", []):
+        for node in configuration.get("nodes", []):
+            for match in node.get("cpeMatch", []):
+                end = match.get("versionEndExcluding")
+
+                if end and _matches_component(match, component, version):
+                    found.add(end)
+
+    return tuple(sorted(found, key=version_key))
+
+
 def applies(cve: dict, component: Cpe, version: str, system: str) -> bool:
     for configuration in cve.get("configurations", []):
         results = [_node_matches(node, component, version, system) for node in configuration.get("nodes", [])]

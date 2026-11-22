@@ -56,7 +56,13 @@ def vendored(repo: str, tag: str, entries: list[dict]) -> list[Bundled]:
     return found
 
 
-def _downloads(text: str) -> dict:
+def _downloads(text: str, path: str) -> dict:
+    if path.endswith(".json"):
+        try:
+            return json.loads(text)
+        except json.JSONDecodeError as error:
+            raise SourceError(f"python-build-standalone {path} is not valid JSON: {error}") from error
+
     for node in ast.parse(text).body:
         if isinstance(node, ast.Assign) and getattr(node.targets[0], "id", "") == "DOWNLOADS":
             return ast.literal_eval(node.value)
@@ -83,7 +89,7 @@ def pbs_release(repo_root: Path, python_version: str, url_regex: str) -> str:
 
 def pbs(repo_root: Path, params: dict) -> list[Bundled]:
     tag = pbs_release(repo_root, params["version"], params["url_regex"])
-    downloads = _downloads(_raw(params["repo"], params["path"], tag))
+    downloads = _downloads(_raw(params["repo"], params["path"], tag), params["path"])
     found: list[Bundled] = []
 
     for ship in params["ships"]:

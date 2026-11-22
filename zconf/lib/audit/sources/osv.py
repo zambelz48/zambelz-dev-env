@@ -1,5 +1,7 @@
+import dataclasses
 import json
 import tempfile
+import tomllib
 from concurrent.futures import ThreadPoolExecutor
 from dataclasses import dataclass
 from pathlib import Path
@@ -7,7 +9,7 @@ from pathlib import Path
 import ghapi
 import procs
 import webapi
-from model import Component, Finding
+from model import NOT_SHIPPED, Component, Finding
 
 QUERY_BATCH = "https://api.osv.dev/v1/querybatch"
 VULN = "https://api.osv.dev/v1/vulns/{id}"
@@ -66,34 +68,37 @@ def _severity(entry: dict, vulnerability_id: str) -> str:
     return "unknown"
 
 
-def findings_from_scan(component: Component, output: dict) -> list[Finding]:
+def findings_from_scan(component: Component, output: dict, label: str | None = None) -> list[Finding]:
     findings: list[Finding] = []
 
     for result in output.get("results", []):
+        source = label or f"osv-scanner:{result.get('source', {}).get('path', '')}"
+
         for entry in result.get("packages", []):
             package = entry["package"]
-            label = f"{package.get('ecosystem')}/{package['name']}@{package.get('version', '')}"
+            label = package_key(package)
             dev_only = (entry.get("dependency_groups") or []) == ["dev"]
 
             for vulnerability in entry.get("vulnerabilities", []):
                 findings.append(
                     Finding(
                         component=component,
-                        source=f"osv-scanner:{result.get('source', {}).get('path', '')}",
+                        source=source,
                         id=vulnerability["id"],
-                        summary=vulnerability.get("summary") or vulnerability.get("details", "")[:200],
+                        summary=vulnerability.get("summary") or vulnerability.get("details", ""),
                         aliases=tuple(vulnerability.get("aliases", [])),
                         fixed_in=_fixed(vulnerability, package),
                         severity=_severity(entry, vulnerability["id"]),
                         dev_only=dev_only,
                         package=label,
+                        notice=notice(vulnerability),
                     )
                 )
 
     return findings
 
 
-def _scan(component: Component, args: list[str]) -> list[Finding]:
+def _scan(component: Component, args: list[str], label: str | None = None) -> list[Finding]:
     with tempfile.TemporaryDirectory() as workdir:
         config = Path(workdir) / "empty.toml"
         config.write_text("")
@@ -110,7 +115,31 @@ def _scan(component: Component, args: list[str]) -> list[Finding]:
     if not done.stdout.strip():
         return []
 
-    return findings_from_scan(component, json.loads(done.stdout))
+    return findings_from_scan(component, json.loads(done.stdout), label)
+
+
+def package_key(package: dict) -> str:
+    return f"{package.get('ecosystem')}/{package['name']}@{package.get('version', '')}"
+
+
+def binary_packages(path: str) -> set[str]:
+    with tempfile.TemporaryDirectory() as workdir:
+        config = Path(workdir) / "empty.toml"
+        config.write_text("")
+        argv = [scanner(), "scan", "source", "--config", str(config), "-f", "json", "--all-packages"]
+        done = procs.run(
+            [*argv, "--x-plugins", "artifact", "--allow-no-lockfiles", "-r", path],
+            env=procs.no_install_env(),
+            cwd=Path(workdir),
+        )
+
+    if done.code not in ANSWERS:
+        detail = (done.stderr.strip().splitlines() or [""])[-1]
+        raise SourceError(f"osv-scanner exited {done.code} listing the packages in {path}: {detail}")
+
+    output = json.loads(done.stdout or "{}")
+
+    return {package_key(entry["package"]) for result in output.get("results", []) for entry in result.get("packages", [])}
 
 
 def scan_lockfile(component: Component, path: str) -> list[Finding]:
@@ -124,22 +153,102 @@ def scan_artifact(component: Component, path: str) -> list[Finding]:
     return _scan(component, [*args, "--allow-no-lockfiles", "-r", path])
 
 
-def scan_upstream(component: Component, repo: str, tag: str, paths: list[str]) -> list[Finding]:
+def _fetch_into(root: Path, repo: str, tag: str, path: str) -> Path:
+    try:
+        text = ghapi.raw_file(repo, path, tag)
+    except ghapi.GitHubError as error:
+        raise SourceError(f"cannot fetch {repo} {path} at {tag}: {error}") from error
+
+    target = root / path
+
+    if root.resolve() not in target.resolve().parents:
+        raise SourceError(f"{repo} path {path} leaves the checkout")
+
+    target.parent.mkdir(parents=True, exist_ok=True)
+    target.write_text(text)
+
+    return target
+
+
+def cargo_unreachable(text: str, roots: list[str]) -> set[str]:
+    lock = tomllib.loads(text)
+    packages = lock.get("package", [])
+    by_name: dict[str, list[dict]] = {}
+
+    for package in packages:
+        by_name.setdefault(package["name"], []).append(package)
+
+    missing = [root for root in roots if root not in by_name]
+
+    if missing:
+        raise SourceError(f"Cargo.lock has no crate named {', '.join(missing)} to start from")
+
+    def resolve(dependency: str) -> list[dict]:
+        name, _, version = dependency.partition(" ")
+        candidates = by_name.get(name, [])
+
+        if version:
+            candidates = [package for package in candidates if package["version"] == version.split(" ")[0]]
+
+        return candidates
+
+    seen: set[tuple[str, str]] = set()
+    pending = [package for root in roots for package in by_name[root]]
+
+    while pending:
+        package = pending.pop()
+        key = (package["name"], package["version"])
+
+        if key in seen:
+            continue
+
+        seen.add(key)
+
+        for dependency in package.get("dependencies", []):
+            pending.extend(resolve(dependency))
+
+    return {
+        f"crates.io/{package['name']}@{package['version']}"
+        for package in packages
+        if (package["name"], package["version"]) not in seen
+    }
+
+
+def scan_upstream(
+    component: Component,
+    repo: str,
+    tag: str,
+    paths: list[str],
+    context: list[str] = (),
+    roots: list[str] = (),
+) -> list[Finding]:
     findings: list[Finding] = []
 
     with tempfile.TemporaryDirectory() as workdir:
-        for index, path in enumerate(paths):
-            try:
-                text = ghapi.raw_file(repo, path, tag)
-            except ghapi.GitHubError as error:
-                raise SourceError(f"cannot fetch {repo} {path} at {tag}: {error}") from error
+        root = Path(workdir) / "checkout"
 
-            target = Path(workdir) / str(index) / Path(path).name
-            target.parent.mkdir(parents=True)
-            target.write_text(text)
-            findings.extend(_scan(component, ["-L", str(target)]))
+        for path in context:
+            _fetch_into(root, repo, tag, path)
+
+        targets = [(path, _fetch_into(root, repo, tag, path)) for path in paths]
+
+        for path, target in targets:
+            found = _scan(component, ["-L", str(target)], f"osv-scanner {repo}@{tag} {path}")
+
+            if roots and path.endswith("Cargo.lock"):
+                unreachable = cargo_unreachable(target.read_text(), list(roots))
+                found = [_not_shipped(finding, unreachable) for finding in found]
+
+            findings.extend(found)
 
     return findings
+
+
+def _not_shipped(finding: Finding, unreachable: set[str]) -> Finding:
+    if finding.package not in unreachable:
+        return finding
+
+    return dataclasses.replace(finding, notice=NOT_SHIPPED)
 
 
 def _details(vulnerability_id: str) -> dict:
@@ -186,13 +295,24 @@ def _findings_for_ids(component: Component, label: str, vulnerability_ids: list[
             component=component,
             source="osv",
             id=vulnerability["id"],
-            summary=vulnerability.get("summary") or vulnerability.get("details", "")[:200],
+            summary=vulnerability.get("summary") or vulnerability.get("details", ""),
             aliases=tuple(vulnerability.get("aliases", [])),
             fixed_in=_fixed(vulnerability, {"name": name}),
             package=label,
+            notice=notice(vulnerability),
         )
         for vulnerability in details
     ]
+
+
+def notice(vulnerability: dict) -> str:
+    for affected in vulnerability.get("affected", []):
+        kind = (affected.get("database_specific") or {}).get("informational")
+
+        if kind:
+            return str(kind)
+
+    return ""
 
 
 def query_packages(queries: list[PackageQuery]) -> list[Finding]:

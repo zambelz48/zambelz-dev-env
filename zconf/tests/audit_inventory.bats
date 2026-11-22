@@ -201,5 +201,5 @@ EOF
   run audit_engine inventory --everything
 
   [ "$status" -eq 2 ]
-  [[ "$output" == *"usage: audit inventory"* ]]
+  [[ "$output" == *"audit inventory [--declared | --installed] [--json]"* ]]
 }

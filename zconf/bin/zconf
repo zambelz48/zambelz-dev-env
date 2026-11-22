@@ -44,7 +44,9 @@ usage: zconf <command> [args]
   use <tool> <version>            make a version the global default
   lint                            run the shell, zsh and Lua linters
   check-pins                      fail on floating or unlocked pins
-  audit [--declared|--installed]  scan pinned or installed tools (osv)
+  audit [--declared|--installed|--all] [--json]
+                                  audit every pinned and installed component
+                                  for known vulnerabilities (default --all)
   help                            show this help
 
   zconf <module>                  same as: zconf apply <module>

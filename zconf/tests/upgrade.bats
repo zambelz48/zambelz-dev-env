@@ -8,6 +8,8 @@ setup() {
   export ZC_ROOT
   mkdir -p "$ZC_ROOT/mise/zconf" "$ZC_ROOT/packages/zconf"
   cp -R "$REAL/zconf" "$ZC_ROOT/zconf"
+  printf 'import sys\nopen(%s, "w").write(" ".join(sys.argv[1:]))\n' "'$BATS_TEST_TMPDIR/engine-args'" \
+    >"$ZC_ROOT/zconf/lib/audit/__main__.py"
   cp "$REAL/mise/zconf/platforms" "$ZC_ROOT/mise/zconf/platforms"
   printf 'packages\n' >"$ZC_ROOT/zconf/modules"
   CONFIG="$(printf '[tools]\nnode = ["24.11.0", "22.12.0"]\ngo = "1.26.4"')"
@@ -153,7 +155,7 @@ EOF
   run zc_upgrade --yes
   [ "$status" -eq 0 ]
   [[ "$output" == *"packages upgraded"* ]] || false
-  zc_calls osv-scanner | grep -q "scan"
+  [ "$(cat "$BATS_TEST_TMPDIR/engine-args")" = "audit --declared" ]
 }
 
 @test "a cancelled selection changes nothing at all" {

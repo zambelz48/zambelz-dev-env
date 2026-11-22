@@ -100,7 +100,7 @@ the repository records, whichever machine made the change:
 | `zconf update [module...]` | Read-only report of newer versions (mise tools, OS packages, oh-my-zsh, tmux plugins, Neovim plugins) |
 | `zconf upgrade [--yes] [--major] [--dry-run] [tool...]` | Pick newer mise versions (fzf, or all with `--yes`), re-lock, install, upgrade OS packages, run the audit |
 | `zconf use <tool> <version>` | Make a version the global default (first in its list), re-lock, install |
-| `zconf audit [--declared\|--installed]` | Vulnerability scan with osv-scanner |
+| `zconf audit [--declared\|--installed\|--all] [--json]` | Audit every pinned and installed component for known vulnerabilities; fails closed (default `--all`) |
 | `zconf check-pins` | Fail on floating or unlocked pins and on global mise settings that would leak into other projects |
 | `zconf lint` | ShellCheck, `zsh -n` and lua-language-server |
 | `zconf <module>` | Same as `zconf apply <module>` |
@@ -194,16 +194,37 @@ run `uv lock` in `tools/python`, then `zconf apply tools`.
 
 ## Security audit and pre-push hook
 
-- `zconf audit --declared` (default) scans the crates, Go and RubyGems
-  tools in `mise/mise.lock` and the full dependency graphs in
-  `tools/npm/pnpm-lock.yaml` and `tools/python/uv.lock`. Exit 0 clean,
-  1 findings, 3 scan could not run.
-- `zconf audit --installed` scans everything under mise's install
-  directory, `tools/` and the built Gradle language server, then lists OS
-  security advisories (Fedora) as information only.
-- Findings are never accepted: there is no ignore list. Each scan passes an
-  empty config, so an `osv-scanner.toml` next to a lock (even one shipped
-  inside a dependency) cannot hide a finding. Fix a finding by upgrading the
+- `zconf audit --declared` audits everything the repository pins: every
+  mise tool and mise itself, the npm and Python tool trees, Neovim plugins,
+  Tree-sitter parsers, the libraries Neovim's release bundles, tmux plugins,
+  oh-my-zsh and the git submodules. For each tool it follows what the release
+  ships: the upstream lockfiles at the pinned tag (`Cargo.lock`, `go.mod`,
+  `package-lock.json`, `pom.xml`, central NuGet versions), vendored and
+  bundled libraries (CMake's `Utilities/`, python-build-standalone's
+  libraries), submodules and `DEPS` pins.
+- `zconf audit --installed` audits what is on this machine: every mise
+  install (binaries, jars, embedded `deps.json`, Haskell packages, the
+  libraries the Python interpreter loads), the cloned plugins, and the OS
+  packages (`dnf advisory list --security` on Fedora, OSV by source package
+  on Ubuntu, catalog sources for Homebrew). Installs nothing selects and
+  mise configs tracked inside tool installs are reported as leftovers.
+- `zconf audit` (or `--all`) runs both. `--json` prints the report as JSON.
+- Sources: OSV (osv-scanner and the API), GitHub repository advisories, NVD
+  by exact CPE plus CVE.org records for CVEs NVD has not analysed yet, the
+  Node.js, rubysec and .NET security feeds, endoflife.date, and dnf. Which
+  sources apply to which component is declared in `zconf/audit/catalog.toml`;
+  `python3 -E -s zconf/lib/audit catalog --verify` checks every catalog
+  entry against the live services.
+- It fails closed. A component with no source is `NOT COVERED`, a source
+  that cannot answer is `COULD NOT RUN`, and nothing is skipped silently.
+  Exit 0 clean, 1 findings, uncovered components or leftovers, 2 usage,
+  3 could not run. On this machine (2026-11-22) `--declared` takes about
+  150 s and `--installed` about 45 s; NVD answers faster with an
+  `NVD_API_KEY` in the environment.
+- Findings are never accepted: there is no ignore list and no severity
+  threshold. Each scan passes an empty config, so an `osv-scanner.toml`
+  next to a lock (even one shipped inside a dependency) cannot hide a
+  finding. Fix a finding by upgrading the
   tool, or by forcing the fixed version in `tools/npm/pnpm-workspace.yaml`
   `overrides` (or `tools/python/pyproject.toml`), then check the tool still
   works with `node tools/zconf/smoke/overrides.mjs` and

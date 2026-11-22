@@ -6,7 +6,7 @@ import ghapi
 import webapi
 from catalog import Catalog, CatalogError, Source, sources_for, vendored_version
 from model import Component
-from sources import feeds
+from sources import feeds, osv
 
 NVD_CPES = "https://services.nvd.nist.gov/rest/json/cpes/2.0"
 PARALLEL = 8
@@ -98,7 +98,8 @@ def _bundle_ok(repo: str, tag: str, bundle: dict) -> list[str]:
 
     inner_tag = bundle.get("upstream_tag", "v{version}").format(version=version)
     found = [_repo_exists(bundle["repo"])]
-    found.extend(_file_exists(bundle["repo"], inner, inner_tag) for inner in bundle.get("upstream_files", []))
+    inner_paths = [*bundle.get("upstream_files", []), *bundle.get("upstream_context", [])]
+    found.extend(_file_exists(bundle["repo"], inner, inner_tag) for inner in inner_paths)
 
     return [problem for problem in found if problem]
 
@@ -112,8 +113,12 @@ def _source_checks(source: Source) -> list[str]:
         case "github-advisories":
             return [problem for problem in [_repo_exists(params["repo"])] if problem]
         case "upstream-files":
-            found = [_file_exists(params["repo"], path, params["tag"]) for path in params["paths"]]
+            paths = [*params["paths"], *params.get("context", [])]
+            found = [_file_exists(params["repo"], path, params["tag"]) for path in paths]
+            found.extend(_roots_ok(params))
             return [problem for problem in found if problem]
+        case "upstream-nuget-central":
+            return [problem for problem in [_file_exists(params["repo"], params["path"], params["tag"])] if problem]
         case "upstream-submodules":
             return [problem for problem in [_file_exists(params["repo"], ".gitmodules", params["tag"])] if problem]
         case "upstream-deps":
@@ -129,6 +134,27 @@ def _source_checks(source: Source) -> list[str]:
             return _eol_ok(params["product"], params["version"])
         case _:
             return []
+
+
+def _roots_ok(params: dict) -> list[str]:
+    roots = params.get("roots", [])
+    locks = [path for path in params["paths"] if path.endswith("Cargo.lock")]
+
+    if not roots:
+        return []
+
+    if not locks:
+        return [f"{params['repo']}: shipped_crates is set but no Cargo.lock is scanned"]
+
+    problems: list[str] = []
+
+    for path in locks:
+        try:
+            osv.cargo_unreachable(_file(params["repo"], path, params["tag"]), roots)
+        except (ghapi.GitHubError, osv.SourceError) as error:
+            problems.append(f"{params['repo']} {path} at {params['tag']}: {error}")
+
+    return problems
 
 
 def _eol_ok(product: str, version: str) -> list[str]:

@@ -38,7 +38,7 @@ check_commit() {
   fi
   run_step "$short" check-pins
   run_step "$short" lint
-  run_step "$short" audit --declared
+  run_step "$short" audit --declared --gate
   remove_tree
 }
 

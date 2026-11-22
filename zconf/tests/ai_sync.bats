@@ -61,7 +61,7 @@ print(json.dumps(data))
   [ "$(json_get "$REPO/.claude/settings.json" hooks PreToolUse 0 matcher)" = '"Bash|Write|Edit|MultiEdit|NotebookEdit"' ]
   [ "$(json_get "$REPO/.claude/settings.json" hooks PreToolUse 0 hooks 0 command)" = "\"\\\"$AI/hook.sh\\\" claude PreToolUse\"" ]
   [ "$(json_get "$REPO/.claude/settings.json" hooks PreToolUse 0 hooks 0 onFailure)" = '"block"' ]
-  [ "$(json_get "$REPO/.claude/settings.json" hooks PreToolUse 0 hooks 0 timeout)" = '90' ]
+  [ "$(json_get "$REPO/.claude/settings.json" hooks PreToolUse 0 hooks 0 timeout)" = '480' ]
   [ "$(json_get "$REPO/.claude/settings.json" hooks PostToolUse 0 hooks 0 command)" = "\"\\\"$AI/hook.sh\\\" claude PostToolUse\"" ]
 }
 
@@ -447,7 +447,7 @@ EOF
   [ "$status" -eq 0 ]
   [ "$(json_get "$hooks" zambelz-dev-env PreToolUse 0 matcher)" = '"^(run_command|write_file|edit_file|replace_file_content|multi_replace_file_content)$"' ]
   [ "$(json_get "$hooks" zambelz-dev-env PreToolUse 0 hooks 0 command)" = "\"\\\"$AI/hook.sh\\\" antigravity PreToolUse\"" ]
-  [ "$(json_get "$hooks" zambelz-dev-env PreToolUse 0 hooks 0 timeout)" = '90' ]
+  [ "$(json_get "$hooks" zambelz-dev-env PreToolUse 0 hooks 0 timeout)" = '480' ]
   [ "$(json_get "$hooks" zambelz-dev-env PostToolUse 0 hooks 0 command)" = "\"\\\"$AI/hook.sh\\\" antigravity PostToolUse\"" ]
   [ "$(json_get "$hooks" zambelz-dev-env PreInvocation 0 command)" = "\"\\\"$AI/hook.sh\\\" antigravity PreInvocation\"" ]
 }

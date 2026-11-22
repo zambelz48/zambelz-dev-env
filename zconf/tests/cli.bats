@@ -101,14 +101,15 @@ pin_files() {
     false
 }
 
-@test "audit runs the declared scan by default" {
+@test "audit runs every scope by default" {
   zc_stub_mise_passthrough
-  zc_stub osv-scanner 0
-  mkdir -p "$FIX/mise"
-  printf 'lockfile_version = 3\n' >"$FIX/mise/mise.lock"
+  printf 'import sys\nopen(%s, "w").write(" ".join(sys.argv[1:]))\n' "'$BATS_TEST_TMPDIR/engine-args'" \
+    >"$FIX/zconf/lib/audit/__main__.py"
+
   run "$ZCONF" audit
+
   [ "$status" -eq 0 ]
-  zc_calls osv-scanner | grep -q -- "-L osv-scanner:"
+  [ "$(cat "$BATS_TEST_TMPDIR/engine-args")" = "audit --all" ]
 }
 
 @test "audit with an unknown mode exits 2" {

@@ -293,7 +293,29 @@ def rubysec(component: Component, version: str) -> list[Finding]:
     return findings
 
 
+def dotnet_runtime(sdk_version: str) -> str:
+    return _dotnet_release(sdk_version)[1]["release-version"]
+
+
 def dotnet(component: Component, sdk_version: str) -> list[Finding]:
+    releases, pinned = _dotnet_release(sdk_version)
+    pinned_runtime = pinned["release-version"]
+
+    return [
+        Finding(
+            component=component,
+            source=".NET release metadata",
+            id=", ".join(cve.get("cve-id", "") for cve in release.get("cve-list", [])) or f"dotnet-security-{release['release-version']}",
+            summary=f".NET {release['release-version']} is a security release newer than the pinned SDK {sdk_version}",
+            fixed_in=(release.get("sdk", {}).get("version", release["release-version"]),),
+            package=f"dotnet-sdk@{sdk_version}",
+        )
+        for release in releases
+        if release.get("security") and version_key(release["release-version"]) > version_key(pinned_runtime)
+    ]
+
+
+def _dotnet_release(sdk_version: str) -> tuple[list[dict], dict]:
     channel = ".".join(sdk_version.split(".")[:2])
     index = webapi.get_json(DOTNET_INDEX)
     entry = next((item for item in index.get("releases-index", []) if item.get("channel-version") == channel), None)
@@ -319,20 +341,7 @@ def dotnet(component: Component, sdk_version: str) -> list[Finding]:
     if pinned is None:
         raise SourceError(f".NET {channel} release metadata does not list SDK {sdk_version}")
 
-    pinned_runtime = pinned["release-version"]
-
-    return [
-        Finding(
-            component=component,
-            source=".NET release metadata",
-            id=", ".join(cve.get("cve-id", "") for cve in release.get("cve-list", [])) or f"dotnet-security-{release['release-version']}",
-            summary=f".NET {release['release-version']} is a security release newer than the pinned SDK {sdk_version}",
-            fixed_in=(release.get("sdk", {}).get("version", release["release-version"]),),
-            package=f"dotnet-sdk@{sdk_version}",
-        )
-        for release in releases
-        if release.get("security") and version_key(release["release-version"]) > version_key(pinned_runtime)
-    ]
+    return releases, pinned
 
 
 def eol_cycle(product: str, version: str) -> dict:
