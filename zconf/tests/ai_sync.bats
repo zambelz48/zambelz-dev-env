@@ -380,3 +380,156 @@ EOF
 
   [ "$status" -eq 0 ]
 }
+
+@test "sync antigravity writes one workspace plugin" {
+  cat >"$AI/mcp.json" <<'EOF'
+{
+  "mcpServers": {
+    "context7": {
+      "type": "http",
+      "url": "https://mcp.context7.com/mcp",
+      "headers": {
+        "CONTEXT7_API_KEY": "${CONTEXT7_API_KEY:-}"
+      }
+    }
+  }
+}
+EOF
+
+  run "$AI/sync-ai.sh" antigravity
+
+  plugin="$REPO/.agents/plugins/zambelz-dev-env"
+
+  [ "$status" -eq 0 ]
+  [ "$(json_get "$plugin/plugin.json" name)" = '"zambelz-dev-env"' ]
+  [ "$(json_get "$plugin/plugin.json" version)" = '"1.0.0"' ]
+  [ -x "$plugin/skills/run-checks/run.sh" ]
+  [ "$(json_get "$plugin/mcp_config.json" mcpServers context7)" = '{"url": "https://mcp.context7.com/mcp"}' ]
+  [ ! -e "$REPO/.agents/skills" ]
+  [ ! -e "$REPO/.agents/hooks.json" ]
+}
+
+@test "an antigravity command becomes a skill" {
+  run "$AI/sync-ai.sh" antigravity
+
+  [ "$status" -eq 0 ]
+  [ "$(cat "$REPO/.agents/plugins/zambelz-dev-env/skills/check/SKILL.md")" = "$(printf -- '---\nname: "check"\ndescription: "Run the checks"\n---\n\nRun it.')" ]
+}
+
+@test "antigravity MCP headers come only from the antigravity override" {
+  cat >"$AI/mcp.json" <<'EOF'
+{
+  "mcpServers": {
+    "docs": {
+      "type": "http",
+      "url": "https://docs.example.com/mcp",
+      "antigravity": {
+        "headers": {
+          "TOKEN": "literal"
+        }
+      }
+    }
+  }
+}
+EOF
+
+  run "$AI/sync-ai.sh" antigravity
+
+  [ "$status" -eq 0 ]
+  [ "$(json_get "$REPO/.agents/plugins/zambelz-dev-env/mcp_config.json" mcpServers docs headers)" = '{"TOKEN": "literal"}' ]
+}
+
+@test "antigravity hooks cover PreToolUse, PostToolUse and PreInvocation" {
+  run "$AI/sync-ai.sh" antigravity
+
+  hooks="$REPO/.agents/plugins/zambelz-dev-env/hooks.json"
+
+  [ "$status" -eq 0 ]
+  [ "$(json_get "$hooks" zambelz-dev-env PreToolUse 0 matcher)" = '"^(run_command|write_file|edit_file|replace_file_content|multi_replace_file_content)$"' ]
+  [ "$(json_get "$hooks" zambelz-dev-env PreToolUse 0 hooks 0 command)" = "\"\\\"$AI/hook.sh\\\" antigravity PreToolUse\"" ]
+  [ "$(json_get "$hooks" zambelz-dev-env PreToolUse 0 hooks 0 timeout)" = '90' ]
+  [ "$(json_get "$hooks" zambelz-dev-env PostToolUse 0 hooks 0 command)" = "\"\\\"$AI/hook.sh\\\" antigravity PostToolUse\"" ]
+  [ "$(json_get "$hooks" zambelz-dev-env PreInvocation 0 command)" = "\"\\\"$AI/hook.sh\\\" antigravity PreInvocation\"" ]
+}
+
+@test "antigravity has no after-tool wiring when no hook subscribes to it" {
+  cat >"$AI/hooks/hooks.toml" <<'EOF'
+[[hook]]
+name = "guard"
+module = "guard"
+events = ["tool.before"]
+summary = "Guards"
+EOF
+
+  run "$AI/sync-ai.sh" antigravity
+
+  hooks="$REPO/.agents/plugins/zambelz-dev-env/hooks.json"
+
+  [ "$status" -eq 0 ]
+  [[ "$(json_get "$hooks" zambelz-dev-env)" == *'"PreToolUse"'* ]]
+  [[ "$(json_get "$hooks" zambelz-dev-env)" != *'"PostToolUse"'* ]]
+  [[ "$(json_get "$hooks" zambelz-dev-env)" != *'"PreInvocation"'* ]]
+}
+
+@test "antigravity runs agy plugin validate after a sync" {
+  zc_stub_script agy <<'EOF'
+if [ "$1" = "--version" ]; then
+  echo 1.5.14
+  exit 0
+fi
+echo "VALIDATED $*"
+EOF
+
+  run "$AI/sync-ai.sh" antigravity
+
+  [ "$status" -eq 0 ]
+  [[ "$output" == *"OK: antigravity: agy plugin validate --strict passed"* ]]
+  grep -q "plugin validate --strict $REPO/.agents/plugins/zambelz-dev-env" "$BATS_TEST_TMPDIR/calls/agy"
+}
+
+@test "a failing agy plugin validate fails the sync" {
+  zc_stub_script agy <<'EOF'
+if [ "$1" = "--version" ]; then
+  echo 1.5.14
+  exit 0
+fi
+echo "bad matcher"
+exit 1
+EOF
+
+  run "$AI/sync-ai.sh" antigravity
+
+  [ "$status" -eq 1 ]
+  [[ "$output" == *"ERROR: antigravity: agy plugin validate --strict failed:"*"bad matcher"* ]]
+}
+
+@test "sync all writes every agent and check all passes" {
+  run "$AI/sync-ai.sh" all
+
+  [ "$status" -eq 0 ]
+  [ -f "$REPO/.claude/commands/check.md" ]
+  [ -f "$REPO/.opencode/commands/check.md" ]
+  [ -f "$REPO/.agents/plugins/zambelz-dev-env/skills/check/SKILL.md" ]
+
+  run "$AI/sync-ai.sh" --check all
+
+  [ "$status" -eq 0 ]
+  [[ "$output" == *"OK: claude:"* ]]
+  [[ "$output" == *"OK: opencode:"* ]]
+  [[ "$output" == *"OK: antigravity:"* ]]
+}
+
+@test "sync of some agents leaves the others alone" {
+  run "$AI/sync-ai.sh" claude antigravity claude
+
+  [ "$status" -eq 0 ]
+  [ -f "$REPO/.claude/commands/check.md" ]
+  [ -f "$REPO/.agents/plugins/zambelz-dev-env/plugin.json" ]
+  [ ! -e "$REPO/.opencode" ]
+
+  run "$AI/sync-ai.sh" --clean antigravity
+
+  [ "$status" -eq 0 ]
+  [ ! -e "$REPO/.agents/plugins/zambelz-dev-env" ]
+  [ -f "$REPO/.claude/commands/check.md" ]
+}

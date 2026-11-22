@@ -95,6 +95,13 @@ def check_version(agent: str, report: Report) -> None:
         )
 
 
+def validate(agent: str, report: Report) -> None:
+    validator = getattr(agents.module(agent), "validate", None)
+
+    if validator is not None:
+        validator(REPO_ROOT, report)
+
+
 def _render(source: model.Source, request: Request, report: Report) -> dict[str, writer.Plan] | None:
     plans: dict[str, writer.Plan] = {}
 
@@ -124,6 +131,7 @@ def run(request: Request, source: model.Source, report: Report) -> None:
             case "sync":
                 check_version(agent, report)
                 writer.sync(workspace, plan, state)
+                validate(agent, report)
             case "check":
                 writer.check(workspace, plan, state)
             case "clean":

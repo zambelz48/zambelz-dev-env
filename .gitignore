@@ -46,6 +46,7 @@ dev-plan/
 /.opencode/commands/
 /.opencode/skills/
 /.opencode/plugins/zambelz-dev-env/
+/.agents/plugins/zambelz-dev-env/
 
 # installed by zconf apply tools
 tools/npm/node_modules/
