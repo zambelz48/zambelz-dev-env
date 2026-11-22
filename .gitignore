@@ -42,6 +42,10 @@ dev-plan/
 /.claude/commands/
 /.claude/skills/
 /.mcp.json
+/.opencode/opencode.json
+/.opencode/commands/
+/.opencode/skills/
+/.opencode/plugins/zambelz-dev-env/
 
 # installed by zconf apply tools
 tools/npm/node_modules/

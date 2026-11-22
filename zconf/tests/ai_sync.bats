@@ -254,3 +254,129 @@ mtime_ns() {
   [ "$status" -eq 1 ]
   [[ "$output" == *"contains a double quote"* ]]
 }
+
+opencode_servers() {
+  cat >"$AI/mcp.json" <<'EOF'
+{
+  "mcpServers": {
+    "context7": {
+      "type": "http",
+      "url": "https://mcp.context7.com/mcp",
+      "opencode": {
+        "headers": {
+          "CONTEXT7_API_KEY": "{env:CONTEXT7_API_KEY}"
+        }
+      }
+    },
+    "local": {
+      "type": "stdio",
+      "command": "serve-docs",
+      "args": [
+        "--stdio"
+      ],
+      "env": {
+        "DOCS": "1"
+      }
+    }
+  }
+}
+EOF
+}
+
+@test "sync opencode writes commands, skills, MCP config and the plugin" {
+  opencode_servers
+
+  run "$AI/sync-ai.sh" opencode
+
+  [ "$status" -eq 0 ]
+  [ -f "$REPO/.opencode/commands/check.md" ]
+  [ -x "$REPO/.opencode/skills/run-checks/run.sh" ]
+  [ "$(json_get "$REPO/.opencode/opencode.json" "\$schema")" = '"https://opencode.ai/config.json"' ]
+  [ "$(json_get "$REPO/.opencode/opencode.json" mcp servers context7 type)" = '"remote"' ]
+  [ "$(json_get "$REPO/.opencode/opencode.json" mcp servers context7 headers CONTEXT7_API_KEY)" = '"{env:CONTEXT7_API_KEY}"' ]
+  [ "$(json_get "$REPO/.opencode/opencode.json" mcp servers context7 oauth)" = 'false' ]
+  [ "$(json_get "$REPO/.opencode/opencode.json" mcp servers local type)" = '"local"' ]
+  [ "$(json_get "$REPO/.opencode/opencode.json" mcp servers local command)" = '["serve-docs", "--stdio"]' ]
+  [ "$(json_get "$REPO/.opencode/opencode.json" mcp servers local environment)" = '{"DOCS": "1"}' ]
+  [ ! -e "$REPO/opencode.json" ]
+}
+
+@test "an opencode command drops keys OpenCode does not define" {
+  printf -- '---\ndescription: Audit\nargument-hint: [mode]\n---\n\nRun it.\n' >"$AI/commands/audit.md"
+
+  run "$AI/sync-ai.sh" opencode
+
+  [ "$status" -eq 0 ]
+  [ "$(cat "$REPO/.opencode/commands/audit.md")" = "$(printf -- '---\ndescription: "Audit"\n---\n\nRun it.')" ]
+}
+
+@test "the opencode plugin calls hook.sh for the watched tools" {
+  run "$AI/sync-ai.sh" opencode
+
+  plugin="$REPO/.opencode/plugins/zambelz-dev-env/index.ts"
+
+  [ "$status" -eq 0 ]
+  grep -qF "const hookScript = \"$AI/hook.sh\"" "$plugin"
+  grep -qF 'const watchedTools: readonly string[] = ["shell", "write", "edit", "apply_patch", "patch"]' "$plugin"
+  grep -qF 'const checkBefore = true' "$plugin"
+  grep -qF 'const checkAfter = true' "$plugin"
+  grep -qF 'id: "zambelz-dev-env"' "$plugin"
+
+  run grep -c "@@" "$plugin"
+
+  [ "$output" = "0" ]
+}
+
+@test "the opencode plugin skips events no hook subscribes to" {
+  cat >"$AI/hooks/hooks.toml" <<'EOF'
+[[hook]]
+name = "guard"
+module = "guard"
+events = ["tool.before"]
+summary = "Guards"
+EOF
+
+  run "$AI/sync-ai.sh" opencode
+
+  [ "$status" -eq 0 ]
+  grep -qF 'const checkBefore = true' "$REPO/.opencode/plugins/zambelz-dev-env/index.ts"
+  grep -qF 'const checkAfter = false' "$REPO/.opencode/plugins/zambelz-dev-env/index.ts"
+}
+
+@test "no hooks means no opencode plugin and no MCP means no config" {
+  rm "$AI/mcp.json" "$AI/hooks/hooks.toml"
+
+  run "$AI/sync-ai.sh" opencode
+
+  [ "$status" -eq 0 ]
+  [ ! -e "$REPO/.opencode/plugins" ]
+  [ ! -e "$REPO/.opencode/opencode.json" ]
+}
+
+@test "sync opencode leaves the tracked root opencode.json and other .opencode files alone" {
+  printf '{\n  "instructions": [\n    "README.md"\n  ]\n}\n' >"$REPO/opencode.json"
+  mkdir -p "$REPO/.opencode/plugins/mine"
+  printf 'export default {}\n' >"$REPO/.opencode/plugins/mine/index.ts"
+
+  run "$AI/sync-ai.sh" opencode
+
+  [ "$status" -eq 0 ]
+  [[ "$(cat "$REPO/opencode.json")" == *'"README.md"'* ]]
+  [ -f "$REPO/.opencode/plugins/mine/index.ts" ]
+
+  run "$AI/sync-ai.sh" --clean opencode
+
+  [ "$status" -eq 0 ]
+  [ -f "$REPO/opencode.json" ]
+  [ -f "$REPO/.opencode/plugins/mine/index.ts" ]
+  [ ! -e "$REPO/.opencode/plugins/zambelz-dev-env" ]
+  [ ! -e "$REPO/.opencode/commands" ]
+}
+
+@test "check opencode passes right after a sync" {
+  "$AI/sync-ai.sh" opencode >/dev/null
+
+  run "$AI/sync-ai.sh" --check opencode
+
+  [ "$status" -eq 0 ]
+}
