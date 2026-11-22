@@ -9,7 +9,7 @@ zzd_fonts_dir() {
   esac
 }
 
-_zc_fonts_files() {
+_zzd_fonts_files() {
   local dir files
   dir="$(mise -C "${ZZD_HOME:?}" where "$1" 2>/dev/null)" || return 1
   if [ ! -d "$dir" ]; then
@@ -23,18 +23,18 @@ _zc_fonts_files() {
   sort <<<"$files"
 }
 
-_zc_fonts_unavailable() {
+_zzd_fonts_unavailable() {
   case "$2" in
     1) zzd_error "$1 is not installed by mise" "zzd apply mise" ;;
     *) zzd_error "$1 has no font files" ;;
   esac
 }
 
-_zc_fonts_state() {
+_zzd_fonts_state() {
   printf '%s/fonts/%s\n' "${ZZD_STATE_DIR:?}" "${1//[\/:]/-}"
 }
 
-_zc_fonts_refresh() {
+_zzd_fonts_refresh() {
   local os
   os="$(zzd_os)"
   if [ "$os" = "darwin" ] || ! command -v fc-cache >/dev/null 2>&1; then
@@ -45,11 +45,11 @@ _zc_fonts_refresh() {
   fi
 }
 
-_zc_fonts_apply_tool() {
+_zzd_fonts_apply_tool() {
   local tool="$1" fontdir="$2" files="$3" file name state old
   local shipped=$'\n' installed=() removed=()
-  state="$(_zc_fonts_state "$tool")"
-  if ! _zc_dry_run; then
+  state="$(_zzd_fonts_state "$tool")"
+  if ! _zzd_dry_run; then
     mkdir -p "$fontdir"
   fi
   while IFS= read -r file; do
@@ -73,7 +73,7 @@ _zc_fonts_apply_tool() {
       fi
     done <"$state"
   fi
-  if _zc_dry_run; then
+  if _zzd_dry_run; then
     return 0
   fi
   mkdir -p "$(dirname "$state")"
@@ -88,10 +88,10 @@ _zc_fonts_apply_tool() {
     zzd_ok "$tool fonts in $fontdir"
     return 0
   fi
-  _zc_fonts_refresh "$fontdir"
+  _zzd_fonts_refresh "$fontdir"
 }
 
-_zc_fonts_check_tool() {
+_zzd_fonts_check_tool() {
   local tool="$1" fontdir="$2" files="$3" file name status=0
   while IFS= read -r file; do
     name="${file##*/}"
@@ -107,15 +107,15 @@ _zc_fonts_check_tool() {
   return "$status"
 }
 
-_zc_fonts_each() {
+_zzd_fonts_each() {
   local action="$1" tool fontdir files rc status=0
   fontdir="$(zzd_fonts_dir)"
   while IFS= read -r tool || [ -n "$tool" ]; do
     zzd_is_data_line "$tool" || continue
-    files="$(_zc_fonts_files "$tool")"
+    files="$(_zzd_fonts_files "$tool")"
     rc=$?
     if [ "$rc" -ne 0 ]; then
-      _zc_fonts_unavailable "$tool" "$rc"
+      _zzd_fonts_unavailable "$tool" "$rc"
       status=1
       continue
     fi
@@ -125,9 +125,9 @@ _zc_fonts_each() {
 }
 
 zzd_fonts_apply() {
-  _zc_fonts_each _zc_fonts_apply_tool "$1"
+  _zzd_fonts_each _zzd_fonts_apply_tool "$1"
 }
 
 zzd_fonts_check() {
-  _zc_fonts_each _zc_fonts_check_tool "$1"
+  _zzd_fonts_each _zzd_fonts_check_tool "$1"
 }

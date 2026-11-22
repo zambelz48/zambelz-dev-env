@@ -27,7 +27,7 @@ zzd_module_known() {
   return 1
 }
 
-_zc_has_function() {
+_zzd_has_function() {
   declare -F "$1" >/dev/null
 }
 
@@ -41,7 +41,7 @@ zzd_module_run() {
       # shellcheck source=/dev/null
       . "$dir/$phase.sh"
     fi
-    if [ "$phase" = "apply" ] && _zc_has_function mod_pre_apply; then
+    if [ "$phase" = "apply" ] && _zzd_has_function mod_pre_apply; then
       mod_pre_apply || exit 1
     fi
     case "$phase" in
@@ -63,7 +63,7 @@ zzd_module_run() {
         *) ;;
       esac
     fi
-    if _zc_has_function "mod_$phase"; then
+    if _zzd_has_function "mod_$phase"; then
       "mod_$phase" || status=1
     fi
     exit "$status"

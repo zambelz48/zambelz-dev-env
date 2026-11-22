@@ -22,7 +22,7 @@ _nvim_build_gradle() {
     zzd_error "Java 17 is not installed" "zzd apply mise"
     return 1
   fi
-  if _zc_dry_run; then
+  if _zzd_dry_run; then
     printf 'DRY-RUN: build gradle-language-server with %s\n' "$java"
     return 0
   fi
@@ -43,7 +43,7 @@ _nvim_restore() {
     zzd_error "neovim is not installed by mise" "zzd apply mise"
     return 1
   fi
-  if _zc_dry_run; then
+  if _zzd_dry_run; then
     zzd_do "$nvim" --headless "+Lazy! restore" +qa
   elif output="$("$nvim" --headless "+Lazy! restore" +qa 2>&1)"; then
     zzd_ok "lazy.nvim plugins restored from lazy-lock.json"
@@ -58,7 +58,7 @@ _nvim_restore() {
 _nvim_parsers_sync() {
   local out err installed updated count status=0
   _nvim_parsers_prepare sync || return 1
-  if _zc_dry_run; then
+  if _zzd_dry_run; then
     printf 'DRY-RUN: install and update treesitter parsers with %s\n' \
       "$_NVIM_BIN"
     return 0

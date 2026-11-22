@@ -127,7 +127,7 @@ EOF
 }
 
 @test "upgrade without a terminal and without --yes refuses" {
-  _zc_has_tty() { return 1; }
+  _zzd_has_tty() { return 1; }
   run zzd_upgrade </dev/null
   [ "$status" -eq 2 ]
   zzd_contains "$output" "ERROR: no terminal for the selection" \
@@ -159,7 +159,7 @@ EOF
 }
 
 @test "a cancelled selection changes nothing at all" {
-  _zc_has_tty() { return 0; }
+  _zzd_has_tty() { return 0; }
   zzd_stub fzf 130
   printf 'mod_upgrade() { echo "packages upgraded"; }\n' \
     >"$ZZD_ROOT/packages/zzd/upgrade.sh"

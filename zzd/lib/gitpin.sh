@@ -14,7 +14,7 @@ zzd_git_remote_head() {
   printf '%s\n' "$line"
 }
 
-_zc_git_clone() {
+_zzd_git_clone() {
   local dir="$1" url="$2" commit="$3" label="$4"
   if zzd_do git clone -q "$url" "$dir" &&
     zzd_do git -C "$dir" checkout -q "$commit"; then
@@ -29,7 +29,7 @@ zzd_git_pin() {
   local dir="$1" url="$2" commit="$3" label="$4" head changes
   local fix="zzd apply ${ZZD_MODULE:-}"
   if [ ! -e "$dir" ]; then
-    _zc_git_clone "$dir" "$url" "$commit" "$label"
+    _zzd_git_clone "$dir" "$url" "$commit" "$label"
     return
   fi
   if [ ! -d "$dir/.git" ]; then

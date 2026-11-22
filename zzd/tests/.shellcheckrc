@@ -10,5 +10,5 @@ disable=SC2292
 disable=SC2154
 # Substitutions inside bats assertions are checked by the assertion itself.
 disable=SC2312
-# Test doubles such as _zc_has_tty are called by the code under test.
+# Test doubles such as _zzd_has_tty are called by the code under test.
 disable=SC2329

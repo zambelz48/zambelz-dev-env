@@ -62,6 +62,16 @@ EOF
     "fix: follow each finding's Action line"
 }
 
+@test "a passing gate never claims there are no vulnerabilities" {
+  stub_engine 0
+
+  run zzd_audit --declared --gate
+
+  [ "$status" -eq 0 ]
+  [[ "$output" == *"OK: nothing blocks; open findings marked 'waiting for upstream' are listed above"* ]]
+  [[ "$output" != *"no known vulnerabilities"* ]]
+}
+
 @test "an engine that could not run exits 3" {
   stub_engine 3
 

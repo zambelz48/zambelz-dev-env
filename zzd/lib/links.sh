@@ -1,15 +1,15 @@
 # shellcheck shell=bash
 
-_zc_backup_dir=""
+_zzd_backup_dir=""
 
-_zc_backup() {
+_zzd_backup() {
   local target="$1" rel="$2" stamp dest destdir
-  if [ -z "$_zc_backup_dir" ]; then
+  if [ -z "$_zzd_backup_dir" ]; then
     mkdir -p "${ZZD_STATE_DIR:?}/backup"
     stamp="$(date +%Y%m%d-%H%M%S)"
-    _zc_backup_dir="$(mktemp -d "$ZZD_STATE_DIR/backup/$stamp-$$.XXXXXX")"
+    _zzd_backup_dir="$(mktemp -d "$ZZD_STATE_DIR/backup/$stamp-$$.XXXXXX")"
   fi
-  dest="$_zc_backup_dir/$rel"
+  dest="$_zzd_backup_dir/$rel"
   destdir="$(dirname "$dest")"
   mkdir -p "$destdir"
   mv "$target" "$dest"
@@ -18,7 +18,7 @@ _zc_backup() {
 
 zzd_links_apply() {
   local file="$1" src rel source target current parent backup status=0
-  _zc_backup_dir=""
+  _zzd_backup_dir=""
   while IFS=$'\t' read -r src rel || [ -n "$src" ]; do
     zzd_is_data_line "$src" || continue
     source="${ZZD_ROOT:?}/$src"
@@ -35,18 +35,18 @@ zzd_links_apply() {
         zzd_ok "linked $rel"
         continue
       fi
-      if _zc_dry_run; then
+      if _zzd_dry_run; then
         printf 'DRY-RUN: relink %s -> %s\n' "$rel" "$source"
         continue
       fi
       rm "$target"
     elif [ -e "$target" ]; then
-      if _zc_dry_run; then
+      if _zzd_dry_run; then
         printf 'DRY-RUN: back up %s, link -> %s\n' "$rel" "$source"
         continue
       fi
-      backup="$(_zc_backup "$target" "$rel")"
-    elif _zc_dry_run; then
+      backup="$(_zzd_backup "$target" "$rel")"
+    elif _zzd_dry_run; then
       printf 'DRY-RUN: link %s -> %s\n' "$rel" "$source"
       continue
     fi

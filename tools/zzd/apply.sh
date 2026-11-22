@@ -14,7 +14,7 @@ _tools_link() {
   local written=() removed=()
   bin="$(_tools_bin_dir)"
   entries="$(_tools_entries)"
-  if ! _zc_dry_run; then
+  if ! _zzd_dry_run; then
     mkdir -p "$bin"
   fi
   while IFS=$'\t' read -r cmd kind; do
@@ -31,7 +31,7 @@ _tools_link() {
     if [ -f "$bin/$cmd" ] && _tools_same "$bin/$cmd" "$content"; then
       continue
     fi
-    if _zc_dry_run; then
+    if _zzd_dry_run; then
       printf 'DRY-RUN: write %s/%s\n' "$bin" "$cmd"
       continue
     fi

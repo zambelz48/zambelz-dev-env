@@ -1,6 +1,6 @@
 # shellcheck shell=bash
 
-_zc_os_release_value() {
+_zzd_os_release_value() {
   local key="$1" file="$2" line value
   while IFS= read -r line; do
     case "$line" in
@@ -33,8 +33,8 @@ zzd_os() {
       ;;
   esac
   if [ -r "$release" ]; then
-    id="$(_zc_os_release_value ID "$release")"
-    id_like="$(_zc_os_release_value ID_LIKE "$release")"
+    id="$(_zzd_os_release_value ID "$release")"
+    id_like="$(_zzd_os_release_value ID_LIKE "$release")"
   fi
   case " $id $id_like " in
     *" fedora "*) printf 'fedora\n' ;;

@@ -1,6 +1,6 @@
 # shellcheck shell=bash
 
-_zc_sub_paths() {
+_zzd_sub_paths() {
   local config path
   config="$(git config --file "${ZZD_ROOT:?}/.gitmodules" \
     --get-regexp '^submodule\..*\.path$' 2>/dev/null)" || config=""
@@ -12,9 +12,9 @@ _zc_sub_paths() {
   done <<<"$config"
 }
 
-_zc_sub_entries() {
+_zzd_sub_entries() {
   local paths path lines line state sha list=()
-  paths="$(_zc_sub_paths "$1")"
+  paths="$(_zzd_sub_paths "$1")"
   while IFS= read -r path; do
     if [ -n "$path" ]; then
       list+=("$path")
@@ -40,7 +40,7 @@ _zc_sub_entries() {
   done <<<"$lines"
 }
 
-_zc_sub_recorded() {
+_zzd_sub_recorded() {
   local line sha=""
   line="$(git -C "${ZZD_ROOT:?}" ls-files --stage -- "$1" 2>/dev/null)" ||
     line=""
@@ -48,7 +48,7 @@ _zc_sub_recorded() {
   printf '%s' "$sha"
 }
 
-_zc_sub_was_recorded() {
+_zzd_sub_was_recorded() {
   local log old new
   log="$(git -C "${ZZD_ROOT:?}" log --format= --raw --no-abbrev -- "$1" \
     2>/dev/null)" || return 1
@@ -60,18 +60,18 @@ _zc_sub_was_recorded() {
   return 1
 }
 
-_zc_sub_update() {
+_zzd_sub_update() {
   zzd_do git -C "${ZZD_ROOT:?}" \
     -c "url.https://github.com/.insteadOf=git@github.com:" \
     submodule update --quiet --init --recursive -- "$1"
 }
 
-_zc_sub_left_alone() {
+_zzd_sub_left_alone() {
   zzd_warn "submodule $1 is at $2, not the recorded $3; left as is" \
     "git -C ${ZZD_ROOT:?} submodule update -- $1"
 }
 
-_zc_sub_apply_one() {
+_zzd_sub_apply_one() {
   local module="$1" state="$2" path="$3" head="$4" dir recorded changes
   dir="${ZZD_ROOT:?}/$path"
   case "$state" in
@@ -80,7 +80,7 @@ _zc_sub_apply_one() {
       return 0
       ;;
     missing)
-      if _zc_sub_update "$path"; then
+      if _zzd_sub_update "$path"; then
         zzd_changed "submodule $path checked out at $head"
         return 0
       fi
@@ -94,9 +94,9 @@ _zc_sub_apply_one() {
       return 1
       ;;
   esac
-  recorded="$(_zc_sub_recorded "$path")"
-  if ! _zc_sub_was_recorded "$path" "$head"; then
-    _zc_sub_left_alone "$path" "$head" "$recorded"
+  recorded="$(_zzd_sub_recorded "$path")"
+  if ! _zzd_sub_was_recorded "$path" "$head"; then
+    _zzd_sub_left_alone "$path" "$head" "$recorded"
     return 0
   fi
   changes="$(git -C "$dir" status --porcelain --untracked-files=no \
@@ -106,7 +106,7 @@ _zc_sub_apply_one() {
       "git -C $dir stash, then zzd apply $module"
     return 1
   fi
-  if _zc_sub_update "$path"; then
+  if _zzd_sub_update "$path"; then
     zzd_changed "submodule $path $head -> $recorded"
     return 0
   fi
@@ -115,7 +115,7 @@ _zc_sub_apply_one() {
   return 1
 }
 
-_zc_sub_check_one() {
+_zzd_sub_check_one() {
   local module="$1" state="$2" path="$3" head="$4" recorded
   case "$state" in
     ok)
@@ -133,9 +133,9 @@ _zc_sub_check_one() {
       return 1
       ;;
   esac
-  recorded="$(_zc_sub_recorded "$path")"
-  if ! _zc_sub_was_recorded "$path" "$head"; then
-    _zc_sub_left_alone "$path" "$head" "$recorded"
+  recorded="$(_zzd_sub_recorded "$path")"
+  if ! _zzd_sub_was_recorded "$path" "$head"; then
+    _zzd_sub_left_alone "$path" "$head" "$recorded"
     return 0
   fi
   zzd_error "submodule $path at $head, recorded $recorded" \
@@ -143,12 +143,12 @@ _zc_sub_check_one() {
   return 1
 }
 
-_zc_submodules_each() {
+_zzd_submodules_each() {
   local each="$1" module="$2" entries state path head status=0
   if [ ! -f "${ZZD_ROOT:?}/.gitmodules" ]; then
     return 0
   fi
-  if ! entries="$(_zc_sub_entries "$module")"; then
+  if ! entries="$(_zzd_sub_entries "$module")"; then
     zzd_error "cannot read the submodules under $module" \
       "git -C $ZZD_ROOT submodule status -- $module"
     return 1
@@ -164,9 +164,9 @@ _zc_submodules_each() {
 # Moves a stale checkout (a commit the repository recorded before) to the
 # recorded commit; any other commit is the owner's work and is left alone.
 zzd_submodules_apply() {
-  _zc_submodules_each _zc_sub_apply_one "$1"
+  _zzd_submodules_each _zzd_sub_apply_one "$1"
 }
 
 zzd_submodules_check() {
-  _zc_submodules_each _zc_sub_check_one "$1"
+  _zzd_submodules_each _zzd_sub_check_one "$1"
 }

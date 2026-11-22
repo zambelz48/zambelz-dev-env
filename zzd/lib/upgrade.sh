@@ -1,56 +1,56 @@
 # shellcheck shell=bash
 
-_zc_versions() {
+_zzd_versions() {
   zzd_python "${ZZD_ROOT:?}/zzd/lib/versions.py" "$@"
 }
 
-_zc_mise_save() {
+_zzd_mise_save() {
   mkdir -p "$1"
   cp "$ZZD_ROOT/mise/mise.toml" "$ZZD_ROOT/mise/mise.lock" "$1/"
 }
 
-_zc_mise_snapshot() {
+_zzd_mise_snapshot() {
   local dir
   dir="$(mktemp -d)"
-  _zc_mise_save "$dir"
+  _zzd_mise_save "$dir"
   printf '%s' "$dir"
 }
 
-_zc_mise_interrupted() {
-  _zc_mise_restore "$1"
+_zzd_mise_interrupted() {
+  _zzd_mise_restore "$1"
   zzd_error "interrupted; mise.toml and the lock were restored"
   exit 130
 }
 
-_zc_mise_guard() {
+_zzd_mise_guard() {
   # shellcheck disable=SC2064 # the snapshot path is fixed when the trap is set
-  trap "_zc_mise_interrupted '$1'" INT TERM
+  trap "_zzd_mise_interrupted '$1'" INT TERM
 }
 
-_zc_mise_unguard() {
+_zzd_mise_unguard() {
   trap - INT TERM
 }
 
-_zc_mise_restore() {
+_zzd_mise_restore() {
   local dir="$1"
   cp "$dir/mise.toml" "$dir/mise.lock" "$ZZD_ROOT/mise/"
   rm -rf "$dir"
 }
 
-_zc_pin_tool() {
+_zzd_pin_tool() {
   local step="$1/step" tool="$2" version="$3" platforms
   shift 3
   platforms="$(zzd_lock_platforms)"
-  _zc_mise_save "$step"
-  if ! _zc_versions "$@"; then
-    _zc_mise_restore "$step"
+  _zzd_mise_save "$step"
+  if ! _zzd_versions "$@"; then
+    _zzd_mise_restore "$step"
     zzd_error "could not set $tool $version; $tool was left as it was"
     return 1
   fi
   if ! mise -C "$ZZD_ROOT/mise" lock --global --platform "$platforms" \
-    "$tool" || ! _zc_versions locked "$ZZD_ROOT/mise/mise.toml" \
+    "$tool" || ! _zzd_versions locked "$ZZD_ROOT/mise/mise.toml" \
     "$ZZD_ROOT/mise/mise.lock" "$step/mise.lock" "$tool" "$version"; then
-    _zc_mise_restore "$step"
+    _zzd_mise_restore "$step"
     zzd_error "could not lock $tool $version; $tool was left as it was" \
       "check $tool $version exists for $platforms"
     return 1
@@ -58,14 +58,14 @@ _zc_pin_tool() {
   rm -rf "$step"
 }
 
-_zc_install_locked() {
+_zzd_install_locked() {
   if ! mise -C "${ZZD_HOME:?}" install --locked; then
     zzd_error "mise install --locked failed" "zzd apply mise"
     return 1
   fi
 }
 
-_zc_changed_files() {
+_zzd_changed_files() {
   local changes line
   changes="$(git -C "$ZZD_ROOT" status --short -- mise 2>/dev/null)" ||
     changes=""
@@ -76,7 +76,7 @@ _zc_changed_files() {
   done <<<"$changes"
 }
 
-_zc_upgrade_select() {
+_zzd_upgrade_select() {
   local candidates="$1" yes="$2"
   if [ -z "$candidates" ] || [ "$yes" -eq 1 ]; then
     printf '%s' "$candidates"
@@ -85,7 +85,7 @@ _zc_upgrade_select() {
   printf '%s\n' "$candidates" | fzf --multi --prompt 'upgrade> ' || true
 }
 
-_zc_upgrade_dry_run() {
+_zzd_upgrade_dry_run() {
   local selected="$1" named="$2" tool old new platforms
   while read -r tool old new; do
     if [ -n "$tool" ]; then
@@ -107,27 +107,27 @@ _zc_upgrade_dry_run() {
   fi
 }
 
-_zc_upgrade_apply() {
+_zzd_upgrade_apply() {
   local selected="$1" snapshot tool old new status=0 changed=()
-  snapshot="$(_zc_mise_snapshot)"
-  _zc_mise_guard "$snapshot"
+  snapshot="$(_zzd_mise_snapshot)"
+  _zzd_mise_guard "$snapshot"
   while read -r tool old new; do
     if [ -z "$tool" ]; then
       continue
     fi
-    if _zc_pin_tool "$snapshot" "$tool" "$new" \
+    if _zzd_pin_tool "$snapshot" "$tool" "$new" \
       set "$ZZD_ROOT/mise/mise.toml" "$tool" "$old" "$new"; then
       changed+=("$tool $old -> $new")
     else
       status=1
     fi
   done <<<"$selected"
-  _zc_mise_unguard
+  _zzd_mise_unguard
   rm -rf "$snapshot"
   if [ "${#changed[@]}" -eq 0 ]; then
     return "$status"
   fi
-  _zc_install_locked || return 1
+  _zzd_install_locked || return 1
   for tool in "${changed[@]}"; do
     zzd_changed "$tool"
   done
@@ -154,33 +154,33 @@ zzd_upgrade() {
     esac
   done
   zzd_github_token
-  candidates="$(_zc_versions "${args[@]}")" || {
+  candidates="$(_zzd_versions "${args[@]}")" || {
     zzd_error "could not check mise versions"
     return 1
   }
   if [ -z "$candidates" ]; then
     zzd_ok "mise tools are current"
-  elif [ "$yes" -eq 0 ] && ! _zc_has_tty; then
+  elif [ "$yes" -eq 0 ] && ! _zzd_has_tty; then
     zzd_error "no terminal for the selection" "zzd upgrade --yes"
     return 2
   fi
-  selected="$(_zc_upgrade_select "$candidates" "$yes")"
+  selected="$(_zzd_upgrade_select "$candidates" "$yes")"
   if [ -n "$candidates" ] && [ -z "$selected" ]; then
     zzd_ok "nothing selected"
     return 0
   fi
   if [ "$dry" -eq 1 ]; then
-    _zc_upgrade_dry_run "$selected" "$named"
+    _zzd_upgrade_dry_run "$selected" "$named"
     return
   fi
   if [ -n "$selected" ]; then
-    _zc_upgrade_apply "$selected" || return 1
+    _zzd_upgrade_apply "$selected" || return 1
   fi
   if [ "$named" -eq 0 ]; then
     zzd_modules_run upgrade || status=1
   fi
   zzd_audit --declared || status=1
-  _zc_changed_files
+  _zzd_changed_files
   return "$status"
 }
 
@@ -190,18 +190,18 @@ zzd_use() {
     zzd_error "usage: zzd use <tool> <version>"
     return 2
   fi
-  snapshot="$(_zc_mise_snapshot)"
-  _zc_mise_guard "$snapshot"
+  snapshot="$(_zzd_mise_snapshot)"
+  _zzd_mise_guard "$snapshot"
   zzd_github_token
-  if ! _zc_pin_tool "$snapshot" "$1" "$2" \
+  if ! _zzd_pin_tool "$snapshot" "$1" "$2" \
     use "${ZZD_ROOT:?}/mise/mise.toml" "$1" "$2"; then
-    _zc_mise_unguard
+    _zzd_mise_unguard
     rm -rf "$snapshot"
     return 1
   fi
-  _zc_mise_unguard
+  _zzd_mise_unguard
   rm -rf "$snapshot"
-  _zc_install_locked || return 1
+  _zzd_install_locked || return 1
   zzd_changed "$1 $2 is the global default"
-  _zc_changed_files
+  _zzd_changed_files
 }

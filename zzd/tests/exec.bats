@@ -26,7 +26,7 @@ setup() {
 }
 
 @test "sudo without a terminal fails fast and prints the command" {
-  _zc_has_tty() { return 1; }
+  _zzd_has_tty() { return 1; }
   zzd_stub sudo 1
   zzd_stub dnf 0
   start=$SECONDS
@@ -39,7 +39,7 @@ setup() {
 }
 
 @test "sudo without a terminal uses passwordless sudo when allowed" {
-  _zc_has_tty() { return 1; }
+  _zzd_has_tty() { return 1; }
   zzd_stub sudo 0
   run zzd_sudo dnf install x </dev/null
   [ "$status" -eq 0 ]
@@ -54,7 +54,7 @@ in_pty() {
 }
 
 @test "a controlling terminal counts when stdin is redirected" {
-  in_pty '_zc_has_tty </dev/null && echo has-tty || echo no-tty'
+  in_pty '_zzd_has_tty </dev/null && echo has-tty || echo no-tty'
   zzd_contains "$output" "has-tty"
 }
 
@@ -66,7 +66,7 @@ in_pty() {
 }
 
 @test "sudo with a terminal calls sudo directly" {
-  _zc_has_tty() { return 0; }
+  _zzd_has_tty() { return 0; }
   zzd_stub sudo 0
   run zzd_sudo apt-get install -y zsh
   [ "$status" -eq 0 ]

@@ -4,7 +4,7 @@
 
 _tmux_install_plugins() {
   local tpm="$1" output
-  if _zc_dry_run; then
+  if _zzd_dry_run; then
     zzd_do "$tpm/bin/install_plugins"
     return 0
   fi

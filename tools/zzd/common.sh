@@ -120,7 +120,7 @@ _tools_install_npm() {
     zzd_ok "npm tools installed from pnpm-lock.yaml"
     return 0
   fi
-  if _zc_dry_run; then
+  if _zzd_dry_run; then
     printf 'DRY-RUN: pnpm install --frozen-lockfile in %s\n' "$dir"
     return 0
   fi
@@ -141,7 +141,7 @@ _tools_install_python() {
     zzd_ok "python tools installed from uv.lock"
     return 0
   fi
-  if _zc_dry_run; then
+  if _zzd_dry_run; then
     printf 'DRY-RUN: uv sync --locked in %s\n' "$dir"
     return 0
   fi

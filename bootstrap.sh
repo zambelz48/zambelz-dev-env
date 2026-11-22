@@ -121,7 +121,7 @@ bs_homebrew() {
     zzd_ok "Homebrew"
     return 0
   fi
-  if _zc_dry_run; then
+  if _zzd_dry_run; then
     printf 'DRY-RUN: install Homebrew\n'
     return 0
   fi

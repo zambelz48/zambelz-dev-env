@@ -8,7 +8,7 @@ mod_pre_apply() {
     zzd_ok "kitty/kitty.conf present"
     return 0
   fi
-  if _zc_dry_run; then
+  if _zzd_dry_run; then
     printf 'DRY-RUN: generate kitty/kitty.conf\n'
     return 0
   fi

@@ -15,17 +15,17 @@ zzd_mise_version() {
   esac
 }
 
-_zc_mise_unreadable() {
+_zzd_mise_unreadable() {
   zzd_error "cannot read min_version from ${ZZD_ROOT:?}/mise/mise.toml" \
     "edit $ZZD_ROOT/mise/mise.toml"
   return 1
 }
 
-_zc_mise_path() {
+_zzd_mise_path() {
   command -v mise 2>/dev/null || true
 }
 
-_zc_mise_current() {
+_zzd_mise_current() {
   if [ -n "$1" ]; then
     zzd_mise_version "$1"
   fi
@@ -34,16 +34,16 @@ _zc_mise_current() {
 zzd_mise_ready() {
   local pinned path current
   pinned="$(zzd_mise_min_version)" || return 1
-  path="$(_zc_mise_path)"
-  current="$(_zc_mise_current "$path")"
+  path="$(_zzd_mise_path)"
+  current="$(_zzd_mise_current "$path")"
   [ -n "$current" ] && zzd_version_ge "$current" "$pinned"
 }
 
 zzd_mise_check() {
   local pinned path current
-  pinned="$(zzd_mise_min_version)" || _zc_mise_unreadable || return 1
-  path="$(_zc_mise_path)"
-  current="$(_zc_mise_current "$path")"
+  pinned="$(zzd_mise_min_version)" || _zzd_mise_unreadable || return 1
+  path="$(_zzd_mise_path)"
+  current="$(_zzd_mise_current "$path")"
   if [ -n "$current" ] && zzd_version_ge "$current" "$pinned"; then
     zzd_ok "mise $current (>= $pinned)"
     return 0
@@ -60,10 +60,10 @@ zzd_mise_check() {
 # breaks all of them, `mise self-update` included. A newer mise is kept.
 zzd_mise_ensure() {
   local pinned bin path current installer after
-  pinned="$(zzd_mise_min_version)" || _zc_mise_unreadable || return 1
+  pinned="$(zzd_mise_min_version)" || _zzd_mise_unreadable || return 1
   bin="$(zzd_mise_bin)"
-  path="$(_zc_mise_path)"
-  current="$(_zc_mise_current "$path")"
+  path="$(_zzd_mise_path)"
+  current="$(_zzd_mise_current "$path")"
   if [ -n "$current" ] && zzd_version_ge "$current" "$pinned"; then
     zzd_ok "mise $current (>= $pinned)"
     return 0
@@ -73,7 +73,7 @@ zzd_mise_ensure() {
       "remove $path, or put ${bin%/*} before ${path%/*} on PATH"
     return 1
   fi
-  if _zc_dry_run; then
+  if _zzd_dry_run; then
     printf 'DRY-RUN: install mise %s from https://mise.run into %s\n' \
       "$pinned" "$bin"
     return 0

@@ -1,11 +1,11 @@
 # shellcheck shell=bash
 
-_zc_has_tty() {
+_zzd_has_tty() {
   [ -t 0 ] || { : </dev/tty; } 2>/dev/null
 }
 
 zzd_do() {
-  if _zc_dry_run; then
+  if _zzd_dry_run; then
     printf 'DRY-RUN: %s\n' "$*"
     return 0
   fi
@@ -19,11 +19,11 @@ zzd_sudo() {
     zzd_do "$@"
     return
   fi
-  if _zc_dry_run; then
+  if _zzd_dry_run; then
     printf 'DRY-RUN: sudo %s\n' "$*"
     return 0
   fi
-  if _zc_has_tty; then
+  if _zzd_has_tty; then
     sudo "$@"
     return
   fi
@@ -50,7 +50,7 @@ zzd_ensure_line() {
     zzd_ok "$file has: $line"
     return 0
   fi
-  if _zc_dry_run; then
+  if _zzd_dry_run; then
     printf 'DRY-RUN: append to %s: %s\n' "$file" "$line"
     return 0
   fi

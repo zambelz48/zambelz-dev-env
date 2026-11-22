@@ -6,7 +6,7 @@ _tools_relock() {
   local kind="$1" lock backup
   shift
   lock="$(_tools_lock "$kind")"
-  if _zc_dry_run; then
+  if _zzd_dry_run; then
     printf 'DRY-RUN: re-resolve %s\n' "$lock"
     return 0
   fi

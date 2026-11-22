@@ -1,6 +1,6 @@
 # shellcheck shell=bash
 
-_zc_scan_rc() {
+_zzd_scan_rc() {
   local name file number line trimmed
   for name in .zshrc .zprofile .zshenv .profile.zsh; do
     file="${ZZD_HOME:?}/$name"
@@ -29,7 +29,7 @@ _zc_scan_rc() {
   done
 }
 
-_zc_shadowed() {
+_zzd_shadowed() {
   local dir="$1" shims="$2" shim name names=""
   for shim in "$shims"/*; do
     name="${shim##*/}"
@@ -40,7 +40,7 @@ _zc_shadowed() {
   printf '%s' "${names# }"
 }
 
-_zc_check_path() {
+_zzd_check_path() {
   local shims="$ZZD_HOME/.local/share/mise/shims" output path_line entry
   local seen_shims=0 status=0 entries shadowed
   output="$(zsh -i -c 'print -r -- $PATH' 2>/dev/null)" || output=""
@@ -59,7 +59,7 @@ _zc_check_path() {
         status=1
         ;;
       *)
-        shadowed="$(_zc_shadowed "$entry" "$shims")"
+        shadowed="$(_zzd_shadowed "$entry" "$shims")"
         if [ -n "$shadowed" ]; then
           zzd_error "$entry shadows mise shims: $shadowed" "zzd apply zsh"
           status=1
@@ -101,8 +101,8 @@ zzd_doctor_core() {
     zzd_warn "no GitHub token (mise downloads may hit the API rate limit)" \
       "gh auth login"
   fi
-  _zc_check_path || status=1
-  _zc_scan_rc
+  _zzd_check_path || status=1
+  _zzd_scan_rc
   for dir in .pyenv .rbenv .jenv .gvm .local/share/fnm; do
     if [ -d "$ZZD_HOME/$dir" ]; then
       note="(retired; remove it manually when ready)"
