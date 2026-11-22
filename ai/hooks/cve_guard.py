@@ -18,8 +18,14 @@ WATCHED = (
     "tools/npm/pnpm-workspace.yaml",
     "tools/python/pyproject.toml",
     "tools/python/uv.lock",
+    "neovim/lazy-lock.json",
+    "neovim/lua/treesitter_parsers.lua",
+    "tmux/zconf/pins",
+    "zsh/zconf/pins",
+    ".gitmodules",
+    "zconf/audit/catalog.toml",
 )
-AUDIT_TIMEOUT_SECONDS = 420
+AUDIT_TIMEOUT_SECONDS = 600
 GATED_SUBCOMMANDS = ("commit", "push")
 WRAPPERS = ("command", "exec", "env", "nohup", "time")
 ASSIGNMENT = re.compile(r"[A-Za-z_][A-Za-z0-9_]*=.*")

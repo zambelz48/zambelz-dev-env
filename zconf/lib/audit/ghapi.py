@@ -7,7 +7,7 @@ import procs
 RETRIES = 3
 TRANSIENT = re.compile(
     r"TLS handshake timeout|i/o timeout|connection reset|connection refused|unexpected EOF"
-    r"|no such host|HTTP 50[0234]|HTTP 429|secondary rate limit",
+    r"|no such host|HTTP 50[0234]|HTTP 429|secondary rate limit|check your internet connection",
     re.IGNORECASE,
 )
 

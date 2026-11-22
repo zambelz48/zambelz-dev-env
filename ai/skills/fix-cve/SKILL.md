@@ -1,6 +1,6 @@
 ---
 name: fix-cve
-description: Fix a known vulnerability that zconf audit reports in the pinned tools, at the source first and with an override only when no source fix exists, then prove the tools still work. Use when zconf audit --declared fails or the cve-guard hook blocks a commit or push.
+description: Fix a known vulnerability that zconf audit reports, at the source first and with an override only when no source fix exists, then prove the tools still work. Use when zconf audit fails or the cve-guard hook blocks a commit or push.
 ---
 
 # Fix a CVE
@@ -10,14 +10,28 @@ Findings are never accepted: there is no ignore list and no bypass
 
 ## 1. Read the finding
 
-Run `zconf/bin/zconf audit --declared`. For each row note the advisory, the
-package, its version, the fixed version and the source file:
+Run `zconf/bin/zconf audit --all`. Each finding names the component, the
+advisory, the library and its fixed version, an Action line and a link. Its
+label says what can be done:
 
-| Source | Owner |
+- `fix available, blocks push`: a newer release of the tool exists in its
+  pinned line. Follow the Action line, then audit again.
+- `blocks push`: the fix route is yours to find (the table below).
+- `waiting for upstream`: the tool is at its newest release and still ships
+  the vulnerable library. Report it to the user as open; there is nothing to
+  install yet.
+
+| Component | Fix route |
 | --- | --- |
-| `mise/mise.lock` | a mise tool (crates, Go, RubyGems backends) |
-| `tools/npm/pnpm-lock.yaml` | an npm language server in `tools/npm/package.json` |
-| `tools/python/uv.lock` | a Python tool in `tools/python/pyproject.toml` |
+| `mise-tool:*`, `mise:mise` | `zconf/bin/zconf upgrade <tool>`; for mise itself raise `min_version` and run `zconf apply mise` |
+| `bundled:<tool>/<library>`, `upstream-pin:<tool>/<path>` | upgrade the tool that ships it |
+| `lockfile:tools/npm/pnpm-lock.yaml` | an npm language server in `tools/npm/package.json` (steps 2-4) |
+| `lockfile:tools/python/uv.lock` | a Python tool in `tools/python/pyproject.toml` (steps 2-4) |
+| `nvim-plugin:*`, `treesitter-parser:*` | move the pin to a commit that contains the fix (`zconf neovim check-updates`) |
+| `tmux-plugin:*`, `oh-my-zsh:*` | move the commit in `tmux/zconf/pins` or `zsh/zconf/pins` |
+| `submodule:*` | move the submodule to a commit that contains the fix |
+| `os-package:*` | `sudo dnf upgrade --advisory=<id>` (Fedora) or the distribution's update; the owner runs it |
+| `install:*` | an install nothing pins: remove it (`mise prune`) or pin a fixed version |
 
 ## 2. Find who pulls it in
 
@@ -57,7 +71,8 @@ override was necessary.
    check to that file that exercises the overridden package through the tool
    that depends on it, like the existing ones.
 2. `node tools/zconf/smoke/lsp-smoke.mjs`.
-3. `zconf/bin/zconf audit --declared` exits 0.
+3. `zconf/bin/zconf audit --declared --gate` exits 0, and the finding is gone
+   from `zconf/bin/zconf audit --all`.
 4. The `run-checks` skill passes.
 
 If the tool breaks with the fixed version, do not ship the override: upgrade

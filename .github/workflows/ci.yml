@@ -29,6 +29,7 @@ jobs:
     container: ${{ matrix.image }}
     env:
       GITHUB_TOKEN: ${{ github.token }}
+      NVD_API_KEY: ${{ secrets.NVD_API_KEY }}
     defaults:
       run:
         shell: bash
@@ -66,7 +67,7 @@ jobs:
         run: |
           cd "$HOME/zambelz-dev-env"
           zsh -c 'zconf/tests/run && zconf lint && zconf check-pins &&
-            zconf audit'
+            zconf audit --all --gate'
 
       - name: AI agent setup renders and stays in sync
         run: |

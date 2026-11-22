@@ -4,7 +4,7 @@ import frontmatter
 from model import Command, Skill, Source
 from writer import Output
 
-HOOK_TIMEOUT_SECONDS = 480
+HOOK_TIMEOUT_SECONDS = 660
 
 
 class RenderError(Exception):

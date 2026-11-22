@@ -218,9 +218,24 @@ run `uv lock` in `tools/python`, then `zconf apply tools`.
 - It fails closed. A component with no source is `NOT COVERED`, a source
   that cannot answer is `COULD NOT RUN`, and nothing is skipped silently.
   Exit 0 clean, 1 findings, uncovered components or leftovers, 2 usage,
-  3 could not run. On this machine (2026-11-22) `--declared` takes about
-  150 s and `--installed` about 45 s; NVD answers faster with an
-  `NVD_API_KEY` in the environment.
+  3 could not run. On this machine (2026-11-23) `--declared` takes about
+  170 s with an `NVD_API_KEY` in the environment and about 380 s without
+  one (NVD allows 50 requests per 30 s with a key, 5 without); `--installed`
+  takes about 45 s. The agent hook allows the audit 600 s.
+- Each finding prints the affected component, the advisory and its aliases,
+  the severity, the vulnerable library with its fixed version, what the
+  vulnerability is, an `Action:` line and a link to the advisory. Its label
+  says what can be done: `fix available, blocks push` (a newer release of
+  the tool exists in its pinned line; the action names the upgrade),
+  `blocks push` (the fix route depends on the component; see the `fix-cve`
+  skill), or `waiting for upstream` (the tool is at its newest release and
+  still ships the vulnerable library).
+- Some findings are reported as information, not failures: dev-only
+  dependencies, RustSec "unmaintained" notices (no known flaw), libraries an
+  installed binary's own dependency list shows it does not contain, and
+  crates a release's `Cargo.lock` reaches only from crates it does not ship
+  (`shipped_crates` in the catalog). Without that evidence, as in CI before
+  anything is installed, they fail.
 - Findings are never accepted: there is no ignore list and no severity
   threshold. Each scan passes an empty config, so an `osv-scanner.toml`
   next to a lock (even one shipped inside a dependency) cannot hide a
@@ -229,12 +244,18 @@ run `uv lock` in `tools/python`, then `zconf apply tools`.
   `overrides` (or `tools/python/pyproject.toml`), then check the tool still
   works with `node tools/zconf/smoke/overrides.mjs` and
   `node tools/zconf/smoke/lsp-smoke.mjs`.
+- `--gate` is the mode the gates use: it prints the same report but exits 1
+  only for findings that block (not for `waiting for upstream` ones),
+  uncovered components and leftovers. Every run checks for new releases
+  again, so a waiting finding blocks as soon as its tool ships a release.
 
 - `zconf apply git` sets `core.hooksPath` to `.githooks`. The pre-push hook
-  then runs `check-pins`, `lint` and `audit --declared` on a temporary
+  then runs `check-pins`, `lint` and `audit --declared --gate` on a temporary
   checkout of the commit each pushed branch or tag points to, so uncommitted
-  changes do not affect the result, and blocks the push if any fails (a scan
-  that cannot run also blocks). `git push --no-verify` skips it.
+  changes do not affect the result, and blocks the push if any fails (an
+  audit that cannot run also blocks). `git push --no-verify` skips it. CI
+  runs `zconf audit --all --gate` in each container, with `NVD_API_KEY` from
+  the repository secret.
 
 ## AI agents
 
@@ -286,7 +307,7 @@ cannot read, a missing `python3`) blocks the call.
 
 | Hook | When | What it does |
 | --- | --- | --- |
-| `cve-guard` | before a shell command; after any file-changing tool | Blocks `git commit` and `git push` while `zconf audit --declared` reports findings or cannot run. After a change to `mise/mise.toml`, `mise/mise.lock`, `tools/npm/{package.json,pnpm-lock.yaml,pnpm-workspace.yaml}` or `tools/python/{pyproject.toml,uv.lock}`, runs the audit and shows the agent the result |
+| `cve-guard` | before a shell command; after any file-changing tool | Blocks `git commit` and `git push` while `zconf audit --declared --gate` reports blocking findings or cannot run. After a change to any pin file the audit reads (`mise/mise.{toml,lock}`, `tools/npm/{package.json,pnpm-lock.yaml,pnpm-workspace.yaml}`, `tools/python/{pyproject.toml,uv.lock}`, `neovim/lazy-lock.json`, `neovim/lua/treesitter_parsers.lua`, `tmux/zconf/pins`, `zsh/zconf/pins`, `.gitmodules`, `zconf/audit/catalog.toml`), runs the full audit and shows the agent the result |
 | `dev-plan` | before a write or edit | Blocks a `dev-plan/PLAN-*.md` that misses `## MANDATORY RULES`, `## Overview`, a `## Phase <n>` with checkbox tasks, the rule phrases "Adhere to AGENTS.md", "Mark completed tasks" and "Work phase by phase", or that has an invalid checkbox list item. Edits are checked on the whole new file |
 
 - The CVE guard reads the command text: a commit hidden behind `bash -c`,
