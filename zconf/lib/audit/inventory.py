@@ -455,6 +455,24 @@ def _package_version(manager: str, name: str) -> str | None:
     return text.replace("(none):", "")
 
 
+def _apt_source(name: str) -> dict[str, str]:
+    done = procs.run(["dpkg-query", "-W", "-f", "${source:Package}\t${source:Version}", name])
+    source, _, version = done.stdout.strip().partition("\t")
+
+    if done.code != 0 or not source or not version:
+        raise LookupError(f"dpkg-query cannot tell the source package of the installed {name}")
+
+    return {"source": source, "source_version": version}
+
+
+def _package_details(manager: str, name: str) -> dict[str, str]:
+    match manager:
+        case "apt":
+            return _apt_source(name)
+        case _:
+            return {}
+
+
 def os_packages(paths: Paths) -> Inventory:
     inventory = Inventory()
 
@@ -469,7 +487,14 @@ def os_packages(paths: Paths) -> Inventory:
                 continue
 
             inventory.components.append(
-                _installed(Kind.OS_PACKAGE, name, version, f"packages/{manager}.txt", manager=manager)
+                _installed(
+                    Kind.OS_PACKAGE,
+                    name,
+                    version,
+                    f"packages/{manager}.txt",
+                    manager=manager,
+                    **_package_details(manager, name),
+                )
             )
 
     return inventory
