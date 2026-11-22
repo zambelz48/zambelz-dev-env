@@ -6,6 +6,7 @@ import ghapi
 import webapi
 from catalog import Catalog, CatalogError, Source, sources_for, vendored_version
 from model import Component
+from sources import feeds
 
 NVD_CPES = "https://services.nvd.nist.gov/rest/json/cpes/2.0"
 PARALLEL = 8
@@ -122,8 +123,21 @@ def _source_checks(source: Source) -> list[str]:
             return [problem for problem in found if problem]
         case "upstream-bundle":
             return _bundle_ok(params["repo"], params["tag"], params["bundle"])
+        case "feed" if params["name"] not in feeds.FEEDS:
+            return [f"unknown feed '{params['name']}'; known feeds: {', '.join(sorted(feeds.FEEDS))}"]
+        case "eol":
+            return _eol_ok(params["product"], params["version"])
         case _:
             return []
+
+
+def _eol_ok(product: str, version: str) -> list[str]:
+    try:
+        feeds.eol_cycle(product, version)
+    except feeds.SourceError as error:
+        return [str(error)]
+
+    return []
 
 
 def verify(catalog: Catalog, components: list[Component], managers: list[str]) -> CheckResult:
