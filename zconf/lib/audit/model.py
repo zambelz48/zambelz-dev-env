@@ -51,6 +51,7 @@ class Finding:
     fixed_in: tuple[str, ...] = ()
     severity: str = "unknown"
     dev_only: bool = False
+    package: str = ""
 
 
 @dataclass(frozen=True)
