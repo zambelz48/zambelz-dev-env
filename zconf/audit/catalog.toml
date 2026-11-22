@@ -1,0 +1,5 @@
+[mise-tool.neovim]
+repo = "neovim/neovim"
+
+[nvim-plugin.nvim-treesitter]
+repo = "nvim-treesitter/nvim-treesitter"
