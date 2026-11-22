@@ -63,6 +63,14 @@ const checks = [
     const merged = deepmerge({ a: { b: 1 } }, { a: { c: 2 } });
     return merged.a.b === 1 && merged.a.c === 2;
   }],
+  ['prisma-language-server: effect', () => {
+    const { Either, Schema } = requireFrom('@prisma+config@', '@prisma/config')(
+      'effect');
+    const decode = Schema.decodeUnknownEither(
+      Schema.Struct({ schema: Schema.String }));
+    return Either.isRight(decode({ schema: 'schema.prisma' }))
+      && Either.isLeft(decode({ schema: 1 }));
+  }],
 ];
 
 let failed = 0;
