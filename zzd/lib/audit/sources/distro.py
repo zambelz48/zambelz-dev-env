@@ -1,9 +1,10 @@
 import json
 import os
+import re
 from pathlib import Path
 
 import procs
-from model import Component, Finding, Kind, Scope
+from model import FIX_AVAILABLE, WAITING, Component, Finding, Kind, Scope
 from sources import osv
 
 DNF_ADVISORIES = ["dnf", "-q", "--refresh", "advisory", "list", "--security", "--available", "--json"]
@@ -90,6 +91,50 @@ def dnf(components: list[Component]) -> list[Finding]:
         )
 
     return findings
+
+
+def apt_versions(package: str) -> tuple[str, str] | None:
+    try:
+        done = procs.run(["apt-cache", "policy", package])
+    except procs.CommandError:
+        return None
+
+    installed = re.search(r"^\s*Installed:\s*(\S+)", done.stdout, re.MULTILINE)
+    candidate = re.search(r"^\s*Candidate:\s*(\S+)", done.stdout, re.MULTILINE)
+
+    if done.code != 0 or installed is None or candidate is None or installed.group(1) == "(none)":
+        return None
+
+    return installed.group(1), candidate.group(1)
+
+
+def status(finding: Finding) -> dict[str, str]:
+    manager = finding.component.locator.get("manager")
+
+    match manager:
+        case "dnf":
+            return {"status": FIX_AVAILABLE, "action": f"sudo dnf upgrade --advisory={finding.id}"}
+        case "apt":
+            return _apt_status(finding.component.name)
+        case _:
+            return {}
+
+
+def _apt_status(package: str) -> dict[str, str]:
+    versions = apt_versions(package)
+
+    if versions is None:
+        return {}
+
+    installed, candidate = versions
+
+    if candidate != installed:
+        return {
+            "status": FIX_AVAILABLE,
+            "action": f"sudo apt-get install --only-upgrade {package} ({installed} -> {candidate}), then audit again",
+        }
+
+    return {"status": WAITING, "action": f"none possible yet; {package} {installed} is the newest version the distribution ships"}
 
 
 def ubuntu_ecosystem(release: dict[str, str]) -> str:

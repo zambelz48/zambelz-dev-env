@@ -13,6 +13,7 @@ MISE_REPO = "jdx/mise"
 PARALLEL = 8
 TOOL_KINDS = (Kind.MISE_TOOL, Kind.INSTALL)
 CHILD_KINDS = (Kind.BUNDLED, Kind.UPSTREAM_PIN)
+COMMIT_KINDS = (Kind.NVIM_PLUGIN, Kind.TMUX_PLUGIN, Kind.OHMYZSH, Kind.SUBMODULE)
 
 
 def _versions_module():
@@ -28,6 +29,7 @@ class Newest:
     pinned: str
     in_line: str | None
     any_line: str | None
+    commit: bool = False
 
 
 def _newer(candidate: str | None, pinned: str) -> bool:
@@ -54,18 +56,66 @@ def _mise_itself(version: str) -> Newest:
     return Newest("mise", version, newest, newest)
 
 
-def newest_versions(tools_and_versions: set[tuple[str, str]], config: Path) -> dict[tuple[str, str], Newest]:
+def _latest_release(repo: str) -> str | None:
+    try:
+        tag = ghapi.json_get(f"repos/{repo}/releases/latest").get("tag_name", "")
+    except ghapi.GitHubError:
+        try:
+            tags = ghapi.json_get(f"repos/{repo}/tags?per_page=1")
+        except ghapi.GitHubError:
+            return None
+
+        tag = (tags[:1] or [{}])[0].get("name", "")
+
+    return tag.rsplit("/", 1)[-1].removeprefix("v") or None
+
+
+def _downloaded(name: str, version: str, repo: str | None) -> Newest:
+    newest = None
+
+    if repo:
+        newest = _latest_release(repo)
+
+    return Newest(name, version, newest, newest)
+
+
+def _head(name: str, commit: str, repo: str | None) -> Newest:
+    head = None
+
+    if repo:
+        try:
+            head = ghapi.json_get(f"repos/{repo}/commits/HEAD").get("sha")
+        except ghapi.GitHubError:
+            head = None
+
+    return Newest(name, commit, head, head, commit=True)
+
+
+def newest_versions(
+    tools_and_versions: set[tuple[str, str]],
+    config: Path,
+    repos: dict[tuple[str, str], str] | None = None,
+    commit_pinned: set[tuple[str, str]] = frozenset(),
+) -> dict[tuple[str, str], Newest]:
     versions = _versions_module()
-    tools = versions.load_tools(config)
+    tools: dict = {}
+    repos = repos or {}
+
+    if config.is_file():
+        tools = versions.load_tools(config)
     jobs: list[tuple[str, str, list[str]]] = []
     answers: dict[tuple[str, str], Newest] = {}
 
     for name, version in sorted(tools_and_versions):
+        key = (name, version)
+
         match name:
+            case _ if key in commit_pinned:
+                answers[key] = _head(name, version, repos.get(key))
             case "mise":
-                answers[(name, version)] = _mise_itself(version)
+                answers[key] = _mise_itself(version)
             case _ if name.startswith("http:"):
-                continue
+                answers[key] = _downloaded(name, version, repos.get(key))
             case _:
                 pins = versions.versions_of(tools.get(name)) or [version]
                 jobs.append((name, version, pins))
@@ -81,6 +131,8 @@ def parent_of(component: Component) -> tuple[str, str] | None:
     match component.kind:
         case Kind.MISE:
             return ("mise", component.version)
+        case kind if kind in COMMIT_KINDS:
+            return (component.name, component.version)
         case kind if kind in TOOL_KINDS:
             return (component.name, component.version)
         case kind if kind in CHILD_KINDS and component.locator.get("root_tool"):
@@ -92,6 +144,12 @@ def parent_of(component: Component) -> tuple[str, str] | None:
 
 
 def available(newest: Newest) -> str | None:
+    if newest.commit:
+        if newest.in_line and newest.in_line != newest.pinned:
+            return newest.in_line
+
+        return None
+
     if _newer(newest.in_line, newest.pinned):
         return newest.in_line
 
@@ -100,6 +158,18 @@ def available(newest: Newest) -> str | None:
 
 def action(newest: Newest) -> str:
     target = available(newest)
+
+    if newest.commit:
+        if target is None:
+            return f"none possible yet; {newest.tool} is pinned at the newest commit of its default branch"
+
+        return f"move the {newest.tool} pin {newest.pinned[:12]} -> {target[:12]} (newest commit), then run the audit again"
+
+    if newest.tool.startswith("http:") and target is not None:
+        return (
+            f"upgrade {newest.tool} {newest.pinned} -> {target}: update its version, URLs and checksums in "
+            "mise/mise.toml, then run the audit again"
+        )
 
     if target is not None:
         return f"upgrade {newest.tool} {newest.pinned} -> {target} (zzd upgrade {newest.tool}), then run the audit again"

@@ -341,20 +341,45 @@ class Engine:
 
         return result
 
+    def _repo_of(self, component: Component) -> tuple[tuple[str, str] | None, str | None]:
+        key = upgrades.parent_of(component)
+
+        if key is None:
+            return None, None
+
+        match component.kind:
+            case Kind.TMUX_PLUGIN:
+                return key, component.name
+            case Kind.SUBMODULE:
+                return key, github_repo(component.locator.get("url", ""))
+            case Kind.NVIM_PLUGIN | Kind.OHMYZSH:
+                return key, self.catalog.repo(component.kind, component.name)
+            case _:
+                return key, self.catalog.repo(Kind.MISE_TOOL, key[0])
+
     def with_status(self, findings: list[Finding]) -> list[Finding]:
         failing = [finding for finding in findings if not finding.dev_only and finding.notice not in NOT_FAILING]
         parents = {parent for parent in map(upgrades.parent_of, (f.component for f in failing)) if parent}
+        repos = {key: repo for key, repo in map(self._repo_of, (f.component for f in failing)) if key and repo}
+        commit_pinned = {
+            upgrades.parent_of(f.component) for f in failing if f.component.kind in upgrades.COMMIT_KINDS
+        }
         newest: dict[tuple[str, str], upgrades.Newest] = {}
         annotated: list[Finding] = []
 
         if parents:
             try:
-                newest = upgrades.newest_versions(parents, self.repo / "mise/mise.toml")
+                newest = upgrades.newest_versions(parents, self.repo / "mise/mise.toml", repos, commit_pinned)
             except (OSError, ValueError, procs.CommandError, ghapi.GitHubError):
                 newest = {}
 
         for finding in findings:
             url = advisory_url(finding)
+
+            if finding.component.kind == Kind.OS_PACKAGE:
+                annotated.append(dataclasses.replace(finding, url=url, **distro.status(finding)))
+                continue
+
             parent = upgrades.parent_of(finding.component)
             known = newest.get(parent) if parent else None
 

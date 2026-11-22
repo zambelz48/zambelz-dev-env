@@ -63,6 +63,15 @@ jobs:
           printf '%s\n' "$out"
           grep -q '^Summary: 0 changed,' <<<"$out"
 
+      - name: Bring OS packages up to date
+        run: |
+          if command -v dnf >/dev/null 2>&1; then
+            dnf upgrade -y --refresh
+          else
+            apt-get update
+            DEBIAN_FRONTEND=noninteractive apt-get upgrade -y
+          fi
+
       - name: Tests, lint, pins and audit
         run: |
           cd "$HOME/zambelz-dev-env"

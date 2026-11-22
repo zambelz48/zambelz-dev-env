@@ -556,33 +556,33 @@ checksum = "sha256:b1f2abe0b3cccb462cf64fb4a5587c7d09df60cf8be7748b152cbd89d018b
 url = "https://download.eclipse.org/jdtls/milestones/1.63.0/jdt-language-server-1.63.0-202610191322.tar.gz"
 
 [[tools."http:kotlin-lsp"]]
-version = "263.7084.0"
+version = "271.2085.0"
 backend = "http:kotlin-lsp"
-specifiers = ["263.7084.0"]
+specifiers = ["271.2085.0"]
 
 [tools."http:kotlin-lsp"."platforms.linux-arm64"]
-checksum = "sha256:450ab7c1d80e48106aa429b48cb4226d82ca12a8a2400447ae02386794780cac"
-url = "https://download.jetbrains.com/language-server/kotlin-server/263.7084.0/kotlin-server-263.7084.0-aarch64.tar.gz"
+checksum = "sha256:877aee612a17dab48144466282a6414ec58ab428a10b97c7e13edd9b6b3dc96e"
+url = "https://download.jetbrains.com/language-server/kotlin-server/271.2085.0/kotlin-server-271.2085.0-aarch64.tar.gz"
 
 [tools."http:kotlin-lsp"."platforms.linux-x64"]
-checksum = "sha256:ae0c4b01e17ab73a4a5227a78ea99e6dcbe3e499600315b22759a4e4cddd11df"
-url = "https://download.jetbrains.com/language-server/kotlin-server/263.7084.0/kotlin-server-263.7084.0.tar.gz"
+checksum = "sha256:e398e799027f41749ea33faa57470307d13d40f910961858c7e30adbd778ae08"
+url = "https://download.jetbrains.com/language-server/kotlin-server/271.2085.0/kotlin-server-271.2085.0.tar.gz"
 
 [[tools."http:kotlin-lsp"]]
-version = "263.7084.0"
+version = "271.2085.0"
 backend = "http:kotlin-lsp"
-specifiers = ["263.7084.0"]
+specifiers = ["271.2085.0"]
 
 [tools."http:kotlin-lsp".options]
 format = "zip"
 
 [tools."http:kotlin-lsp"."platforms.macos-arm64"]
-checksum = "sha256:b403bf8a54bd458e3ba6731cf8abb3340be08b439c03576dfc02b13faf3694b8"
-url = "https://download.jetbrains.com/language-server/kotlin-server/263.7084.0/kotlin-server-263.7084.0-aarch64.sit"
+checksum = "sha256:2d22388f58be6f4dfa7a8f18c1e231871164dcacc16e407559029d7232816b4a"
+url = "https://download.jetbrains.com/language-server/kotlin-server/271.2085.0/kotlin-server-271.2085.0-aarch64.sit"
 
 [tools."http:kotlin-lsp"."platforms.macos-x64"]
-checksum = "sha256:b29c393a5e541153d03d626e7946268437e358a667a5f914a126dbb4007664b1"
-url = "https://download.jetbrains.com/language-server/kotlin-server/263.7084.0/kotlin-server-263.7084.0.sit"
+checksum = "sha256:68457ab1825331e3eac85191b7c32737cbd8993867f5a9c50dfe012c5509e8f7"
+url = "https://download.jetbrains.com/language-server/kotlin-server/271.2085.0/kotlin-server-271.2085.0.sit"
 
 [[tools.java]]
 version = "temurin-25.0.5.1+2.0.LTS"

@@ -168,7 +168,7 @@ newest = {
     ("fzf", "0.74.5"): upgrades.Newest("fzf", "0.74.5", "0.75.0", "0.75.0"),
     ("java", "temurin-17.0.21.1+2"): upgrades.Newest("java", "temurin-17.0.21.1+2", "temurin-17.0.21.1+2", "temurin-27.0.1.1+4"),
 }
-upgrades.newest_versions = lambda pairs, config: newest
+upgrades.newest_versions = lambda pairs, config, *rest: newest
 findings = [
     finding(tool("biome", "2.6.8"), id="RUSTSEC-2026-0341"),
     finding(tool("fzf", "0.74.5"), id="GO-2026-5024"),
@@ -188,6 +188,54 @@ print(sorted(f.id for f in result.blocking_findings()), int(result.exit_code()),
   [ "${lines[4]}" = "['GHSA-9', 'GO-2026-5024'] 1 1" ]
 }
 
+@test "a commit pin at its newest commit is waiting, behind it is fix available" {
+  run engine_py '
+import upgrades, ghapi
+ghapi.json_get = lambda endpoint, paginate=False: {"sha": "b" * 40} if endpoint == "repos/o/plugin/commits/HEAD" else {}
+newest = upgrades.newest_versions({("plugin", "b" * 40), ("other", "a" * 40)}, Path("/missing"), {("plugin", "b" * 40): "o/plugin", ("other", "a" * 40): "o/plugin"}, {("plugin", "b" * 40), ("other", "a" * 40)})
+print(upgrades.available(newest[("plugin", "b" * 40)]), upgrades.action(newest[("plugin", "b" * 40)]))
+print(upgrades.available(newest[("other", "a" * 40)]) == "b" * 40, upgrades.action(newest[("other", "a" * 40)]))
+' 2>&1
+
+  [ "${lines[0]}" = "None none possible yet; plugin is pinned at the newest commit of its default branch" ]
+  [ "${lines[1]}" = "True move the other pin aaaaaaaaaaaa -> bbbbbbbbbbbb (newest commit), then run the audit again" ]
+}
+
+@test "a download-url tool is compared with its project's newest release" {
+  run engine_py '
+import upgrades, ghapi
+ghapi.json_get = lambda endpoint, paginate=False: {"tag_name": "kotlin-lsp/v271.2085.0"}
+n = upgrades._downloaded("http:kotlin-lsp", "263.7084.0", "Kotlin/kotlin-lsp")
+print(upgrades.available(n))
+print(upgrades.action(n))
+'
+
+  [ "${lines[0]}" = "271.2085.0" ]
+  [ "${lines[1]}" = "upgrade http:kotlin-lsp 263.7084.0 -> 271.2085.0: update its version, URLs and checksums in mise/mise.toml, then run the audit again" ]
+}
+
+@test "an OS package finding is fix available when the package manager has a newer version, waiting when not" {
+  zzd_stub_script apt-cache <<'EOF'
+case "$2" in
+  git) printf 'git:\n  Installed: 1:2.51.0-1\n  Candidate: 1:2.51.0-2\n' ;;
+  tar) printf 'tar:\n  Installed: 1.35-3\n  Candidate: 1.35-3\n' ;;
+  *) exit 100 ;;
+esac
+EOF
+
+  run engine_py '
+from sources import distro
+pkg = lambda name, manager: Component(Kind.OS_PACKAGE, name, "1", "packages/x.txt", Scope.INSTALLED, {"manager": manager})
+for name, manager in (("git", "apt"), ("tar", "apt"), ("missing", "apt"), ("openssl", "dnf")):
+    print(distro.status(finding(pkg(name, manager), id="FEDORA-1")))
+'
+
+  [ "${lines[0]}" = "{'status': 'fix available', 'action': 'sudo apt-get install --only-upgrade git (1:2.51.0-1 -> 1:2.51.0-2), then audit again'}" ]
+  [ "${lines[1]}" = "{'status': 'waiting for upstream', 'action': 'none possible yet; tar 1.35-3 is the newest version the distribution ships'}" ]
+  [ "${lines[2]}" = "{}" ]
+  [ "${lines[3]}" = "{'status': 'fix available', 'action': 'sudo dnf upgrade --advisory=FEDORA-1'}" ]
+}
+
 @test "only waiting findings fail the full audit but pass the gate" {
   run engine_py '
 from model import Result, WAITING
@@ -202,7 +250,7 @@ print(int(result.exit_code()), int(result.exit_code(gate=True)))
 @test "a tool whose newest version cannot be checked keeps blocking" {
   run engine_py '
 import upgrades
-upgrades.newest_versions = lambda pairs, config: {("biome", "2.6.8"): upgrades.Newest("biome", "2.6.8", None, None)}
+upgrades.newest_versions = lambda pairs, config, *rest: {("biome", "2.6.8"): upgrades.Newest("biome", "2.6.8", None, None)}
 print(repr(run.with_status([finding(tool("biome", "2.6.8"))])[0].status))
 '
 
