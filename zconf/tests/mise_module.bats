@@ -186,7 +186,7 @@ EOF
 }
 
 @test "doctor compares mise versions numerically, not as text" {
-  fake_mise "2026.11.10" "" 0 0
+  fake_mise "2026.11.100" "" 0 0
   zc_module_run mise apply
   run zc_module_run mise doctor
   [ "$status" -eq 0 ]
@@ -282,7 +282,7 @@ esac
 EOF
   run zc_module_run mise update
   [ "$status" -eq 0 ]
-  [[ "$output" == *"INFO: node 24.22.1 -> 24.23.0 (mise)"* ]] || false
+  [[ "$output" == *"INFO: node 24.22.3 -> 24.23.0 (mise)"* ]] || false
 }
 
 @test "update reports unchecked http tools as counted warnings with a fix" {
