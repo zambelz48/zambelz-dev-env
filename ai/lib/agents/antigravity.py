@@ -10,7 +10,7 @@ from agents.common import HOOK_TIMEOUT_SECONDS, base_dir, command_as_skill, shel
 from decode import DecodeError
 from events import Decision, Event
 from hookio import PendingQueue, Reply, joined, json_reply
-from model import Source, resolve_server
+from model import Source, commands_without_skill, resolve_server
 from report import Report
 from writer import Output, Plan, json_bytes
 
@@ -96,7 +96,7 @@ def render(source: Source, repo_root: Path) -> Plan:
     for skill in source.skills:
         files.update(skill_files(skill, f"{PLUGIN_DIR}skills"))
 
-    for command in source.commands:
+    for command in commands_without_skill(source):
         files[f"{PLUGIN_DIR}skills/{command.name}/SKILL.md"] = Output(command_as_skill(command))
 
     if source.servers:

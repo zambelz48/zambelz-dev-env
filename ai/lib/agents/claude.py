@@ -6,7 +6,7 @@ import tools
 from agents.common import HOOK_TIMEOUT_SECONDS, base_dir, command_markdown, shell_hook_command, skill_files, subscribes
 from events import Decision, Event
 from hookio import Reply, joined, json_reply
-from model import Source, resolve_server
+from model import Source, commands_without_skill, resolve_server
 from writer import Output, Plan, json_bytes
 
 NAME = "claude"
@@ -57,7 +57,7 @@ def _settings(source: Source, repo_root: Path) -> dict:
 def render(source: Source, repo_root: Path) -> Plan:
     files: dict[str, Output] = {}
 
-    for command in source.commands:
+    for command in commands_without_skill(source):
         files[f".claude/commands/{command.name}.md"] = Output(command_markdown(command))
 
     for skill in source.skills:

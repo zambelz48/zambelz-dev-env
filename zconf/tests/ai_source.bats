@@ -15,6 +15,18 @@ setup() {
   [[ "$output" == *"OK: source: 1 commands, 1 skills, 0 MCP servers, 0 hooks"* ]]
 }
 
+@test "the repository's own source loads and renders for every agent" {
+  ai_stub_agents
+  rm -rf "$AI/commands" "$AI/skills" "$AI/hooks"
+  cp -R "$ZC_ROOT/ai/commands" "$ZC_ROOT/ai/skills" "$ZC_ROOT/ai/hooks" "$ZC_ROOT/ai/mcp.json" "$AI/"
+
+  run "$AI/sync-ai.sh" all
+
+  [ "$status" -eq 0 ]
+  [[ "$output" == *"OK: source: 5 commands, 4 skills, 1 MCP servers, 2 hooks"* ]]
+  [[ "$output" != *"ERROR"* ]]
+}
+
 @test "sync-ai needs an agent" {
   run "$AI/sync-ai.sh"
 
@@ -134,14 +146,13 @@ setup() {
   [[ "$output" == *"longer than 1024 characters"* ]]
 }
 
-@test "a skill cannot share a name with a command" {
+@test "a command may share its name with a skill" {
   ai_command audit "Audit"
   ai_skill audit "Audit"
 
   run "$AI/sync-ai.sh" claude
 
-  [ "$status" -eq 1 ]
-  [[ "$output" == *"same name as a command"* ]]
+  [ "$status" -eq 0 ]
 }
 
 @test "mcp.json must be valid JSON" {

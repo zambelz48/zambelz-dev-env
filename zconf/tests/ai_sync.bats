@@ -533,3 +533,16 @@ EOF
   [ ! -e "$REPO/.agents/plugins/zambelz-dev-env" ]
   [ -f "$REPO/.claude/commands/check.md" ]
 }
+
+@test "a command named like a skill is that skill's entry point" {
+  ai_command run-checks "Run the checks" "Follow the run-checks skill."
+
+  run "$AI/sync-ai.sh" all
+
+  [ "$status" -eq 0 ]
+  [ ! -e "$REPO/.claude/commands/run-checks.md" ]
+  [ -f "$REPO/.claude/skills/run-checks/SKILL.md" ]
+  [ -f "$REPO/.opencode/commands/run-checks.md" ]
+  [ -f "$REPO/.opencode/skills/run-checks/SKILL.md" ]
+  [ "$(cat "$REPO/.agents/plugins/zambelz-dev-env/skills/run-checks/SKILL.md")" = "$(cat "$AI/skills/run-checks/SKILL.md")" ]
+}

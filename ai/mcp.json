@@ -1,0 +1,18 @@
+{
+  "mcpServers": {
+    "context7": {
+      "type": "http",
+      "url": "https://mcp.context7.com/mcp",
+      "claude": {
+        "headers": {
+          "CONTEXT7_API_KEY": "${CONTEXT7_API_KEY:-}"
+        }
+      },
+      "opencode": {
+        "headers": {
+          "CONTEXT7_API_KEY": "{env:CONTEXT7_API_KEY}"
+        }
+      }
+    }
+  }
+}

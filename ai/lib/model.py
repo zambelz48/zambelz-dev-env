@@ -233,17 +233,6 @@ def load_hooks(hooks_dir: Path) -> tuple[HookSpec, ...]:
     return hooks
 
 
-def _check_unique(commands: list[Command], skills: list[Skill], problems: list[str]) -> None:
-    command_names = {command.name for command in commands}
-
-    for skill in skills:
-        if skill.name in command_names:
-            problems.append(
-                f"{skill.directory}: skill '{skill.name}' has the same name as a command; "
-                "commands become skills on Antigravity"
-            )
-
-
 def load(ai_dir: Path) -> Source:
     problems: list[str] = []
     command_paths = sorted((ai_dir / "commands").glob("*.md"))
@@ -255,8 +244,6 @@ def load(ai_dir: Path) -> Source:
     loaded_commands = [command for command in commands if command is not None]
     loaded_skills = [skill for skill in skills if skill is not None]
 
-    _check_unique(loaded_commands, loaded_skills, problems)
-
     if problems:
         raise SourceError(problems)
 
@@ -267,6 +254,12 @@ def load(ai_dir: Path) -> Source:
         servers=servers,
         hooks=hooks,
     )
+
+
+def commands_without_skill(source: Source) -> tuple[Command, ...]:
+    skill_names = {skill.name for skill in source.skills}
+
+    return tuple(command for command in source.commands if command.name not in skill_names)
 
 
 def resolve_server(server: dict, agent: str) -> dict:
