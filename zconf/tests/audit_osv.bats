@@ -181,6 +181,62 @@ osv.query_packages([osv.PackageQuery(component, "Go", "stdlib", "1.26.4")])
   [[ "$output" == *"does not match the queries"* ]]
 }
 
+real_osv() {
+  run env HOME="$REAL_HOME" PATH="$REAL_PATH" "$PY" -E -s -c "
+import os, sys
+sys.path.insert(0, '$ENGINE')
+from model import Component, Kind, Scope
+from sources import osv
+$1
+"
+}
+
+# bats test_tags=network
+@test "an artifact scan of a real Go install finds stdlib advisories and installs nothing" {
+  local installs="$MISE_DATA_DIR/installs" tracked="$REAL_HOME/.local/state/mise/tracked-configs" go before_dirs before_tracked
+
+  go="$(find "$installs/go" -mindepth 1 -maxdepth 1 -type d ! -type l | sort | head -1)"
+  before_dirs="$(find "$installs" -mindepth 2 -maxdepth 2 | wc -l)"
+  before_tracked="$(find "$tracked" -mindepth 1 -maxdepth 1 | wc -l)"
+
+  real_osv "
+component = Component(Kind.INSTALL, 'go', '-', '$go', Scope.INSTALLED, {'path': '$go'})
+findings = osv.scan_artifact(component, '$go')
+print(sum(1 for f in findings if '/stdlib@' in f.package))
+"
+
+  [ "$status" -eq 0 ]
+  [ "$output" -gt 0 ]
+  [ "$(find "$installs" -mindepth 2 -maxdepth 2 | wc -l)" = "$before_dirs" ]
+  [ "$(find "$tracked" -mindepth 1 -maxdepth 1 | wc -l)" = "$before_tracked" ]
+}
+
+# bats test_tags=network
+@test "an upstream lockfile at a release tag is scanned and dev-only findings are marked" {
+  real_osv "
+component = Component(Kind.MISE_TOOL, 'js-debug', '1.140.0', 'x', Scope.DECLARED, {})
+findings = osv.scan_upstream(component, 'microsoft/vscode-js-debug', 'v1.140.0', ['package-lock.json'])
+print(len(findings), sum(1 for f in findings if f.dev_only))
+"
+
+  [ "$status" -eq 0 ]
+  read -r total dev <<<"$output"
+  [ "$total" -gt 0 ]
+  [ "$dev" -gt 0 ]
+  [ "$dev" -lt "$total" ]
+}
+
+# bats test_tags=network
+@test "a commit query reaches OSV and returns an answer per commit" {
+  real_osv "
+component = Component(Kind.OHMYZSH, 'oh-my-zsh', 'x', 'x', Scope.DECLARED, {})
+print(osv._query([{'commit': '17a2b4c3a5855524ad4772a17ada0dc474e2fdf3'}, {'commit': '0000000000000000000000000000000000000000'}]))
+"
+
+  [ "$status" -eq 0 ]
+  [ "$output" = "[[], []]" ]
+}
+
 # bats test_tags=network
 @test "OSV reports advisories for a known vulnerable Go toolchain" {
   run env HOME="$REAL_HOME" PATH="$REAL_PATH" "$PY" -E -s -c "
