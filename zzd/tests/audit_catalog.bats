@@ -148,7 +148,7 @@ for url in ('https://github.com/mroth/evalcache', 'git@github.com:dracula/zsh.gi
 
 # bats test_tags=network
 @test "the repository's own catalog verifies against the live services" {
-  run env HOME="$REAL_HOME" PATH="$REAL_PATH" ZZD_ROOT="$REAL_ROOT" "$PY" -E -s "$ENGINE" catalog --verify
+  run env -u ZZD_OS_RELEASE HOME="$REAL_HOME" PATH="$REAL_PATH" ZZD_ROOT="$REAL_ROOT" "$PY" -E -s "$ENGINE" catalog --verify
 
   echo "$output"
   [ "$status" -eq 0 ]

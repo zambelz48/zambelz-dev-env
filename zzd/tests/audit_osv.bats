@@ -192,7 +192,7 @@ $1
 }
 
 # bats test_tags=network
-@test "an artifact scan of a real Go install finds stdlib advisories and installs nothing" {
+@test "an artifact scan of a real Go install reads its toolchain build info and installs nothing" {
   local installs="$MISE_DATA_DIR/installs" tracked="$REAL_HOME/.local/state/mise/tracked-configs" go before_dirs before_tracked
 
   go="$(find "$installs/go" -mindepth 1 -maxdepth 1 -type d ! -type l | sort | head -1)"
@@ -201,12 +201,12 @@ $1
 
   real_osv "
 component = Component(Kind.INSTALL, 'go', '-', '$go', Scope.INSTALLED, {'path': '$go'})
-findings = osv.scan_artifact(component, '$go')
-print(sum(1 for f in findings if '/stdlib@' in f.package))
+osv.scan_artifact(component, '$go')
+print(any(package.startswith('Go/stdlib@') for package in osv.binary_packages('$go')))
 "
 
   [ "$status" -eq 0 ]
-  [ "$output" -gt 0 ]
+  [ "$output" = "True" ]
   [ "$(find "$installs" -mindepth 2 -maxdepth 2 | wc -l)" = "$before_dirs" ]
   [ "$(find "$tracked" -mindepth 1 -maxdepth 1 | wc -l)" = "$before_tracked" ]
 }
