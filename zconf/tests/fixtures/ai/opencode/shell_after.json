@@ -1,0 +1,28 @@
+{
+  "directory": "@REPO@",
+  "event": {
+    "tool": "shell",
+    "sessionID": "ses_1",
+    "agent": "build",
+    "messageID": "msg_1",
+    "id": "call_1",
+    "input": {
+      "command": "@COMMAND@"
+    },
+    "status": "completed",
+    "result": {
+      "output": {
+        "exit": 0,
+        "truncated": false,
+        "output": "done\n",
+        "status": "completed"
+      },
+      "content": [
+        {
+          "type": "text",
+          "text": "done\n"
+        }
+      ]
+    }
+  }
+}

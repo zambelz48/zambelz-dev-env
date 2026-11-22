@@ -1,0 +1,18 @@
+{
+  "conversationId": "conv-1",
+  "workspacePaths": [
+    "@REPO@"
+  ],
+  "hookEventName": "PreToolUse",
+  "cwd": "@REPO@",
+  "toolCall": {
+    "id": "toolu_3",
+    "name": "edit_file",
+    "args": {
+      "Path": "@REPO@/@FILE@",
+      "Replacement": "@NEW@",
+      "Target": "@OLD@"
+    }
+  },
+  "stepIdx": 6
+}

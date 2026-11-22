@@ -1,0 +1,17 @@
+{
+  "conversationId": "conv-1",
+  "workspacePaths": [
+    "@REPO@"
+  ],
+  "hookEventName": "PreToolUse",
+  "cwd": "@REPO@",
+  "toolCall": {
+    "id": "toolu_2",
+    "name": "write_file",
+    "args": {
+      "Content": "@CONTENT@",
+      "Path": "@REPO@/@FILE@"
+    }
+  },
+  "stepIdx": 4
+}

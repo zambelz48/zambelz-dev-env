@@ -1,0 +1,22 @@
+{
+  "conversationId": "conv-1",
+  "workspacePaths": [
+    "@REPO@"
+  ],
+  "transcriptPath": "/tmp/transcript.jsonl",
+  "artifactDirectoryPath": "/tmp/artifacts",
+  "modelName": "auto",
+  "lastUserInput": "run it",
+  "hookEventName": "PreToolUse",
+  "cwd": "@REPO@",
+  "toolCall": {
+    "id": "toolu_1",
+    "name": "run_command",
+    "args": {
+      "CommandLine": "@COMMAND@",
+      "WaitMsBeforeAsync": 5000,
+      "toolSummary": "Run a command"
+    }
+  },
+  "stepIdx": 2
+}

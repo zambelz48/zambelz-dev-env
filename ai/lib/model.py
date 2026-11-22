@@ -223,6 +223,16 @@ def _load_hooks(hooks_dir: Path, problems: list[str]) -> tuple[HookSpec, ...]:
     return hooks
 
 
+def load_hooks(hooks_dir: Path) -> tuple[HookSpec, ...]:
+    problems: list[str] = []
+    hooks = _load_hooks(hooks_dir, problems)
+
+    if problems:
+        raise SourceError(problems)
+
+    return hooks
+
+
 def _check_unique(commands: list[Command], skills: list[Skill], problems: list[str]) -> None:
     command_names = {command.name for command in commands}
 

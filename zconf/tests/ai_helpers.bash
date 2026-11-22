@@ -31,6 +31,28 @@ ai_skill() {
   printf -- '---\nname: %s\ndescription: %s\n---\n\nDo it.\n' "$name" "$description" >"$AI/skills/$name/SKILL.md"
 }
 
+ai_payload() {
+  local fixture="$1"
+  shift
+
+  "$MISE_DATA_DIR/shims/python3" -c '
+import json
+import sys
+
+text = open(sys.argv[1]).read()
+values = {"REPO": sys.argv[2]}
+
+for pair in sys.argv[3:]:
+    key, _, value = pair.partition("=")
+    values[key] = value
+
+for key, value in values.items():
+    text = text.replace(f"@{key}@", json.dumps(value)[1:-1])
+
+sys.stdout.write(text)
+' "$ZC_ROOT/zconf/tests/fixtures/ai/$fixture" "$REPO" "$@"
+}
+
 ai_hook_module() {
   local module="$1" body="$2"
 

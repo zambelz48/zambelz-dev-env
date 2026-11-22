@@ -1,9 +1,15 @@
 import shutil
 import subprocess
+from collections.abc import Callable
 from pathlib import Path
 
+import decode
+import events
 import tools
-from agents.common import HOOK_TIMEOUT_SECONDS, command_as_skill, shell_hook_command, skill_files, subscribes
+from agents.common import HOOK_TIMEOUT_SECONDS, base_dir, command_as_skill, shell_hook_command, skill_files, subscribes
+from decode import DecodeError
+from events import Decision, Event
+from hookio import PendingQueue, Reply, joined, json_reply
 from model import Source, resolve_server
 from report import Report
 from writer import Output, Plan, json_bytes
@@ -128,3 +134,68 @@ def validate(repo_root: Path, report: Report) -> None:
         return
 
     report.ok("antigravity: agy plugin validate --strict passed")
+
+
+KIND_FOR = {
+    "PreToolUse": events.BEFORE,
+    "PostToolUse": events.AFTER,
+}
+
+
+def _inject(queue: PendingQueue) -> Reply:
+    warnings = queue.take()
+
+    if not warnings:
+        return json_reply({})
+
+    return json_reply(
+        {
+            "injectSteps": [
+                {
+                    "systemMessage": {
+                        "systemMessage": joined(tuple(warnings)),
+                    },
+                },
+            ],
+        }
+    )
+
+
+def hook(event_name: str, payload: dict, repo_root: Path, run_hooks: Callable[[list[Event]], Decision]) -> Reply:
+    queue = PendingQueue(repo_root, payload.get("conversationId"))
+
+    if event_name == "PreInvocation":
+        return _inject(queue)
+
+    call = payload.get("toolCall")
+
+    if not isinstance(call, dict):
+        raise DecodeError("the payload has no 'toolCall' object")
+
+    base = base_dir(payload.get("cwd"), repo_root)
+    event = decode.tool_event(KIND_FOR[event_name], NAME, call.get("name"), call.get("args"), repo_root, base)
+    decision = run_hooks([event])
+
+    match event_name:
+        case "PreToolUse" if decision.deny:
+            return json_reply(
+                {
+                    "decision": "deny",
+                    "reason": decision.deny,
+                }
+            )
+        case "PreToolUse":
+            return Reply()
+        case "PostToolUse":
+            if decision.warnings:
+                queue.add(decision.warnings)
+
+            return json_reply({})
+
+
+def failure(event_name: str) -> Reply:
+    match event_name:
+        case "PreInvocation":
+            return json_reply({})
+        case _:
+            return Reply(exit_code=2)

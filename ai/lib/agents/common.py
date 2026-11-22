@@ -24,6 +24,13 @@ def shell_hook_command(repo_root: Path, agent: str, event: str) -> str:
     return f'"{hook_script(repo_root)}" {agent} {event}'
 
 
+def base_dir(value: object, repo_root: Path) -> Path:
+    if isinstance(value, str) and value:
+        return Path(value)
+
+    return repo_root
+
+
 def subscribes(source: Source, event: str) -> bool:
     return any(event in hook.events for hook in source.hooks)
 

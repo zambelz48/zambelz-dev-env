@@ -1,8 +1,14 @@
 import json
+from collections.abc import Callable
 from pathlib import Path
 
+import decode
+import events
 import tools
-from agents.common import command_markdown, hook_script, skill_files, subscribes
+from agents.common import base_dir, command_markdown, hook_script, skill_files, subscribes
+from decode import DecodeError
+from events import Decision, Event
+from hookio import Reply, json_reply
 from model import Command, Source, resolve_server
 from writer import Output, Plan, json_bytes
 
@@ -94,3 +100,36 @@ def render(source: Source, repo_root: Path) -> Plan:
         files[f"{PLUGIN_DIR}index.ts"] = Output(_plugin(source, repo_root))
 
     return Plan(agent=NAME, files=files, owned=OWNED)
+
+
+KIND_FOR = {
+    "execute.before": events.BEFORE,
+    "execute.after": events.AFTER,
+}
+
+
+def hook(event_name: str, payload: dict, repo_root: Path, run_hooks: Callable[[list[Event]], Decision]) -> Reply:
+    call = payload.get("event")
+
+    if not isinstance(call, dict):
+        raise DecodeError("the payload has no 'event' object")
+
+    base = base_dir(payload.get("directory"), repo_root)
+    event = decode.tool_event(KIND_FOR[event_name], NAME, call.get("tool"), call.get("input"), repo_root, base)
+    decision = run_hooks([event])
+    verdict = "none"
+
+    if decision.deny:
+        verdict = "deny"
+
+    return json_reply(
+        {
+            "decision": verdict,
+            "message": decision.deny,
+            "warnings": list(decision.warnings),
+        }
+    )
+
+
+def failure(event_name: str) -> Reply:
+    return Reply(exit_code=2)

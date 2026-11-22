@@ -1,0 +1,10 @@
+{
+  "conversationId": "conv-1",
+  "workspacePaths": [
+    "@REPO@"
+  ],
+  "hookEventName": "PreInvocation",
+  "cwd": "@REPO@",
+  "invocationNum": 3,
+  "initialNumSteps": 10
+}

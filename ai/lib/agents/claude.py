@@ -1,7 +1,11 @@
+from collections.abc import Callable
 from pathlib import Path
 
+import decode
 import tools
-from agents.common import HOOK_TIMEOUT_SECONDS, command_markdown, shell_hook_command, skill_files, subscribes
+from agents.common import HOOK_TIMEOUT_SECONDS, base_dir, command_markdown, shell_hook_command, skill_files, subscribes
+from events import Decision, Event
+from hookio import Reply, joined, json_reply
 from model import Source, resolve_server
 from writer import Output, Plan, json_bytes
 
@@ -13,6 +17,7 @@ EVENT_FOR = {
     "tool.before": "PreToolUse",
     "tool.after": "PostToolUse",
 }
+KIND_FOR = {claude_event: kind for kind, claude_event in EVENT_FOR.items()}
 
 
 def _hook_group(repo_root: Path, event: str) -> dict:
@@ -68,3 +73,37 @@ def render(source: Source, repo_root: Path) -> Plan:
         files[".claude/settings.json"] = Output(json_bytes(settings))
 
     return Plan(agent=NAME, files=files, owned=OWNED)
+
+
+def hook(event_name: str, payload: dict, repo_root: Path, run_hooks: Callable[[list[Event]], Decision]) -> Reply:
+    kind = KIND_FOR[event_name]
+    base = base_dir(payload.get("cwd"), repo_root)
+    event = decode.tool_event(kind, NAME, payload.get("tool_name"), payload.get("tool_input"), repo_root, base)
+    decision = run_hooks([event])
+
+    match event_name:
+        case "PreToolUse" if decision.deny:
+            return json_reply(
+                {
+                    "hookSpecificOutput": {
+                        "hookEventName": "PreToolUse",
+                        "permissionDecision": "deny",
+                        "permissionDecisionReason": decision.deny,
+                    },
+                }
+            )
+        case "PostToolUse" if decision.warnings:
+            return json_reply(
+                {
+                    "hookSpecificOutput": {
+                        "hookEventName": "PostToolUse",
+                        "additionalContext": joined(decision.warnings),
+                    },
+                }
+            )
+        case _:
+            return Reply()
+
+
+def failure(event_name: str) -> Reply:
+    return Reply(exit_code=2)
