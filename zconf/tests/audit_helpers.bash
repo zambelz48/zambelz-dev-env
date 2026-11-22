@@ -1,4 +1,8 @@
 audit_test_setup() {
+  REAL_HOME="$HOME"
+  REAL_PATH="$PATH"
+  export REAL_HOME REAL_PATH
+
   load helpers
   zc_test_setup
 
