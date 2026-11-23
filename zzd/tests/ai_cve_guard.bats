@@ -29,14 +29,20 @@ code="$(cat "$AUDIT_CODE")"
 
 case "$code" in
   1)
-    printf 'Scanned 3 files\n'
-    printf '| OSV URL | PACKAGE |\n'
-    printf '| https://osv.dev/GHSA-test | effect |\n'
+    printf 'FINDING (fix available, blocks push): lockfile:tools/npm/pnpm-lock.yaml@- [tools/npm/pnpm-lock.yaml]\n'
+    printf '  GHSA-test, high (CVSS 7.5)\n'
+    printf '  Library: npm/effect@3.19.0, fixed in 3.20.0\n'
+    printf '  Action: upgrade the tool\n'
+    printf 'FINDING (waiting for upstream): mise-tool:biome@2.6.8 [mise/mise.lock]\n'
+    printf '  RUSTSEC-waiting, medium\n'
+    printf 'INFO: bundled:python@3.15.2/uuid@1.0.3: has no advisory channel of its own\n'
+    printf 'Summary: 3 components, 2 findings in 2 components (1 block pushes, 1 waiting for upstream)\n'
     printf 'ERROR: vulnerabilities found\n'
     printf '  fix: upgrade the tool\n'
     ;;
   3)
-    printf 'ERROR: scan could not run (osv-scanner exit 128)\n'
+    printf 'COULD NOT RUN: mise-tool:biome@2.6.8: osv-scanner exit 128 [osv-artifact]\n'
+    printf 'ERROR: scan could not run\n'
     ;;
   *)
     printf 'OK: no known vulnerabilities\n'
@@ -116,7 +122,10 @@ audits() {
   [[ "$output" == *"reports findings that block"* ]]
   [[ "$output" == *"GHSA-test"* ]]
   [[ "$output" == *"no bypass"* ]]
-  [[ "$output" != *"Scanned 3 files"* ]]
+  [[ "$output" == *"Action: upgrade the tool"* ]]
+  [[ "$output" == *"Summary: 3 components"* ]]
+  [[ "$output" != *"RUSTSEC-waiting"* ]]
+  [[ "$output" != *"INFO:"* ]]
 }
 
 @test "the commit gate runs the audit in gate mode, the change report runs it in full" {
@@ -143,7 +152,7 @@ cve_guard.run_audit(Path(sys.argv[3]))
   [ "$status" -eq 0 ]
   [[ "$output" == *'"permissionDecision": "deny"'* ]]
   [[ "$output" == *"could not run"* ]]
-  [[ "$output" == *"osv-scanner exit 128"* ]]
+  [[ "$output" == *"COULD NOT RUN: mise-tool:biome@2.6.8: osv-scanner exit 128"* ]]
 }
 
 @test "an audit that never finishes counts as could not run" {
