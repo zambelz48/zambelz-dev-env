@@ -156,7 +156,11 @@ def available(newest: Newest) -> str | None:
     return None
 
 
-def action(newest: Newest) -> str:
+def still_in_newest(newest: Newest) -> str:
+    return f"none possible yet; {newest.tool} {available(newest)}, the newest release, still has it"
+
+
+def action(newest: Newest, outside: bool = False) -> str:
     target = available(newest)
 
     if newest.commit:
@@ -164,6 +168,12 @@ def action(newest: Newest) -> str:
             return f"none possible yet; {newest.tool} is pinned at the newest commit of its default branch"
 
         return f"move the {newest.tool} pin {newest.pinned[:12]} -> {target[:12]} (newest commit), then run the audit again"
+
+    if outside and target is not None:
+        return (
+            f"raise {newest.tool} {newest.pinned} -> {target} in the project that selects it, then remove this "
+            f"install (mise uninstall {newest.tool}@{newest.pinned}) and run the audit again"
+        )
 
     if newest.tool.startswith("http:") and target is not None:
         return (
