@@ -1,7 +1,7 @@
 {
   "name": "zzd-npm-tools",
   "private": true,
-  "packageManager": "pnpm@12.22.0",
+  "packageManager": "pnpm@12.23.0",
   "dependencies": {
     "@ansible/ansible-language-server": "26.6.0",
     "@microsoft/compose-language-service": "1.0.0",
