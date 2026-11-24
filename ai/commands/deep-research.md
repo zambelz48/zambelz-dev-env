@@ -1,5 +1,5 @@
 ---
-description: Deep-research a subject against this codebase and current sources, and write one decided report to tmp/docs/deep-research/
+description: Deep-research a subject against this codebase and current sources, and write one decided report to tmp/deep-research/
 argument-hint: "<subject>"
 ---
 
