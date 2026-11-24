@@ -175,6 +175,12 @@ def action(newest: Newest, outside: bool = False) -> str:
             f"install (mise uninstall {newest.tool}@{newest.pinned}) and run the audit again"
         )
 
+    if newest.tool == "mise" and target is not None:
+        return (
+            f"upgrade mise {newest.pinned} -> {target}: raise min_version in mise/mise.toml, run zzd apply mise, "
+            "then run the audit again"
+        )
+
     if newest.tool.startswith("http:") and target is not None:
         return (
             f"upgrade {newest.tool} {newest.pinned} -> {target}: update its version, URLs and checksums in "

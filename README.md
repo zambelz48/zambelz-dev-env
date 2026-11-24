@@ -259,6 +259,13 @@ run `uv lock` in `tools/python`, then `zzd apply tools`.
   audit that cannot run also blocks). `git push --no-verify` skips it. CI
   runs `zzd audit --all --gate` in each container, with `NVD_API_KEY` from
   the repository secret.
+- Git connects to GitHub before the pre-push hook runs and sends the commits
+  after it, so the connection stays idle while the checks run (several
+  minutes for the audit). Without keepalives the connection is dropped and
+  the push fails with exit 141 after the checks pass. `zzd apply git`
+  therefore also sets this repository's `core.sshCommand` to
+  `ssh -o ServerAliveInterval=30 -o ServerAliveCountMax=6`; `~/.ssh/config`
+  still applies. `zzd doctor git` checks both settings.
 
 ## AI agents
 

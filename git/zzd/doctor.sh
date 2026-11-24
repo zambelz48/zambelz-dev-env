@@ -1,14 +1,21 @@
 # shellcheck shell=bash
+# shellcheck source=common.sh
+. "${ZZD_ROOT:?}/git/zzd/common.sh"
 
 mod_doctor() {
-  local current
-  current="$(git -C "${ZZD_ROOT:?}" config --get core.hooksPath)" ||
-    current=""
-  if [ "$current" = ".githooks" ]; then
-    zzd_ok "core.hooksPath = .githooks"
-    return 0
-  fi
-  zzd_error "core.hooksPath is not .githooks (${current:-unset})" \
-    "zzd apply git"
-  return 1
+  local key wanted current settings status=0
+  settings="$(_git_module_settings)"
+
+  while IFS=$'\t' read -r key wanted; do
+    current="$(_git_module_current "$key")"
+    if [ "$current" = "$wanted" ]; then
+      zzd_ok "$key = $wanted"
+      continue
+    fi
+
+    zzd_error "$key is not $wanted (${current:-unset})" "zzd apply git"
+    status=1
+  done <<<"$settings"
+
+  return "$status"
 }
