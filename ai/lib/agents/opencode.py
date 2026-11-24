@@ -16,7 +16,8 @@ NAME = "opencode"
 TESTED_VERSION = "2.2.7"
 VERSION_COMMAND = ("opencode", "--version")
 PLUGIN_DIR = ".opencode/plugins/zambelz-dev-env/"
-OWNED = (".opencode/opencode.json", ".opencode/commands/", ".opencode/skills/", PLUGIN_DIR)
+CONFIG_FILE = "opencode.json"
+OWNED = (CONFIG_FILE, ".opencode/commands/", ".opencode/skills/", PLUGIN_DIR)
 TEMPLATE = Path(__file__).resolve().parent.parent / "templates" / "opencode_plugin.ts"
 SCHEMA = "https://opencode.ai/config.json"
 
@@ -94,7 +95,7 @@ def render(source: Source, repo_root: Path) -> Plan:
                 "servers": servers,
             },
         }
-        files[".opencode/opencode.json"] = Output(json_bytes(config))
+        files[CONFIG_FILE] = Output(json_bytes(config))
 
     if source.hooks:
         files[f"{PLUGIN_DIR}index.ts"] = Output(_plugin(source, repo_root))

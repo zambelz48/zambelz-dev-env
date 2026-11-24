@@ -1,6 +1,6 @@
 ---
 name: deep-research
-description: Research a subject in depth against this codebase and current external sources, then write one report with a single decided recommendation to tmp/docs/deep-research/yyyyMMdd_{subject}.md. Use when asked to deep-research, audit, compare options, or evaluate an approach, tool, or upgrade before any plan or code change. Read-only except for the report file.
+description: Research a subject in depth against this codebase and current external sources, then write one report with a single decided recommendation to tmp/deep-research/yyyyMMdd_{subject}.md. Use when asked to deep-research, audit, compare options, or evaluate an approach, tool, or upgrade before any plan or code change. Read-only except for the report file.
 ---
 
 Deep research produces **one report file** and changes nothing else. It ends
@@ -9,13 +9,13 @@ with a single decided recommendation that follows this repository's rules in
 
 ## Output
 
-- Path: `tmp/docs/deep-research/yyyyMMdd_{subject}.md` at the repository root.
+- Path: `tmp/deep-research/yyyyMMdd_{subject}.md` at the repository root.
   `yyyyMMdd` is today's date; `{subject}` is a short lowercase slug of the
   subject, words joined by hyphens
-  (`tmp/docs/deep-research/20261011_tmux-plugin-manager.md`). If that file
-  exists, append `-2`, `-3`, and so on.
+  (`tmp/deep-research/20261011_tmux-plugin-manager.md`). If that file exists,
+  append `-2`, `-3`, and so on.
 - The report must stay untracked: check with
-  `git check-ignore -q tmp/docs/deep-research/x`.
+  `git check-ignore -q tmp/deep-research/x`.
 - Never reference the report from a tracked file, and never write notes or
   scratch files anywhere else in the repository. Working notes worth keeping go
   into the report's appendix; everything else is discarded.
