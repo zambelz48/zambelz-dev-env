@@ -1,4 +1,4 @@
-min_version = "2026.11.13"
+min_version = "2026.11.14"
 
 [settings]
 idiomatic_version_file_enable_tools = ["node", "python", "ruby", "java", "go"]
@@ -35,7 +35,7 @@ cmake = "4.5.1"
 "github:cantino/mcfly" = { version = "0.9.4", os = ["linux"] }
 
 lua-language-server = "3.19.2"
-rust-analyzer = "2026-11-16"
+rust-analyzer = "2026-11-23"
 terraform-ls = "0.39.1"
 biome = "2.6.8"
 "go:golang.org/x/tools/gopls" = "0.24.0"
