@@ -10,7 +10,7 @@ from model import Source, commands_without_skill, resolve_server
 from writer import Output, Plan, json_bytes
 
 NAME = "claude"
-TESTED_VERSION = "2.1.330"
+TESTED_VERSION = "2.1.331"
 VERSION_COMMAND = ("claude", "--version")
 OWNED = (".claude/settings.json", ".claude/commands/", ".claude/skills/", ".mcp.json")
 EVENT_FOR = {

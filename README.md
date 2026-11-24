@@ -304,7 +304,7 @@ belong to the script; edit the source under `ai/` instead.
   `tmp/ai/backup/<timestamp>/` before it is rewritten.
 - The sync warns when an installed agent's version differs from the one this
   setup was tested with (`TESTED_VERSION` in `ai/lib/agents/<agent>.py`:
-  Claude Code 2.1.330, OpenCode 2.2.7, Antigravity CLI 1.5.15), and runs
+  Claude Code 2.1.331, OpenCode 2.2.7, Antigravity CLI 1.5.16), and runs
   `agy plugin validate --strict` on the Antigravity plugin.
 - Antigravity prefixes the plugin's MCP servers with its name
   (`zambelz-dev-env_context7`).

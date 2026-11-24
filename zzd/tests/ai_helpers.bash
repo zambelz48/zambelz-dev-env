@@ -13,9 +13,9 @@ ai_test_setup() {
 }
 
 ai_stub_agents() {
-  zzd_stub claude 0 "2.1.330 (Claude Code)"
+  zzd_stub claude 0 "2.1.331 (Claude Code)"
   zzd_stub opencode 0 "opencode v2.2.7"
-  zzd_stub agy 0 "1.5.15"
+  zzd_stub agy 0 "1.5.16"
 }
 
 ai_command() {
