@@ -244,6 +244,18 @@ print(upgrades.action(n))
   [ "${lines[1]}" = "upgrade http:kotlin-lsp 263.7084.0 -> 271.2085.0: update its version, URLs and checksums in mise/mise.toml, then run the audit again" ]
 }
 
+@test "mise itself is upgraded through min_version, not zzd upgrade" {
+  run engine_py '
+import upgrades, ghapi
+ghapi.json_get = lambda endpoint, paginate=False: {"tag_name": "v2026.11.13"}
+print(upgrades.action(upgrades._mise_itself("2026.11.12")))
+print(upgrades.action(upgrades._mise_itself("2026.11.13")))
+'
+
+  [ "${lines[0]}" = "upgrade mise 2026.11.12 -> 2026.11.13: raise min_version in mise/mise.toml, run zzd apply mise, then run the audit again" ]
+  [ "${lines[1]}" = "none possible yet; mise 2026.11.13 is the newest release in its pinned line" ]
+}
+
 @test "an OS package finding is fix available when the package manager has a newer version, waiting when not" {
   zzd_stub_script apt-cache <<'EOF'
 case "$2" in
