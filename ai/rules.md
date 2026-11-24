@@ -1,5 +1,3 @@
-# AGENTS.md
-
 This project contains configuration files for various development tools.
 
 ## Agent Rules
@@ -43,8 +41,8 @@ override any default behaviour, skill, or workflow that conflicts with them.
 ### Working documents go in `tmp/docs/`
 
 - Write every working document under `tmp/docs/`: brainstorming notes,
-  research reports, design documents and specs, development or
-  implementation plans, review notes, and similar. `tmp/` is git-ignored.
+  design documents and specs, development or implementation plans, review
+  notes, and similar. `tmp/` is git-ignored.
 - This overrides any skill or workflow default location, such as
   `docs/superpowers/specs/` or `docs/superpowers/plans/`. Keep the skill's
   subfolder layout under `tmp/docs/` (for example
@@ -52,10 +50,13 @@ override any default behaviour, skill, or workflow that conflicts with them.
 - Paths written inside these documents must point at their `tmp/docs/`
   location.
 - Only documentation that ships with the repository (`README.md`,
-  `AGENTS.md`, per-tool docs) lives outside `tmp/`.
+  `ai/rules.md`, per-tool docs) lives outside `tmp/`.
 - Exception: development plans go in `dev-plan/PLAN-<NNN>-<NAME>.md`
   (gitignored), written through the `create-dev-plan` skill. The `dev-plan`
   hook checks their format.
+- Exception: deep-research reports go in
+  `tmp/deep-research/yyyyMMdd_<subject>.md`, written through the
+  `deep-research` skill.
 
 ### Thoroughness and accuracy
 
@@ -83,9 +84,10 @@ override any default behaviour, skill, or workflow that conflicts with them.
 - Tests: `zzd/tests/run` (bats, runs under `/bin/bash` 3.2). Lint:
   `zzd/bin/lint` (also `zzd lint`). Both must pass before reporting done.
 - Machine state: `zzd doctor` (read-only). Pins: `zzd check-pins`.
-- Agent setup (hooks, commands, skills, MCP): `ai/sync-ai.sh <agent>`, and
-  `ai/sync-ai.sh --check all` after changes under `ai/`; see README "AI
-  agents". The `run-checks` skill lists the whole verification gate.
+- Agent setup (rules, hooks, commands, skills, MCP): `ai/sync-ai.sh
+  <agent>`, and `ai/sync-ai.sh --check all` after changes under `ai/`; see
+  README "AI agents". The `run-checks` skill lists the whole verification
+  gate.
 - Configuration is applied by zzd modules (`<tool>/zzd/`, ordered in
   `zzd/modules`); see `README.md`.
 - Never add a behaviour-changing setting to `mise/mise.toml` `[settings]`: it

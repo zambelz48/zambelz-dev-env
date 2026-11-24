@@ -51,6 +51,7 @@ class Source:
     skills: tuple[Skill, ...]
     servers: dict[str, dict]
     hooks: tuple[HookSpec, ...]
+    rules: str | None
 
 
 def _check_name(name: str, where: str, problems: list[str]) -> None:
@@ -223,6 +224,19 @@ def _load_hooks(hooks_dir: Path, problems: list[str]) -> tuple[HookSpec, ...]:
     return hooks
 
 
+def _load_rules(path: Path, problems: list[str]) -> str | None:
+    if not path.is_file():
+        return None
+
+    text = path.read_text()
+
+    if not text.strip():
+        problems.append(f"{path}: the rules file is empty")
+        return None
+
+    return text
+
+
 def load_hooks(hooks_dir: Path) -> tuple[HookSpec, ...]:
     problems: list[str] = []
     hooks = _load_hooks(hooks_dir, problems)
@@ -241,6 +255,7 @@ def load(ai_dir: Path) -> Source:
     skills = [_load_skill(directory, problems) for directory in skill_dirs]
     servers = _load_servers(ai_dir / "mcp.json", problems)
     hooks = _load_hooks(ai_dir / "hooks", problems)
+    rules = _load_rules(ai_dir / "rules.md", problems)
     loaded_commands = [command for command in commands if command is not None]
     loaded_skills = [skill for skill in skills if skill is not None]
 
@@ -253,6 +268,7 @@ def load(ai_dir: Path) -> Source:
         skills=tuple(loaded_skills),
         servers=servers,
         hooks=hooks,
+        rules=rules,
     )
 
 

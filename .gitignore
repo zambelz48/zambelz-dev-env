@@ -38,15 +38,12 @@ kitty/kitty.conf
 tmp/
 dev-plan/
 
-/.claude/settings.json
-/.claude/commands/
-/.claude/skills/
+/AGENTS.md
+/opencode.json
 /.mcp.json
-/.opencode/opencode.json
-/.opencode/commands/
-/.opencode/skills/
-/.opencode/plugins/zambelz-dev-env/
-/.agents/plugins/zambelz-dev-env/
+/.claude/
+/.opencode/
+/.agents/
 
 # installed by zzd apply tools
 tools/npm/node_modules/

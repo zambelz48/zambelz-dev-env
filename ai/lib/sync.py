@@ -7,6 +7,7 @@ from pathlib import Path
 
 import agents
 import model
+import rules
 import writer
 from agents.common import RenderError
 from report import Report, usage_error
@@ -117,6 +118,20 @@ def _render(source: model.Source, request: Request, report: Report) -> dict[str,
     return plans
 
 
+def _shared_rules(mode: str, plan: writer.Plan, workspace: writer.Workspace, state: writer.State) -> None:
+    agent_synced = any(state.is_synced(agent) for agent in model.AGENTS)
+
+    match mode:
+        case "sync":
+            writer.sync(workspace, plan, state)
+        case "check":
+            writer.check(workspace, plan, state)
+        case "clean" if not agent_synced:
+            writer.clean(workspace, plan.agent, plan.owned, state)
+        case "clean":
+            workspace.report.ok(f"{plan.agent}: kept; other agents are still synced")
+
+
 def run(request: Request, source: model.Source, report: Report) -> None:
     plans = _render(source, request, report)
 
@@ -136,6 +151,8 @@ def run(request: Request, source: model.Source, report: Report) -> None:
                 writer.check(workspace, plan, state)
             case "clean":
                 writer.clean(workspace, agent, plan.owned, state)
+
+    _shared_rules(request.mode, rules.render(source), workspace, state)
 
     if request.mode != "check":
         state.save()

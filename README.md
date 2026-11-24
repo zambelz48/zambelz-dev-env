@@ -270,8 +270,10 @@ run `uv lock` in `tools/python`, then `zzd apply tools`.
 ## AI agents
 
 Claude Code, OpenCode and Antigravity get the same project setup when they
-work on this repository: guard hooks, slash commands, skills and MCP servers.
-The rules stay in `AGENTS.md`, which all three read on their own.
+work on this repository: rules, guard hooks, slash commands, skills and MCP
+servers. Everything an agent reads is generated from the source under `ai/`
+and gitignored; the rules source is `ai/rules.md`, written out as
+`AGENTS.md`, which all three read on their own.
 
 ### Use
 
@@ -288,14 +290,18 @@ belong to the script; edit the source under `ai/` instead.
 
 | Agent | Generated files |
 | --- | --- |
+| Every agent | `AGENTS.md` (from `ai/rules.md`; removed by `--clean` only when no agent stays synced) |
 | Claude Code | `.claude/settings.json` (hooks, MCP servers to enable), `.claude/commands/`, `.claude/skills/`, `.mcp.json` |
-| OpenCode | `.opencode/opencode.json` (MCP), `.opencode/plugins/zambelz-dev-env/`, `.opencode/commands/`, `.opencode/skills/` |
+| OpenCode | `opencode.json` (MCP), `.opencode/plugins/zambelz-dev-env/`, `.opencode/commands/`, `.opencode/skills/` |
 | Antigravity | `.agents/plugins/zambelz-dev-env/` (`hooks.json`, `mcp_config.json`, `skills/`; commands become skills) |
 
-- `.claude/settings.local.json`, the tracked root `opencode.json` and any
-  other file in those folders are never touched. A file the sync did not
-  write is reported with `WARN:` and left alone; a generated file edited by
-  hand is moved to `tmp/ai/backup/<timestamp>/` before it is rewritten.
+- `.gitignore` covers `AGENTS.md`, `opencode.json`, `.mcp.json` and the
+  whole `.claude/`, `.opencode/` and `.agents/` folders. A fresh clone has no
+  `AGENTS.md` until `ai/sync-ai.sh` runs.
+- `.claude/settings.local.json` and any other file in those folders are
+  never touched. A file the sync did not write is reported with `WARN:` and
+  left alone; a generated file edited by hand is moved to
+  `tmp/ai/backup/<timestamp>/` before it is rewritten.
 - The sync warns when an installed agent's version differs from the one this
   setup was tested with (`TESTED_VERSION` in `ai/lib/agents/<agent>.py`:
   Claude Code 2.1.330, OpenCode 2.2.7, Antigravity CLI 1.5.15), and runs
@@ -343,7 +349,7 @@ skill, which their `/` menu already runs.
 
 Development plans live in `dev-plan/PLAN-<NNN>-<NAME>.md` (gitignored),
 written through the `create-dev-plan` skill; research reports go to
-`tmp/docs/deep-research/`. To add a hook, write `ai/hooks/<module>.py` with a
+`tmp/deep-research/`. To add a hook, write `ai/hooks/<module>.py` with a
 `handle(event)` that returns `events.deny(...)`, `events.warn(...)` or `None`,
 list it in `hooks.toml` with its events (`tool.before`, `tool.after`), add a
 test in `zzd/tests/`, and run `ai/sync-ai.sh all`. The tool names each
@@ -436,9 +442,8 @@ decoding read.
 ├── tools/                # npm and Python tools: manifests, locks, overrides
 │   └── zzd/            # module, command list, smoke tests
 ├── zsh/ kitty/ tmux/ neovim/ git/   # configs, each with a zzd/ module dir
-├── ai/                   # agent setup: sync-ai.sh, hook.sh, commands, skills, hooks, MCP
-├── .githooks/pre-push
-└── AGENTS.md             # rules for AI coding agents
+├── ai/                   # agent setup: sync-ai.sh, hook.sh, rules.md, commands, skills, hooks, MCP
+└── .githooks/pre-push
 ```
 
 ## Development
