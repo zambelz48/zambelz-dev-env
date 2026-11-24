@@ -154,3 +154,38 @@ print(len(github.advisories('neovim/neovim')) > 0, [f.id for f in github.check_v
   [ "$status" -eq 0 ]
   [ "$output" = "True [] ['GHSA-6f9m-hj8h-xjgj']" ]
 }
+
+@test "a dropped GitHub stream is retried, a missing file is not, and three drops still fail" {
+  run github_py '
+import procs, time
+time.sleep = lambda seconds: None
+calls = []
+def answers(*errors):
+    def checked(argv, cwd=None, env=None):
+        calls.append(argv)
+        if len(calls) <= len(errors):
+            raise procs.CommandError(errors[len(calls) - 1])
+        return "body"
+    return checked
+dropped = "gh api repos/o/r/contents/package-lock.json?ref=v1 -H exited 1: stream error: stream ID 1; CANCEL; received from peer"
+procs.checked = answers(dropped)
+print(ghapi.raw_file("o/r", "package-lock.json", "v1"), len(calls))
+calls.clear()
+procs.checked = answers("gh api repos/o/r/contents/x exited 1: HTTP 404: Not Found")
+try:
+    ghapi.raw_file("o/r", "x", "v1")
+except ghapi.GitHubError as error:
+    print("404", len(calls))
+calls.clear()
+procs.checked = answers(dropped, dropped, dropped)
+try:
+    ghapi.raw_file("o/r", "package-lock.json", "v1")
+except ghapi.GitHubError as error:
+    print("CANCEL", len(calls))
+'
+
+  [ "$status" -eq 0 ]
+  [ "${lines[0]}" = "body 2" ]
+  [ "${lines[1]}" = "404 1" ]
+  [ "${lines[2]}" = "CANCEL 3" ]
+}

@@ -253,10 +253,13 @@ EOF
 }
 
 @test "hook.sh runs from a python install when mise itself refuses to run" {
+  local interpreter
+  interpreter="$(python3 -c 'import sys; print(sys.executable)')"
+
   MISE_DATA_DIR="$BATS_TEST_TMPDIR/mise-data"
   export MISE_DATA_DIR
   mkdir -p "$MISE_DATA_DIR/installs/python/3.99.0/bin" "$MISE_DATA_DIR/shims"
-  ln -s "$(command -v python3)" "$MISE_DATA_DIR/installs/python/3.99.0/bin/python3"
+  ln -s "$interpreter" "$MISE_DATA_DIR/installs/python/3.99.0/bin/python3"
   printf '#!/bin/sh\necho "mise ERROR mise version 2099.1.1 is required" >&2\nexit 1\n' >"$MISE_DATA_DIR/shims/python3"
   chmod +x "$MISE_DATA_DIR/shims/python3"
 

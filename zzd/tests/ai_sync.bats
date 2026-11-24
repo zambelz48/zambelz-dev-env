@@ -474,7 +474,7 @@ EOF
 @test "antigravity runs agy plugin validate after a sync" {
   zzd_stub_script agy <<'EOF'
 if [ "$1" = "--version" ]; then
-  echo 1.5.14
+  echo 1.5.15
   exit 0
 fi
 echo "VALIDATED $*"
@@ -490,7 +490,7 @@ EOF
 @test "a failing agy plugin validate fails the sync" {
   zzd_stub_script agy <<'EOF'
 if [ "$1" = "--version" ]; then
-  echo 1.5.14
+  echo 1.5.15
   exit 0
 fi
 echo "bad matcher"

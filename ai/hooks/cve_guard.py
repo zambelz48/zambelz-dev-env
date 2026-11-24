@@ -41,6 +41,9 @@ GIT_OPTIONS_WITH_VALUE = (
 )
 SEPARATORS = (";", "|", "&", "\n", "(", ")", "`")
 DETAIL_LIMIT = 6000
+BLOCKING_LABELS = ("FINDING (fix available, blocks push):", "FINDING (blocks push):")
+FINDING_INDENT = "  "
+REPORT_PREFIXES = ("NOT COVERED:", "LEFTOVER:", "COULD NOT RUN:", "Summary:", "ERROR:", "  fix:", "WARN:", "OK:")
 
 
 @dataclass(frozen=True)
@@ -151,11 +154,18 @@ def is_gated(command: str) -> bool:
 
 
 def _detail(output: str) -> str:
-    keep = [
-        line
-        for line in output.splitlines()
-        if line.startswith(("|", "+-", "Total ", "ERROR:", "  fix:", "WARN:"))
-    ]
+    keep: list[str] = []
+    in_blocking_finding = False
+
+    for line in output.splitlines():
+        if line.startswith(BLOCKING_LABELS):
+            in_blocking_finding = True
+        elif not line.startswith(FINDING_INDENT):
+            in_blocking_finding = False
+
+        if in_blocking_finding or line.startswith(REPORT_PREFIXES):
+            keep.append(line)
+
     text = "\n".join(keep) or output.strip()
 
     if len(text) > DETAIL_LIMIT:

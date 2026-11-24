@@ -229,7 +229,10 @@ run `uv lock` in `tools/python`, then `zzd apply tools`.
   the tool exists in its pinned line; the action names the upgrade),
   `blocks push` (the fix route depends on the component; see the `fix-cve`
   skill), or `waiting for upstream` (the tool is at its newest release and
-  still ships the vulnerable library).
+  still ships the vulnerable library, or the newer release also has the
+  advisory). For a version another project selects (its `go.mod`,
+  `.tool-versions`, its own mise config), the action is to raise the
+  version in that project and uninstall the old one.
 - Some findings are reported as information, not failures: dev-only
   dependencies, RustSec "unmaintained" notices (no known flaw), libraries an
   installed binary's own dependency list shows it does not contain, and
@@ -288,7 +291,7 @@ belong to the script; edit the source under `ai/` instead.
   hand is moved to `tmp/ai/backup/<timestamp>/` before it is rewritten.
 - The sync warns when an installed agent's version differs from the one this
   setup was tested with (`TESTED_VERSION` in `ai/lib/agents/<agent>.py`:
-  Claude Code 2.1.330, OpenCode 2.2.7, Antigravity CLI 1.5.14), and runs
+  Claude Code 2.1.330, OpenCode 2.2.7, Antigravity CLI 1.5.15), and runs
   `agy plugin validate --strict` on the Antigravity plugin.
 - Antigravity prefixes the plugin's MCP servers with its name
   (`zambelz-dev-env_context7`).

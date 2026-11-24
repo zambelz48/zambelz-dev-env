@@ -364,6 +364,12 @@ class Engine:
         commit_pinned = {
             upgrades.parent_of(f.component) for f in failing if f.component.kind in upgrades.COMMIT_KINDS
         }
+        present = {
+            (parent, _advisory_key(finding))
+            for finding in failing
+            if (parent := upgrades.parent_of(finding.component))
+        }
+        pinned = self._pinned_tools()
         newest: dict[tuple[str, str], upgrades.Newest] = {}
         annotated: list[Finding] = []
 
@@ -387,14 +393,24 @@ class Engine:
                 annotated.append(dataclasses.replace(finding, url=url))
                 continue
 
+            target = upgrades.available(known)
             status = WAITING
+            action = upgrades.action(known, _outside(finding.component, parent, pinned))
 
-            if upgrades.available(known):
+            if target is not None and ((known.tool, target), _advisory_key(finding)) in present:
+                action = upgrades.still_in_newest(known)
+            elif target is not None:
                 status = FIX_AVAILABLE
 
-            annotated.append(dataclasses.replace(finding, url=url, status=status, action=upgrades.action(known)))
+            annotated.append(dataclasses.replace(finding, url=url, status=status, action=action))
 
         return annotated
+
+    def _pinned_tools(self) -> set[tuple[str, str]]:
+        try:
+            return {(component.name, component.version) for component in inventory.mise_tools(self.repo)}
+        except (OSError, ValueError, KeyError):
+            return set()
 
     def install_paths(self) -> dict[tuple[str, str], str]:
         listing = inventory._mise_json(["ls", "--installed"], Path.home())
@@ -460,6 +476,18 @@ def advisory_url(finding: Finding) -> str:
             return f"https://osv.dev/vulnerability/{identifier}"
         case _:
             return ""
+
+
+def _advisory_key(finding: Finding) -> tuple[str, str]:
+    return (finding.id, finding.package.rsplit("@", 1)[0])
+
+
+def _outside(component: Component, parent: tuple[str, str], pinned: set[tuple[str, str]]) -> bool:
+    match component.kind:
+        case Kind.INSTALL | Kind.BUNDLED | Kind.UPSTREAM_PIN if component.scope == Scope.INSTALLED:
+            return parent[0] != "mise" and parent not in pinned
+        case _:
+            return False
 
 
 def _from_upstream_lockfile(finding: Finding) -> bool:

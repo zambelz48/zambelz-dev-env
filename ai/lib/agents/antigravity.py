@@ -15,7 +15,7 @@ from report import Report
 from writer import Output, Plan, json_bytes
 
 NAME = "antigravity"
-TESTED_VERSION = "1.5.14"
+TESTED_VERSION = "1.5.15"
 VERSION_COMMAND = ("agy", "--version")
 PLUGIN = "zambelz-dev-env"
 PLUGIN_DIR = f".agents/plugins/{PLUGIN}/"

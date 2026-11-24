@@ -15,11 +15,13 @@ advisory, the library and its fixed version, an Action line and a link. Its
 label says what can be done:
 
 - `fix available, blocks push`: a newer release of the tool exists in its
-  pinned line. Follow the Action line, then audit again.
+  pinned line. Follow the Action line, then audit again. When the version is
+  selected by another project rather than this repository, the Action line
+  says so: the version is raised in that project, which belongs to the user.
 - `blocks push`: the fix route is yours to find (the table below).
 - `waiting for upstream`: the tool is at its newest release and still ships
-  the vulnerable library. Report it to the user as open; there is nothing to
-  install yet.
+  the vulnerable library, or the newer release has the same advisory. Report
+  it to the user as open; there is nothing to install yet.
 
 | Component | Fix route |
 | --- | --- |

@@ -188,6 +188,36 @@ print(sorted(f.id for f in result.blocking_findings()), int(result.exit_code()),
   [ "${lines[4]}" = "['GHSA-9', 'GO-2026-5024'] 1 1" ]
 }
 
+@test "an advisory the newest release still has is waiting, and an install another project keeps names that project" {
+  mkdir -p "$BATS_TEST_TMPDIR/mise"
+  printf '[[tools.go]]\nversion = "1.27.4"\n\n[[tools.go]]\nversion = "1.26.9"\n' >"$BATS_TEST_TMPDIR/mise/mise.lock"
+
+  run engine_py '
+import upgrades
+newest = {
+    ("go", "1.26.11"): upgrades.Newest("go", "1.26.11", "1.27.4", "1.27.4"),
+    ("go", "1.26.9"): upgrades.Newest("go", "1.26.9", "1.27.4", "1.27.4"),
+    ("go", "1.27.4"): upgrades.Newest("go", "1.27.4", "1.27.4", "1.27.4"),
+}
+upgrades.newest_versions = lambda pairs, config, *rest: newest
+def installed(version):
+    return Component(Kind.INSTALL, "go", version, "/installs/go/" + version, Scope.INSTALLED, {})
+findings = [
+    finding(installed("1.26.11"), id="GO-A", package="Go/golang.org/x/mod@0.20.0"),
+    finding(installed("1.26.11"), id="GO-B", package="Go/stdlib@1.26.2"),
+    finding(installed("1.26.9"), id="GO-B", package="Go/stdlib@1.26.2"),
+    finding(installed("1.27.4"), id="GO-A", package="Go/golang.org/x/mod@0.30.0"),
+]
+for f in run.with_status(findings):
+    print(f.component.version, f.id, "|", f.status, "|", f.action)
+'
+
+  [ "${lines[0]}" = "1.26.11 GO-A | waiting for upstream | none possible yet; go 1.27.4, the newest release, still has it" ]
+  [ "${lines[1]}" = "1.26.11 GO-B | fix available | raise go 1.26.11 -> 1.27.4 in the project that selects it, then remove this install (mise uninstall go@1.26.11) and run the audit again" ]
+  [ "${lines[2]}" = "1.26.9 GO-B | fix available | upgrade go 1.26.9 -> 1.27.4 (zzd upgrade go), then run the audit again" ]
+  [ "${lines[3]}" = "1.27.4 GO-A | waiting for upstream | none possible yet; go 1.27.4 is the newest release in its pinned line" ]
+}
+
 @test "a commit pin at its newest commit is waiting, behind it is fix available" {
   run engine_py '
 import upgrades, ghapi

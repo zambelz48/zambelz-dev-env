@@ -16,7 +16,9 @@ setup() {
   git -C "$CLONE" config user.name live
   cat >"$CLONE/zzd/bin/zzd" <<'EOF'
 #!/usr/bin/env bash
-printf '| https://osv.dev/GHSA-live-test | effect | 3.20.0 | tools/npm/pnpm-lock.yaml |\n'
+printf 'FINDING (fix available, blocks push): lockfile:tools/npm/pnpm-lock.yaml@- [tools/npm/pnpm-lock.yaml]\n'
+printf '  GHSA-live-test, high (CVSS 7.5)\n'
+printf '  Library: npm/effect@3.19.0, fixed in 3.20.0\n'
 printf 'ERROR: vulnerabilities found\n'
 exit 1
 EOF
